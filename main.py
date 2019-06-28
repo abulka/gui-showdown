@@ -12,16 +12,31 @@ model = {
     }
 }
 
+# @dataclass
+# class Dirty:
+#     pass  # Mark that component needs rendering
+
 @dataclass
-class Info:
+class MW:  # Welcome model ref
     model: dict
-    colour: str = ""
-    font: str = ""
+    key: str
 
 @dataclass
-class Dirty:
-    pass  # Mark that component needs rendering
+class MU:  # User model ref
+    model: dict
+    key: str
 
+@dataclass
+class GUIST:  # Static Text Gui ref
+    ref: object
+
+@dataclass
+class GUITC:  # Text Control Gui ref
+    ref: object
+
+# @dataclass
+# class CALC:  # some sort of calc between two model refs or a model ref and a str or something
+#     ops: list
 
 class RenderProcessor(esper.Processor):
     def __init__(self):
@@ -29,77 +44,44 @@ class RenderProcessor(esper.Processor):
 
     def process(self):
         print("RENDER")
-        # for ent, (info, dirty) in self.world.get_components(Info, Dirty):
-        #     # print(f"entity {ent} says {render.info}")
-        #     frame.m_staticText1.SetLabel(info.model["welcome_msg"])
-        #     frame.m_staticText2.SetLabel(info.model["user"]["name"] + " " + info.model["welcome_msg"])
-        #     frame.m_textCtrl1.SetValue(info.model["welcome_msg"])            
-        #     world.remove_component(ent, Dirty)
-        for ent, (info,) in self.world.get_components(Info):
-            frame.m_staticText1.SetLabel(info.model["welcome_msg"])
-            frame.m_staticText2.SetLabel(info.model["user"]["name"] + " " + info.model["welcome_msg"])
-            frame.m_textCtrl1.SetValue(info.model["welcome_msg"])
+        for ent, (mw, guist) in self.world.get_components(MW, GUIST):
+            guist.ref.SetLabel(mw.model[mw.key])
+        for ent, (mw, guitc) in self.world.get_components(MW, GUITC):
+            guitc.ref.SetValue(mw.model[mw.key])
+        for ent, (mw, mu, guist) in self.world.get_components(MW, MU, GUIST):
+            guist.ref.SetLabel(f"{mw.model[mw.key]} {mu.model[mu.key]}")
 
 class MyFrame1A(MyFrame1):
     def onButton1(self, event):
         model["welcome_msg"] = "Hi"
-        # w = world.component_for_entity(model_welcome, Info)
-        # w.info = "Hi"
-        # world.add_component(model_welcome, Dirty())
         world.process()
 
     def onCheck1( self, event):
-        # i = world.component_for_entity(model_welcome, Info)
-        # if frame.m_checkBox1.IsChecked():
-        #     i.info = i.info.upper()
-        # else:
-        #     i.info = i.info.lower()
-        # world.add_component(model_welcome, Dirty())
-        if frame.m_checkBox1.IsChecked():
-            model["welcome_msg"] = model["welcome_msg"].upper()
-        else:
-            model["welcome_msg"] = model["welcome_msg"].lower()
+        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
         world.process()
 
-
-# def setup_esper():
 world = esper.World()
 world.add_processor(RenderProcessor())
 
-"""
-We want to model:
-    - a welcome message, default "Hi"
-    - a user, default "Andy", cannot change
-The GUI displays:
-    - the welcome message twice
-        - top left: pure message
-        - top right: message + user
-    - text entry, which allows editing of the welcome message
-    - checkbox, which converts top right message to uppercase
-    - button, which resets the welcome message to "Hi"
-"""
-
-
-entity_welcome_left = world.create_entity()
-entity_welcome_user_right = world.create_entity()
-entity_edit_welcome_msg = world.create_entity()
-# entity_case_change = world.create_entity()
-# entity_reset_welcome_button = world.create_entity()
-
-world.add_component(entity_welcome_left, Info(model=model, colour="red"))
-world.add_component(entity_welcome_user_right, Info(model=model))
-world.add_component(entity_edit_welcome_msg, Info(model=model))
-
-world.add_component(entity_welcome_left, Dirty())
-world.add_component(entity_welcome_user_right, Dirty())
-world.add_component(entity_edit_welcome_msg, Dirty())
-
-# setup_esper()
 
 app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
 frame.SetSize((400, 400))
+
+entity_welcome_left = world.create_entity()
+entity_welcome_user_right = world.create_entity()
+entity_edit_welcome_msg = world.create_entity()
+
+world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
+
+world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_user_right, MU(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
+
+world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
+world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 
 world.process()
 
