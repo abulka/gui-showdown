@@ -38,7 +38,7 @@ class MyFrame1A(MyFrame1):
 
         i = world.component_for_entity(gui_title, Render)
         i.info = "hi there"
-        world.add_component(gui_title, Dirty)
+        world.add_component(gui_title, Dirty())
         world.process()
 
     def onCheck1( self, event):
@@ -48,7 +48,7 @@ class MyFrame1A(MyFrame1):
             i.info = i.info.upper()
         else:
             i.info = i.info.lower()
-        world.add_component(gui_title, Dirty)
+        world.add_component(gui_title, Dirty())
         world.process()
 
 
