@@ -78,7 +78,7 @@ all possible mediators and triggering only those whose associated models are 'di
 When implementing dirty, it is more efficient to dirty certain mediators, but 
 is this complexity worth it?  
 
-For example, rather than not having dirty flags, or having a dirty_all() call (which amounts to everything being dirty thus no point in the dirty flag) - we could be more specific:
+For example, rather than not having dirty flags, or having a `dirty_all()` call (which amounts to everything being dirty thus no point in the dirty flag) - we could be more specific:
 
 ```python
 def onCheck1(self, event):
@@ -92,3 +92,10 @@ def onCheck1(self, event):
 Perhaps an observer system is indeed best to have after all.  The model would have to be an observable object though - not a pure dict.  And the mediators would have to observers - thus objects too?  
 
 But neither is an object in this ECS project - how do we implement an observer pattern within ECS without objects?
+
+There are some discussions here about implementing observer in ECS:
+
+* https://www.reddit.com/r/gamedev/comments/2rrie6/ecs_and_observer_pattern/
+* https://www.reddit.com/r/gamedev/comments/65qhd0/event_queues_vs_observerssubjects_in_entity/
+
+more thinking required...
