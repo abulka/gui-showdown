@@ -21,15 +21,6 @@ where entities are game objects which are typically sprites which are rendered b
 which draw onto a canvas.  How do models, mediators and gui widgets map to ECS concepts,
 and how to we remove most of the OO from them, in order to do things the ECS way?
 
-** Note that in the absence of an observer pattern being implemented, you can instead
-simply loop through all mediators and trigger them, thus updating the GUI to the state of the
-current model. This loop could be called periodically and strategically.  Its a cheap way.
-Adding a dirty flag to model entities would allow us to skip mediators that don't need to 
-be triggered, thus is more efficient.  Even better optimisation is achieved with dirty models
-and sets, like the way ECS systems query for components that match - you can include a dirty
-component and the set-based lookup speed will be more efficient (rather than looping through
-all possible mediators and triggering only those whose associated models are 'dirty').
-
 Using ECS approach to implement the MGM design pattern.
 -------------------------------------------------------
 
@@ -72,3 +63,32 @@ The GUI displays:
 - checkbox, which converts the welcome message uppercase/lowercase
 - checkbox, which converts top right message to uppercase TODO
 - button, which resets the welcome message to "Hi"
+
+On Observers and Dirty
+----------------------
+** Note that in the absence of an observer pattern being implemented, you can instead
+simply loop through all mediators and trigger them, thus updating the GUI to the state of the
+current model. This loop could be called periodically and strategically.  Its a cheap way.
+Adding a dirty flag to model entities would allow us to skip mediators that don't need to 
+be triggered, thus is more efficient.  Even better optimisation is achieved with dirty models
+and sets, like the way ECS systems query for components that match - you can include a dirty
+component and the set-based lookup speed will be more efficient (rather than looping through
+all possible mediators and triggering only those whose associated models are 'dirty').
+
+When implementing dirty, it is more efficient to dirty certain mediators, but 
+is this complexity worth it?  
+
+For example, rather than not having dirty flags, or having a dirty_all() call (which amounts to everything being dirty thus no point in the dirty flag) - we could be more specific:
+
+```python
+def onCheck1(self, event):
+    world.add_component(entity_welcome_left, Dirty())
+
+    world.add_component(entity_welcome_user_right, Dirty())
+
+    world.process()
+```
+
+Perhaps an observer system is indeed best to have after all.  The model would have to be an observable object though - not a pure dict.  And the mediators would have to observers - thus objects too?  
+
+But neither is an object in this ECS project - how do we implement an observer pattern within ECS without objects?
