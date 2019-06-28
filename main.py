@@ -25,12 +25,17 @@ class RenderProcessor(esper.Processor):
         print("RENDER")
         for ent, (render, dirty) in self.world.get_components(Render, Dirty):
             print(f"entity {ent} says {render.info}")
+            frame.m_staticText1.SetLabel(render.info)
 
 class MyFrame1A(MyFrame1):
     def onButton1(self, event):
         # global world
 
         print("button pushed")
+
+        i = world.component_for_entity(gui_title, Render)
+        i.info = "hi there"
+
         world.process()
 
 
