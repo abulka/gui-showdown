@@ -30,18 +30,18 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer2.Add( self.m_staticText1, 1, wx.ALL, 5 )
 
-		self.m_staticText2 = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText2.Wrap( -1 )
+		self.m_staticText2 = wx.StaticText( self, wx.ID_ANY, u"MyLabel lkjsd lkjkljs d sdkfjfsdljflskdjf", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText2.Wrap( 100 )
 
 		self.m_staticText2.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_CAPTIONTEXT ) )
 		self.m_staticText2.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHT ) )
 
-		bSizer2.Add( self.m_staticText2, 0, wx.ALL, 5 )
+		bSizer2.Add( self.m_staticText2, 1, wx.ALL, 5 )
 
 
 		bSizer1.Add( bSizer2, 0, wx.ALL|wx.EXPAND, 5 )
 
-		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
 		bSizer1.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
 
 		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase Please", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -57,6 +57,7 @@ class MyFrame1 ( wx.Frame ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
+		self.m_textCtrl1.Bind( wx.EVT_TEXT_ENTER, self.onEnter )
 		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.onButton1 )
 
@@ -65,6 +66,9 @@ class MyFrame1 ( wx.Frame ):
 
 
 	# Virtual event handlers, overide them in your derived class
+	def onEnter( self, event ):
+		event.Skip()
+
 	def onCheck1( self, event ):
 		event.Skip()
 

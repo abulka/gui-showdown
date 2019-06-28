@@ -56,8 +56,12 @@ class MyFrame1A(MyFrame1):
         model["welcome_msg"] = "Hi"
         world.process()
 
-    def onCheck1( self, event):
+    def onCheck1(self, event):
         model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+        world.process()
+
+    def onEnter(self, event):
+        model["welcome_msg"] = frame.m_textCtrl1.GetValue()
         world.process()
 
 world = esper.World()
