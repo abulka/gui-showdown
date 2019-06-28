@@ -3,8 +3,8 @@ import time as _time
 from functools import lru_cache as _lru_cache
 from typing import List, Type, TypeVar, Any, Tuple, Iterable
 
-C = TypeVar('C')
-P = TypeVar('P')
+C = TypeVar("C")
+P = TypeVar("P")
 
 
 class Processor:
@@ -17,6 +17,7 @@ class Processor:
     appropriate world methods there, such as
     `for ent, (rend, vel) in self.world.get_components(Renderable, Velocity):`
     """
+
     world = None
 
     def process(self, *args, **kwargs):
@@ -30,6 +31,7 @@ class World:
     is also responsible for executing all Processors assigned to it for each
     frame of your game.
     """
+
     def __init__(self, timed=False):
         self._processors = []
         self._next_entity_id = 0
@@ -233,7 +235,7 @@ class World:
         for entity in self._components.get(component_type, []):
             yield entity, entity_db[entity][component_type]
 
-    def _get_components(self, *component_types: Type)-> Iterable[Tuple[int, ...]]:
+    def _get_components(self, *component_types: Type) -> Iterable[Tuple[int, ...]]:
         """Get an iterator for Entity and multiple Component sets.
 
         :param component_types: Two or more Component types.
