@@ -44,7 +44,7 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
 
-		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Check Me!", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase Please", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
 
 		self.m_button1 = wx.Button( self, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
