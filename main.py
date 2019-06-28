@@ -38,11 +38,18 @@ class MyFrame1A(MyFrame1):
 
         i = world.component_for_entity(gui_title, Render)
         i.info = "hi there"
-
+        world.add_component(gui_title, Dirty)
         world.process()
 
-    def onCheck1( self, event ):
-        print("checked")
+    def onCheck1( self, event):
+        print("checked event")
+        i = world.component_for_entity(gui_title, Render)
+        if frame.m_checkBox1.IsChecked():
+            i.info = i.info.upper()
+        else:
+            i.info = i.info.lower()
+        world.add_component(gui_title, Dirty)
+        world.process()
 
 
 # def setup_esper():
@@ -54,7 +61,7 @@ gui_textentry = world.create_entity()
 gui_checkbox = world.create_entity()
 gui_button1 = world.create_entity()
 
-world.add_component(gui_title, Render())
+world.add_component(gui_title, Render(info="hmm"))
 world.add_component(gui_title, Dirty())
 
 # setup_esper()
@@ -63,5 +70,7 @@ app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
 frame.SetSize((400, 400))
+
+world.process()
 
 app.MainLoop()
