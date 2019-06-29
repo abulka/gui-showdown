@@ -54,7 +54,7 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Welcome Message", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Welcome Message (model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText4.Wrap( -1 )
 
 		bSizer4.Add( self.m_staticText4, 0, wx.ALL, 5 )
@@ -67,7 +67,7 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"User", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"User (model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
 
 		bSizer3.Add( self.m_staticText3, 0, wx.ALL, 5 )
@@ -83,6 +83,9 @@ class MyFrame1 ( wx.Frame ):
 
 		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
+
+		self.m_checkBox1A = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (outputs only)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_checkBox1A, 0, wx.ALL, 5 )
 
 		self.m_checkBox2 = wx.CheckBox( self, wx.ID_ANY, u"Change case of top right message", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox2, 0, wx.ALL, 5 )
@@ -107,8 +110,9 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl2.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserName )
 		self.m_textCtrl3.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserSurname )
 		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
+		self.m_checkBox1A.Bind( wx.EVT_CHECKBOX, self.onCheckToggleWelcomeOutputsOnly )
 		self.m_checkBox2.Bind( wx.EVT_CHECKBOX, self.onCheck2 )
-		self.m_button1.Bind( wx.EVT_BUTTON, self.onButton1 )
+		self.m_button1.Bind( wx.EVT_BUTTON, self.onResetWelcome )
 		self.m_button3.Bind( wx.EVT_BUTTON, self.onClickResetUser )
 		self.m_button_rendernow.Bind( wx.EVT_BUTTON, self.onClickRenderNow )
 
@@ -129,10 +133,13 @@ class MyFrame1 ( wx.Frame ):
 	def onCheck1( self, event ):
 		event.Skip()
 
+	def onCheckToggleWelcomeOutputsOnly( self, event ):
+		event.Skip()
+
 	def onCheck2( self, event ):
 		event.Skip()
 
-	def onButton1( self, event ):
+	def onResetWelcome( self, event ):
 		event.Skip()
 
 	def onClickResetUser( self, event ):

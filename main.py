@@ -47,6 +47,10 @@ class GUITC:  # Text Control Gui ref
 class UPR:  # flag to make upper right message uppercase or not
     pass
 
+@dataclass
+class UPRW:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+    pass
+
 
 class RenderProcessor(esper.Processor):
     def __init__(self):
@@ -59,7 +63,13 @@ class RenderProcessor(esper.Processor):
         for ent, (mw, guist, d) in self.world.get_components(MW, GUIST, Dirty):
             # This loop picks up entities who also have MU !! yikes.
             print("mw top left", ent)
-            guist.ref.SetLabel(mw.model[mw.key])
+            welcome = mw.model[mw.key]
+
+            # See if additional behaviour is needed
+            if self.world.has_component(ent, UPRW):
+                welcome = welcome.upper()
+
+            guist.ref.SetLabel(welcome)
             ents.add(ent)
 
         for ent, (mw, guitc, d) in self.world.get_components(MW, GUITC, Dirty):
@@ -73,6 +83,8 @@ class RenderProcessor(esper.Processor):
             user = f"{mu.model[mu.key]} {mus.model[mus.key]}"
 
             # See if additional behaviour is needed
+            if self.world.has_component(ent, UPRW):
+                welcome = welcome.upper()
             if self.world.has_component(ent, UPR):
                 welcome = welcome.upper()
                 user = user.upper()
@@ -93,14 +105,33 @@ class RenderProcessor(esper.Processor):
         for ent in list(ents):
             world.remove_component(ent, Dirty)
 
+def model_welcome_toggle():
+        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+
+def model_setter_welcome(msg):
+        model["welcome_msg"] = msg
+        model_welcome_toggle()
+
 class MyFrame1A(MyFrame1):
-    def onButton1(self, event):
-        model["welcome_msg"] = "Hello"
+    def onResetWelcome(self, event):
+        model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
         dirty(MW)
         world.process()
 
     def onCheck1(self, event):
-        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+        # toggle the case of the model's welcome message
+        model_welcome_toggle()
+        dirty(MW)
+        world.process()
+
+    def onCheckToggleWelcomeOutputsOnly(self, event):
+        # toggle the case of the welcome output messages only - do not affect model
+        if frame.m_checkBox1A.IsChecked():
+            world.add_component(entity_welcome_left, UPRW())
+            world.add_component(entity_welcome_user_right, UPRW())
+        else:
+            world.remove_component(entity_welcome_left, UPRW)
+            world.remove_component(entity_welcome_user_right, UPRW)
         dirty("welcome outputs only")  # doesn't affect welcome edit field
         world.process()
 
