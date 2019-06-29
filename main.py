@@ -29,12 +29,12 @@ class MW:  # Welcome model ref
     key: str
 
 @dataclass
-class MUF:  # User model ref
+class MUFIRSTNAME:  # User model ref
     model: dict
     key: str
 
 @dataclass
-class MUS:  # User surname model ref
+class MUSURNAME:  # User surname model ref
     model: dict
     key: str
 
@@ -58,17 +58,19 @@ class UP_R_WHOLE:  # flag to make upper right message uppercase or not
 class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
     pass
 
-@dataclass
-class Final:  # represents info extracted from model as plain string, can be transformed before rendering system
-    s: str
+# @dataclass
+# class Final:  # represents info extracted from model as plain string, can be transformed before rendering system
+#     welcome: str
+#     firstname: str
+#     surname: str
 
 @dataclass
 class FinalW:  # Final only for Welcome
     s: str
 
-@dataclass
-class FinalU:  # Final only for User
-    s: str
+# @dataclass
+# class FinalU:  # Final only for User
+#     s: str
 @dataclass
 class FinalUname:  # Final only for User.name
     s: str
@@ -81,30 +83,27 @@ class ModelExtractProcessor(esper.Processor):
     def process(self):
         print("--Model Extract System---")
         for ent, (mw, d) in self.world.get_components(MW, Dirty):
-            welcome = mw.model[mw.key]
-            f = FinalW(s=welcome)
+            f = FinalW(s=mw.model[mw.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mu, d) in self.world.get_components(MUF, Dirty):
-            name = mu.model[mu.key]
-            f = FinalUname(s=name)
+        for ent, (mu, d) in self.world.get_components(MUFIRSTNAME, Dirty):
+            f = FinalUname(s=mu.model[mu.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mus, d) in self.world.get_components(MUS, Dirty):
-            surname = mus.model[mus.key]
-            f = FinalUsurname(s=surname)
+        for ent, (mus, d) in self.world.get_components(MUSURNAME, Dirty):
+            f = FinalUsurname(s=mus.model[mus.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mu, mus, d) in self.world.get_components(MUF, MUS, Dirty):
-            name = mu.model[mu.key]
-            surname = mus.model[mus.key]
-            combined = f"{name} {surname}"
-            f = FinalU(s=combined)
-            world.add_component(ent, f)
-            dump(f, ent)
+        # for ent, (mu, mus, d) in self.world.get_components(MUFIRSTNAME, MUSURNAME, Dirty):
+        #     name = mu.model[mu.key]
+        #     surname = mus.model[mus.key]
+        #     combined = f"{name} {surname}"
+        #     f = FinalU(s=combined)
+        #     world.add_component(ent, f)
+        #     dump(f, ent)
 
 class CaseTransformProcessor(esper.Processor):
     def process(self):
@@ -115,9 +114,9 @@ class CaseTransformProcessor(esper.Processor):
         for ent, (f, upr, d) in self.world.get_components(FinalW, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalU, UP_R_WHOLE, Dirty):
-            f.s = f.s.upper()
-            dump(f, ent)
+        # for ent, (f, upr, d) in self.world.get_components(FinalU, UP_R_WHOLE, Dirty):
+        #     f.s = f.s.upper()
+        #     dump(f, ent)
         for ent, (f, upr, d) in self.world.get_components(FinalUname, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
@@ -135,10 +134,14 @@ class RenderProcessor(esper.Processor):
             print("mw top left static", ent)
             guist.ref.SetLabel(finalw.s)
             ents.add(ent)
-        for ent, (finalw, finalu, guist, d) in self.world.get_components(FinalW, FinalU, GUIST, Dirty):
+        for ent, (finalw, finalf, finals, guist, d) in self.world.get_components(FinalW, FinalUname, FinalUsurname, GUIST, Dirty):
             print("mw mu mus top right")
-            guist.ref.SetLabel(f"{finalw.s} {finalu.s}")
+            guist.ref.SetLabel(f"{finalw.s} {finalf.s} {finals.s}")
             ents.add(ent)
+        # for ent, (finalw, finalu, guist, d) in self.world.get_components(FinalW, FinalU, GUIST, Dirty):
+        #     print("mw mu mus top right")
+        #     guist.ref.SetLabel(f"{finalw.s} {finalu.s}")
+        #     ents.add(ent)
         for ent, (finalw, guitc, d) in self.world.get_components(FinalW, GUITC, Dirty):
             print("mw textctrl")
             guitc.ref.SetValue(finalw.s)
@@ -235,18 +238,18 @@ class MyFrame1A(MyFrame1):
     def onClickResetUser( self, event ):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        dirty(MUF)
-        dirty(MUS)
+        dirty(MUFIRSTNAME)
+        dirty(MUSURNAME)
         world.process()
 
     def onEnterUserName( self, event ):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        dirty(MUF)
+        dirty(MUFIRSTNAME)
         world.process()
 
     def onEnterUserSurname( self, event ):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
-        dirty(MUS)
+        dirty(MUSURNAME)
         world.process()
 
     def onClickRenderNow( self, event ):
@@ -293,17 +296,17 @@ world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
 world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
 
 world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_user_right, MUF(model=model["user"], key="name"))
-world.add_component(entity_welcome_user_right, MUS(model=model["user"], key="surname"))
+world.add_component(entity_welcome_user_right, MUFIRSTNAME(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, MUSURNAME(model=model["user"], key="surname"))
 world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 
 world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
 world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 
-world.add_component(entity_edit_user_name_msg, MUF(model=model["user"], key="name"))
+world.add_component(entity_edit_user_name_msg, MUFIRSTNAME(model=model["user"], key="name"))
 world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
 
-world.add_component(entity_edit_user_surname_msg, MUS(model=model["user"], key="surname"))
+world.add_component(entity_edit_user_surname_msg, MUSURNAME(model=model["user"], key="surname"))
 world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
 
 
@@ -313,8 +316,8 @@ world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
 dirty_model_to_entities = {
     MW: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
     "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
-    MUF: [entity_welcome_user_right, entity_edit_user_name_msg],
-    MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
+    MUFIRSTNAME: [entity_welcome_user_right, entity_edit_user_name_msg],
+    MUSURNAME: [entity_welcome_user_right, entity_edit_user_surname_msg],
     "just top right": [entity_welcome_user_right],
 }
 
