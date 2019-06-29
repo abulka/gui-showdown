@@ -101,3 +101,53 @@ There are some discussions here about implementing observer in ECS:
 * https://www.reddit.com/r/gamedev/comments/65qhd0/event_queues_vs_observerssubjects_in_entity/
 
 more thinking required...
+
+Interim Observer Solution
+-------------------------
+Is to pass a parameter to `dirty()` which 
+tells us which model each mediator entity cares about, like observer pattern mappings.
+
+Note this uses the model component ref class, rather than anything about the model dict itself.
+We even have arbitrary keys which are more verbose model descriptions to make it easier.
+
+```python
+dirty_model_to_entities = {
+    MW: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
+    "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
+    MU: [entity_welcome_user_right, entity_edit_user_name_msg],
+    MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
+    "just top right": [entity_welcome_user_right],
+}
+```
+
+View Model in the future?
+-------------------------
+
+```python
+# Not used - but would be nice to integrate something like this into the ECS
+view_model = {
+    "uppercase welcome model": False,
+    "uppercase welcome outputs": False,
+    "uppercase top right": False,
+}
+```
+
+But no point adding more and more complexity till the flaws are worked out, or this approach
+abandoned.
+
+Evaluation So Far - Flaws
+-------------------------
+
+The implementation is quite big and complex with some flaws:
+
+The render 'system' is picking up the same mediators multiple times because if a mediator has components A, B, C and you are just looking for A, B then you will pick it up - both in the A,B pass and also in the A,B,C pass.
+This means multiple renderings of the same info - inefficient!
+
+For each model element we have to add a unique component.
+
+The hacky observer implementation means maintaining a table of keys to mediator entities affected, including adding helpfully named special keys for special situations. Whilst this is hacky and ongoing, at least the table nicely centralises and summarises what KEY affects what.  The events need to call dirty(KEY).
+
+Needing to call `world.process()` after each event is a bit annoying. On the other hand we have the opportunity to delay calling that and putting it into some other background update loop.  Possibly integrate it with the main wx loop, the way I once did with pygame and the way wxasync library does.
+
+SUMMARY:
+The explosion of components is a worry, and the duplicate renderings is a worry.

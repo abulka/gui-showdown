@@ -12,6 +12,13 @@ model = {
     }
 }
 
+# Not used - but would be nice to integrate something like this into the ECS
+view_model = {
+    "uppercase welcome model": False,
+    "uppercase welcome outputs": False,
+    "uppercase top right": False,
+}
+
 @dataclass
 class Dirty:  # Mark that component needs rendering
     pass 
