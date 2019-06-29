@@ -72,10 +72,10 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer3.Add( self.m_staticText3, 0, wx.ALL, 5 )
 
-		self.m_textCtrl2 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl2 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
 		bSizer3.Add( self.m_textCtrl2, 1, wx.ALL, 5 )
 
-		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
 		bSizer3.Add( self.m_textCtrl3, 1, wx.ALL, 5 )
 
 
@@ -101,6 +101,8 @@ class MyFrame1 ( wx.Frame ):
 
 		# Connect Events
 		self.m_textCtrl1.Bind( wx.EVT_TEXT_ENTER, self.onEnter )
+		self.m_textCtrl2.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserName )
+		self.m_textCtrl3.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserSurname )
 		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.onButton1 )
 		self.m_button3.Bind( wx.EVT_BUTTON, self.onClickResetUser )
@@ -112,6 +114,12 @@ class MyFrame1 ( wx.Frame ):
 
 	# Virtual event handlers, overide them in your derived class
 	def onEnter( self, event ):
+		event.Skip()
+
+	def onEnterUserName( self, event ):
+		event.Skip()
+
+	def onEnterUserSurname( self, event ):
 		event.Skip()
 
 	def onCheck1( self, event ):

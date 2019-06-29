@@ -103,6 +103,16 @@ class MyFrame1A(MyFrame1):
         dirty(MUS)
         world.process()
 
+    def onEnterUserName( self, event ):
+        model["user"]["name"] = frame.m_textCtrl2.GetValue()
+        dirty(MU)
+        world.process()
+
+    def onEnterUserSurname( self, event ):
+        model["user"]["surname"] = frame.m_textCtrl3.GetValue()
+        dirty(MUS)
+        world.process()
+
     def onClickRenderNow( self, event ):
         world.process()
 
