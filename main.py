@@ -105,6 +105,13 @@ class RenderProcessor(esper.Processor):
         for ent in list(ents):
             world.remove_component(ent, Dirty)
 
+        # General housekeeping
+        if frame.m_checkBox1.IsChecked():
+            frame.m_checkBox1A.Disable()
+        else:
+            frame.m_checkBox1A.Enable()
+
+
 def model_welcome_toggle():
         model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
 
