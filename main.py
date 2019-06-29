@@ -24,31 +24,27 @@ class Dirty:  # Mark that component needs rendering
     pass 
 
 @dataclass
-class MW:  # Welcome model ref
+class ModelWelcome:  # Welcome model ref
     model: dict
     key: str
 
 @dataclass
-class MUFIRSTNAME:  # User model ref
+class ModelFirstname:  # User model ref
     model: dict
     key: str
 
 @dataclass
-class MUSURNAME:  # User surname model ref
+class ModelSurname:  # User surname model ref
     model: dict
     key: str
 
 @dataclass
-class GUIST:  # Static Text Gui ref
+class GuiStaticText:  # Static Text Gui ref
     ref: object
 
 @dataclass
-class GUITC:  # Text Control Gui ref
+class GuiTextControl:  # Text Control Gui ref
     ref: object
-
-# @dataclass
-# class CALC:  # some sort of calc between two model refs or a model ref and a str or something
-#     ops: list
 
 @dataclass
 class UP_R_WHOLE:  # flag to make upper right message uppercase or not
@@ -58,69 +54,51 @@ class UP_R_WHOLE:  # flag to make upper right message uppercase or not
 class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
     pass
 
-# @dataclass
-# class Final:  # represents info extracted from model as plain string, can be transformed before rendering system
-#     welcome: str
-#     firstname: str
-#     surname: str
-
 @dataclass
-class FinalW:  # Final only for Welcome
+class FinalWelcome:
     s: str
 
-# @dataclass
-# class FinalU:  # Final only for User
-#     s: str
 @dataclass
-class FinalUname:  # Final only for User.name
+class FinalFirstname:
     s: str
+
 @dataclass
-class FinalUsurname:  # Final only for User.surname
+class FinalSurname:
     s: str
 
 
 class ModelExtractProcessor(esper.Processor):
     def process(self):
         print("--Model Extract System---")
-        for ent, (mw, d) in self.world.get_components(MW, Dirty):
-            f = FinalW(s=mw.model[mw.key])
+        for ent, (mw, d) in self.world.get_components(ModelWelcome, Dirty):
+            f = FinalWelcome(s=mw.model[mw.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mu, d) in self.world.get_components(MUFIRSTNAME, Dirty):
-            f = FinalUname(s=mu.model[mu.key])
+        for ent, (mu, d) in self.world.get_components(ModelFirstname, Dirty):
+            f = FinalFirstname(s=mu.model[mu.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mus, d) in self.world.get_components(MUSURNAME, Dirty):
-            f = FinalUsurname(s=mus.model[mus.key])
+        for ent, (mus, d) in self.world.get_components(ModelSurname, Dirty):
+            f = FinalSurname(s=mus.model[mus.key])
             world.add_component(ent, f)
             dump(f, ent)
 
-        # for ent, (mu, mus, d) in self.world.get_components(MUFIRSTNAME, MUSURNAME, Dirty):
-        #     name = mu.model[mu.key]
-        #     surname = mus.model[mus.key]
-        #     combined = f"{name} {surname}"
-        #     f = FinalU(s=combined)
-        #     world.add_component(ent, f)
-        #     dump(f, ent)
 
 class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
-        for ent, (f, uprw, d) in self.world.get_components(FinalW, UP_L_AND_R_WELCOME_ONLY, Dirty):
+        for ent, (f, uprw, d) in self.world.get_components(FinalWelcome, UP_L_AND_R_WELCOME_ONLY, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalW, UP_R_WHOLE, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalWelcome, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        # for ent, (f, upr, d) in self.world.get_components(FinalU, UP_R_WHOLE, Dirty):
-        #     f.s = f.s.upper()
-        #     dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalUname, UP_R_WHOLE, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalFirstname, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalUsurname, UP_R_WHOLE, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalSurname, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
 
@@ -130,38 +108,26 @@ class RenderProcessor(esper.Processor):
         print("--Render System--")
         ents = set()
 
-        for ent, (finalw, guist, d) in self.world.get_components(FinalW, GUIST, Dirty):
-            print("mw top left static", ent)
+        for ent, (finalw, guist, d) in self.world.get_components(FinalWelcome, GuiStaticText, Dirty):
+            print("top left", ent)
             guist.ref.SetLabel(finalw.s)
             ents.add(ent)
-        for ent, (finalw, finalf, finals, guist, d) in self.world.get_components(FinalW, FinalUname, FinalUsurname, GUIST, Dirty):
-            print("mw mu mus top right")
+        for ent, (finalw, finalf, finals, guist, d) in self.world.get_components(FinalWelcome, FinalFirstname, FinalSurname, GuiStaticText, Dirty):
+            print("top right")
             guist.ref.SetLabel(f"{finalw.s} {finalf.s} {finals.s}")
             ents.add(ent)
-        # for ent, (finalw, finalu, guist, d) in self.world.get_components(FinalW, FinalU, GUIST, Dirty):
-        #     print("mw mu mus top right")
-        #     guist.ref.SetLabel(f"{finalw.s} {finalu.s}")
-        #     ents.add(ent)
-        for ent, (finalw, guitc, d) in self.world.get_components(FinalW, GUITC, Dirty):
+        for ent, (f, guitc, d) in self.world.get_components(FinalWelcome, GuiTextControl, Dirty):
             print("mw textctrl")
-            guitc.ref.SetValue(finalw.s)
+            guitc.ref.SetValue(f.s)
             ents.add(ent)
-
-        # USER 
-
-        # for ent, (finalu, guitc, d) in self.world.get_components(FinalU, GUITC, Dirty):
-        #     print("mu textctrl (hopefully both)")
-        #     guitc.ref.SetValue(finalu.s)
-        #     ents.add(ent)
-
         # wish we didn't have two loops
-        for ent, (finaluname, guitc, d) in self.world.get_components(FinalUname, GUITC, Dirty):
+        for ent, (f, guitc, d) in self.world.get_components(FinalFirstname, GuiTextControl, Dirty):
             print("mu textctrl (name)")
-            guitc.ref.SetValue(finaluname.s)
+            guitc.ref.SetValue(f.s)
             ents.add(ent)
-        for ent, (finalusurname, guitc, d) in self.world.get_components(FinalUsurname, GUITC, Dirty):
+        for ent, (f, guitc, d) in self.world.get_components(FinalSurname, GuiTextControl, Dirty):
             print("mu textctrl (surname)")
-            guitc.ref.SetValue(finalusurname.s)
+            guitc.ref.SetValue(f.s)
             ents.add(ent)
 
         for ent in list(ents):
@@ -192,13 +158,13 @@ def model_setter_welcome(msg):
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        dirty(MW)
+        dirty(ModelWelcome)
         world.process()
 
     def onCheck1(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        dirty(MW)
+        dirty(ModelWelcome)
         world.process()
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
@@ -232,24 +198,24 @@ class MyFrame1A(MyFrame1):
 
     def onEnter(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
-        dirty(MW)
+        dirty(ModelWelcome)
         world.process()
 
     def onClickResetUser( self, event ):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        dirty(MUFIRSTNAME)
-        dirty(MUSURNAME)
+        dirty(ModelFirstname)
+        dirty(ModelSurname)
         world.process()
 
     def onEnterUserName( self, event ):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        dirty(MUFIRSTNAME)
+        dirty(ModelFirstname)
         world.process()
 
     def onEnterUserSurname( self, event ):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
-        dirty(MUSURNAME)
+        dirty(ModelSurname)
         world.process()
 
     def onClickRenderNow( self, event ):
@@ -292,32 +258,32 @@ nice_entity_name = {  # can't we get esper to give us this info?
 def dump(component, entity):
     print(f"added {component} to {nice_entity_name[entity]}")
  
-world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
+world.add_component(entity_welcome_left, ModelWelcome(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_left, GuiStaticText(ref=frame.m_staticText1))
 
-world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_user_right, MUFIRSTNAME(model=model["user"], key="name"))
-world.add_component(entity_welcome_user_right, MUSURNAME(model=model["user"], key="surname"))
-world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
+world.add_component(entity_welcome_user_right, ModelWelcome(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_user_right, ModelFirstname(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, ModelSurname(model=model["user"], key="surname"))
+world.add_component(entity_welcome_user_right, GuiStaticText(ref=frame.m_staticText2))
 
-world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
-world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
+world.add_component(entity_edit_welcome_msg, ModelWelcome(model=model, key="welcome_msg"))
+world.add_component(entity_edit_welcome_msg, GuiTextControl(ref=frame.m_textCtrl1))
 
-world.add_component(entity_edit_user_name_msg, MUFIRSTNAME(model=model["user"], key="name"))
-world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
+world.add_component(entity_edit_user_name_msg, ModelFirstname(model=model["user"], key="name"))
+world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCtrl2))
 
-world.add_component(entity_edit_user_surname_msg, MUSURNAME(model=model["user"], key="surname"))
-world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
+world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
+world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
 
 
 # Tells us which model each mediator entity cares about, like observer pattern mappings.
 # Note this uses the model component ref class, rather than anything about the model dict itself
 # We even have arbitrary keys which are more verbose model descriptions to make it easier
 dirty_model_to_entities = {
-    MW: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
+    ModelWelcome: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
     "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
-    MUFIRSTNAME: [entity_welcome_user_right, entity_edit_user_name_msg],
-    MUSURNAME: [entity_welcome_user_right, entity_edit_user_surname_msg],
+    ModelFirstname: [entity_welcome_user_right, entity_edit_user_name_msg],
+    ModelSurname: [entity_welcome_user_right, entity_edit_user_surname_msg],
     "just top right": [entity_welcome_user_right],
 }
 
