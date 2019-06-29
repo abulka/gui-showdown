@@ -51,11 +51,11 @@ class GUITC:  # Text Control Gui ref
 #     ops: list
 
 @dataclass
-class UPR:  # flag to make upper right message uppercase or not
+class UP_R_WHOLE:  # flag to make upper right message uppercase or not
     pass
 
 @dataclass
-class UPRW:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
     pass
 
 @dataclass
@@ -109,19 +109,19 @@ class ModelExtractProcessor(esper.Processor):
 class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
-        for ent, (f, uprw, d) in self.world.get_components(FinalW, UPRW, Dirty):
+        for ent, (f, uprw, d) in self.world.get_components(FinalW, UP_L_AND_R_WELCOME_ONLY, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalW, UPR, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalW, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalU, UPR, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalU, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalUname, UPR, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalUname, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
-        for ent, (f, upr, d) in self.world.get_components(FinalUsurname, UPR, Dirty):
+        for ent, (f, upr, d) in self.world.get_components(FinalUsurname, UP_R_WHOLE, Dirty):
             f.s = f.s.upper()
             dump(f, ent)
 
@@ -162,10 +162,10 @@ class RenderProcessor(esper.Processor):
             ents.add(ent)
 
         for ent in list(ents):
-            if world.has_component(ent, UPR):
-                world.remove_component(ent, UPR)
-            if world.has_component(ent, UPRW):
-                world.remove_component(ent, UPRW)
+            if world.has_component(ent, UP_R_WHOLE):
+                world.remove_component(ent, UP_R_WHOLE)
+            if world.has_component(ent, UP_L_AND_R_WELCOME_ONLY):
+                world.remove_component(ent, UP_L_AND_R_WELCOME_ONLY)
             world.remove_component(ent, Dirty)
 
 class HousekeepingProcessor(esper.Processor):
@@ -201,13 +201,13 @@ class MyFrame1A(MyFrame1):
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
         if frame.m_checkBox1A.IsChecked():
-            world.add_component(entity_welcome_left, UPRW())
-            world.add_component(entity_welcome_user_right, UPRW())
+            world.add_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY())
+            world.add_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY())
         else:
-            if world.has_component(entity_welcome_left, UPRW):
-                world.remove_component(entity_welcome_left, UPRW)
-            if world.has_component(entity_welcome_user_right, UPRW):
-                world.remove_component(entity_welcome_user_right, UPRW)
+            if world.has_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY):
+                world.remove_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY)
+            if world.has_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY):
+                world.remove_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY)
         dirty("welcome outputs only")  # doesn't affect welcome edit field
         world.process()
 
@@ -217,12 +217,13 @@ class MyFrame1A(MyFrame1):
         # looks like its going to be an extra component. Pity - that's inefficient and complex.
         #
         # perhaps we need a two pass render which converts model info to plain info then the uppercase/lowercase
-        # can furth act on that plain info before rendering.
+        # can further act on that plain info before rendering.
+        e = entity_welcome_user_right
         if frame.m_checkBox2.IsChecked():
-            world.add_component(entity_welcome_user_right, UPR())
+            world.add_component(e, UP_R_WHOLE())
         else:
-            if world.has_component(entity_welcome_user_right, UPR):
-                world.remove_component(entity_welcome_user_right, UPR)
+            if world.has_component(e, UP_R_WHOLE):
+                world.remove_component(e, UP_R_WHOLE)
         dirty("just top right")
         world.process()
 
