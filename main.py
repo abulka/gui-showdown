@@ -173,26 +173,19 @@ class MyFrame1A(MyFrame1):
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
-        add_component(
+        add_or_remove_component(
             condition=frame.m_checkBox1A.IsChecked(), 
             component_Class=UP_L_AND_R_WELCOME_ONLY, 
             entities=[entity_welcome_left, entity_welcome_user_right])
-        dirty("welcome display only, not via model")  # doesn't affect welcome edit field
+        dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def onCheck2(self, event):
         # don't change the model - only the UI display
-        # how do we tell the 'system' logic to do this?  need a flag or an extra component
-        # looks like its going to be an extra component. Pity - that's inefficient and complex.
-        #
-        # perhaps we need a two pass render which converts model info to plain info then the uppercase/lowercase
-        # can further act on that plain info before rendering.
-        e = entity_welcome_user_right
-        if frame.m_checkBox2.IsChecked():
-            world.add_component(e, UP_R_WHOLE())
-        else:
-            if world.has_component(e, UP_R_WHOLE):
-                world.remove_component(e, UP_R_WHOLE)
+        add_or_remove_component(
+            condition=frame.m_checkBox2.IsChecked(), 
+            component_Class=UP_R_WHOLE, 
+            entities=[entity_welcome_user_right])
         dirty("just top right")
         world.process()
 
@@ -287,7 +280,7 @@ dirty_model_to_entities = {
     "just top right": [entity_welcome_user_right],
 }
 
-def add_component(condition: bool, component_Class, entities: list):
+def add_or_remove_component(condition: bool, component_Class, entities: list):
     for ent in entities:
         if condition:
             world.add_component(ent, component_Class())
