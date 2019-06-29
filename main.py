@@ -173,14 +173,18 @@ class MyFrame1A(MyFrame1):
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
-        if frame.m_checkBox1A.IsChecked():
-            world.add_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY())
-            world.add_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY())
-        else:
-            if world.has_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY):
-                world.remove_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY)
-            if world.has_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY):
-                world.remove_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY)
+        component_switch(UP_L_AND_R_WELCOME_ONLY, 
+                         frame.m_checkBox1A.IsChecked(), 
+                         [entity_welcome_left, entity_welcome_user_right])
+
+        # if frame.m_checkBox1A.IsChecked():
+        #     world.add_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY())
+        #     world.add_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY())
+        # else:
+        #     if world.has_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY):
+        #         world.remove_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY)
+        #     if world.has_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY):
+        #         world.remove_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY)
         dirty("welcome outputs only")  # doesn't affect welcome edit field
         world.process()
 
@@ -291,6 +295,13 @@ dirty_model_to_entities = {
     "just top right": [entity_welcome_user_right],
 }
 
+def component_switch(Komponent, on: bool, entities: list):
+    for ent in entities:
+        if on:
+            world.add_component(ent, Komponent())
+        else:
+            if world.has_component(ent, Komponent):
+                world.remove_component(ent, Komponent)
 def dirty_all():
     for e in mediators:
         world.add_component(e, Dirty())
