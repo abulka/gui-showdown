@@ -29,7 +29,7 @@ class MW:  # Welcome model ref
     key: str
 
 @dataclass
-class MU:  # User model ref
+class MUF:  # User model ref
     model: dict
     key: str
 
@@ -86,7 +86,7 @@ class ModelExtractProcessor(esper.Processor):
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mu, d) in self.world.get_components(MU, Dirty):
+        for ent, (mu, d) in self.world.get_components(MUF, Dirty):
             name = mu.model[mu.key]
             f = FinalUname(s=name)
             world.add_component(ent, f)
@@ -98,7 +98,7 @@ class ModelExtractProcessor(esper.Processor):
             world.add_component(ent, f)
             dump(f, ent)
 
-        for ent, (mu, mus, d) in self.world.get_components(MU, MUS, Dirty):
+        for ent, (mu, mus, d) in self.world.get_components(MUF, MUS, Dirty):
             name = mu.model[mu.key]
             surname = mus.model[mus.key]
             combined = f"{name} {surname}"
@@ -234,13 +234,13 @@ class MyFrame1A(MyFrame1):
     def onClickResetUser( self, event ):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        dirty(MU)
+        dirty(MUF)
         dirty(MUS)
         world.process()
 
     def onEnterUserName( self, event ):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        dirty(MU)
+        dirty(MUF)
         world.process()
 
     def onEnterUserSurname( self, event ):
@@ -292,14 +292,14 @@ world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
 world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
 
 world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_user_right, MU(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, MUF(model=model["user"], key="name"))
 world.add_component(entity_welcome_user_right, MUS(model=model["user"], key="surname"))
 world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 
 world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
 world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 
-world.add_component(entity_edit_user_name_msg, MU(model=model["user"], key="name"))
+world.add_component(entity_edit_user_name_msg, MUF(model=model["user"], key="name"))
 world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
 
 world.add_component(entity_edit_user_surname_msg, MUS(model=model["user"], key="surname"))
@@ -312,7 +312,7 @@ world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
 dirty_model_to_entities = {
     MW: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
     "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
-    MU: [entity_welcome_user_right, entity_edit_user_name_msg],
+    MUF: [entity_welcome_user_right, entity_edit_user_name_msg],
     MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
     "just top right": [entity_welcome_user_right],
 }
@@ -322,8 +322,8 @@ def dirty_all():
         world.add_component(e, Dirty())
 
 def dirty(component_class):
-    dirty_all()
-    return
+    # dirty_all()
+    # return
     for mediator in dirty_model_to_entities[component_class]:
         print(f"dirty: {mediator} because {component_class}")
         world.add_component(mediator, Dirty())
