@@ -27,6 +27,11 @@ class MU:  # User model ref
     key: str
 
 @dataclass
+class MUS:  # User surname model ref
+    model: dict
+    key: str
+
+@dataclass
 class GUIST:  # Static Text Gui ref
     ref: object
 
@@ -57,14 +62,19 @@ class RenderProcessor(esper.Processor):
             guitc.ref.SetValue(mw.model[mw.key])
             ents.add(ent)
 
-        for ent, (mw, mu, guist, d) in self.world.get_components(MW, MU, GUIST, Dirty):
-            print("mw mu top right")
-            guist.ref.SetLabel(f"{mw.model[mw.key]} {mu.model[mu.key]}")
+        for ent, (mw, mu, mus, guist, d) in self.world.get_components(MW, MU, MUS, GUIST, Dirty):
+            print("mw mu mus top right")
+            guist.ref.SetLabel(f"{mw.model[mw.key]} {mu.model[mu.key]} {mus.model[mus.key]}")
             ents.add(ent)
 
         for ent, (mu, guitc, d) in self.world.get_components(MU, GUITC, Dirty):
-            print("mu textctrl")
+            print("mu name textctrl")
             guitc.ref.SetValue(mu.model[mu.key])
+            ents.add(ent)
+
+        for ent, (mus, guitc, d) in self.world.get_components(MUS, GUITC, Dirty):
+            print("mus surname textctrl", mus.model[mu.key])
+            guitc.ref.SetValue(mus.model[mus.key])
             ents.add(ent)
 
         for ent in list(ents):
@@ -90,6 +100,7 @@ class MyFrame1A(MyFrame1):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
         dirty(MU)
+        dirty(MUS)
         world.process()
 
     def onClickRenderNow( self, event ):
@@ -123,6 +134,7 @@ world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
 
 world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
 world.add_component(entity_welcome_user_right, MU(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, MUS(model=model["user"], key="surname"))
 world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 
 world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
@@ -131,6 +143,9 @@ world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 world.add_component(entity_edit_user_name_msg, MU(model=model["user"], key="name"))
 world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
 
+world.add_component(entity_edit_user_surname_msg, MUS(model=model["user"], key="surname"))
+world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
+
 
 # Tells us which model each mediator entity cares about, like observer pattern mappings.
 # Note this uses the model component ref class, rather than anything about the model dict itself
@@ -138,6 +153,7 @@ world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
 dirty_model_to_entities = {
     MW: [entity_welcome_left, entity_welcome_user_right],
     MU: [entity_welcome_user_right, entity_edit_user_name_msg],
+    MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
 }
 
 def dirty_all():
