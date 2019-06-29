@@ -95,13 +95,13 @@ class RenderProcessor(esper.Processor):
 
 class MyFrame1A(MyFrame1):
     def onButton1(self, event):
-        model["welcome_msg"] = "Hi"
+        model["welcome_msg"] = "Hello"
         dirty(MW)
         world.process()
 
     def onCheck1(self, event):
         model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
-        dirty(MW)
+        dirty("welcome outputs only")  # doesn't affect welcome edit field
         world.process()
 
     def onCheck2(self, event):
@@ -186,9 +186,10 @@ world.add_component(entity_edit_user_surname_msg, GUITC(ref=frame.m_textCtrl3))
 
 # Tells us which model each mediator entity cares about, like observer pattern mappings.
 # Note this uses the model component ref class, rather than anything about the model dict itself
-# THOUGHT: we could even have arbitrary keys which are more verbose model descriptions
+# We even have arbitrary keys which are more verbose model descriptions to make it easier
 dirty_model_to_entities = {
-    MW: [entity_welcome_left, entity_welcome_user_right],
+    MW: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
+    "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
     MU: [entity_welcome_user_right, entity_edit_user_name_msg],
     MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
     "just top right": [entity_welcome_user_right],
