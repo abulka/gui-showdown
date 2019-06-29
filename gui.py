@@ -25,30 +25,73 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_staticText1 = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel1.SetBackgroundColour( wx.Colour( 255, 255, 135 ) )
+
+		bSizer5 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText1 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1.Wrap( -1 )
 
-		bSizer2.Add( self.m_staticText1, 1, wx.ALL, 5 )
+		bSizer5.Add( self.m_staticText1, 1, wx.ALL, 5 )
 
-		self.m_staticText2 = wx.StaticText( self, wx.ID_ANY, u"MyLabel lkjsd lkjkljs d sdkfjfsdljflskdjf", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"MyLabel lkjsd lkjkljs d sdkfjfsdljflskdjf", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText2.Wrap( 100 )
 
 		self.m_staticText2.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_CAPTIONTEXT ) )
 		self.m_staticText2.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHT ) )
 
-		bSizer2.Add( self.m_staticText2, 1, wx.ALL, 5 )
+		bSizer5.Add( self.m_staticText2, 1, wx.ALL, 5 )
+
+
+		self.m_panel1.SetSizer( bSizer5 )
+		self.m_panel1.Layout()
+		bSizer5.Fit( self.m_panel1 )
+		bSizer2.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 5 )
 
 
 		bSizer1.Add( bSizer2, 0, wx.ALL|wx.EXPAND, 5 )
 
+		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Welcome Message", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText4.Wrap( -1 )
+
+		bSizer4.Add( self.m_staticText4, 0, wx.ALL, 5 )
+
 		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
-		bSizer1.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
+		bSizer4.Add( self.m_textCtrl1, 1, wx.ALL, 5 )
+
+
+		bSizer1.Add( bSizer4, 1, wx.EXPAND, 5 )
+
+		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"User", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText3.Wrap( -1 )
+
+		bSizer3.Add( self.m_staticText3, 0, wx.ALL, 5 )
+
+		self.m_textCtrl2 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer3.Add( self.m_textCtrl2, 1, wx.ALL, 5 )
+
+		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer3.Add( self.m_textCtrl3, 1, wx.ALL, 5 )
+
+
+		bSizer1.Add( bSizer3, 1, wx.EXPAND, 5 )
 
 		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase Please", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
 
-		self.m_button1 = wx.Button( self, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button1 = wx.Button( self, wx.ID_ANY, u"Reset Welcome Message", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_button1, 0, wx.ALL, 5 )
+
+		self.m_button3 = wx.Button( self, wx.ID_ANY, u"Reset User", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_button3, 0, wx.ALL, 5 )
+
+		self.m_button_rendernow = wx.Button( self, wx.ID_ANY, u"Render Now", wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE )
+		bSizer1.Add( self.m_button_rendernow, 0, wx.ALL, 5 )
 
 
 		self.SetSizer( bSizer1 )
@@ -60,6 +103,8 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl1.Bind( wx.EVT_TEXT_ENTER, self.onEnter )
 		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.onButton1 )
+		self.m_button3.Bind( wx.EVT_BUTTON, self.onClickResetUser )
+		self.m_button_rendernow.Bind( wx.EVT_BUTTON, self.onClickRenderNow )
 
 	def __del__( self ):
 		pass
@@ -73,6 +118,12 @@ class MyFrame1 ( wx.Frame ):
 		event.Skip()
 
 	def onButton1( self, event ):
+		event.Skip()
+
+	def onClickResetUser( self, event ):
+		event.Skip()
+
+	def onClickRenderNow( self, event ):
 		event.Skip()
 
 

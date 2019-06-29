@@ -7,8 +7,8 @@ from dataclasses import dataclass
 model = {
     "welcome_msg": "Hi",
     "user": {
-        "name": "Andy",
-        "surname": "",
+        "name": "Sam",
+        "surname": "Smith",
     }
 }
 
@@ -43,19 +43,28 @@ class RenderProcessor(esper.Processor):
         super().__init__()
 
     def process(self):
-        # print("RENDER")
+        print("RENDER")
         ents = set()
 
         for ent, (mw, guist, d) in self.world.get_components(MW, GUIST, Dirty):
+            # This loop picks up entities who also have MU !! yikes.
+            print("mw top left", ent)
             guist.ref.SetLabel(mw.model[mw.key])
             ents.add(ent)
 
         for ent, (mw, guitc, d) in self.world.get_components(MW, GUITC, Dirty):
+            print("mw textctrl")
             guitc.ref.SetValue(mw.model[mw.key])
             ents.add(ent)
 
         for ent, (mw, mu, guist, d) in self.world.get_components(MW, MU, GUIST, Dirty):
+            print("mw mu top right")
             guist.ref.SetLabel(f"{mw.model[mw.key]} {mu.model[mu.key]}")
+            ents.add(ent)
+
+        for ent, (mu, guitc, d) in self.world.get_components(MU, GUITC, Dirty):
+            print("mu textctrl")
+            guitc.ref.SetValue(mu.model[mu.key])
             ents.add(ent)
 
         for ent in list(ents):
@@ -77,6 +86,16 @@ class MyFrame1A(MyFrame1):
         dirty_all()
         world.process()
 
+    def onClickResetUser( self, event ):
+        model["user"]["name"] = "Fred"
+        model["user"]["surname"] = "Flinstone"
+        dirty(MU)
+        world.process()
+
+    def onClickRenderNow( self, event ):
+        world.process()
+
+
 world = esper.World()
 world.add_processor(RenderProcessor())
 
@@ -89,10 +108,14 @@ frame.SetSize((400, 400))
 entity_welcome_left = world.create_entity()
 entity_welcome_user_right = world.create_entity()
 entity_edit_welcome_msg = world.create_entity()
+entity_edit_user_name_msg = world.create_entity()
+entity_edit_user_surname_msg = world.create_entity()
 
 mediators = [entity_welcome_left,
             entity_welcome_user_right,
-            entity_edit_welcome_msg
+            entity_edit_welcome_msg,
+            entity_edit_user_name_msg,
+            entity_edit_user_surname_msg,
             ]
 
 world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
@@ -105,11 +128,16 @@ world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
 world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 
-# Tells us which model each mediator entity cares about, 
-# note this uses the model component ref class, rather than anything about the model dict itself
+world.add_component(entity_edit_user_name_msg, MU(model=model["user"], key="name"))
+world.add_component(entity_edit_user_name_msg, GUITC(ref=frame.m_textCtrl2))
+
+
+# Tells us which model each mediator entity cares about, like observer pattern mappings.
+# Note this uses the model component ref class, rather than anything about the model dict itself
+# THOUGHT: we could even have arbitrary keys which are more verbose model descriptions
 dirty_model_to_entities = {
     MW: [entity_welcome_left, entity_welcome_user_right],
-    MU: [entity_welcome_user_right],
+    MU: [entity_welcome_user_right, entity_edit_user_name_msg],
 }
 
 def dirty_all():
@@ -118,10 +146,8 @@ def dirty_all():
 
 def dirty(component_class):
     for mediator in dirty_model_to_entities[component_class]:
+        print(f"dirty: {mediator} because {component_class}")
         world.add_component(mediator, Dirty())
-
-    # world.add_component(entity_welcome_left, Dirty())
-    # world.add_component(entity_welcome_user_right, Dirty())
 
 dirty_all()    
 world.process()

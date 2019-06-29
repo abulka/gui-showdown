@@ -53,16 +53,18 @@ Behaviour we are modelling
 
 Model:
 - a welcome message, default "Hi"
-- a user, default "Andy", cannot change
+- a user, default "Andy"
 
 The GUI displays:
 - the welcome message twice
     - top left: pure message
     - top right: message + user
 - text entry, which allows editing of the welcome message
+- text entry, which allows editing of the user name and surname
 - checkbox, which converts the welcome message uppercase/lowercase
 - checkbox, which converts top right message to uppercase TODO
 - button, which resets the welcome message to "Hi"
+- button, which resets the user to "Fred"
 
 On Observers and Dirty
 ----------------------
