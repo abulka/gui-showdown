@@ -17,7 +17,7 @@ import wx.xrc
 class MyFrame1 ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 500,360 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -81,8 +81,11 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer1.Add( bSizer3, 1, wx.EXPAND, 5 )
 
-		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase Please", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
+
+		self.m_checkBox2 = wx.CheckBox( self, wx.ID_ANY, u"Change case of top right message", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_checkBox2, 0, wx.ALL, 5 )
 
 		self.m_button1 = wx.Button( self, wx.ID_ANY, u"Reset Welcome Message", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_button1, 0, wx.ALL, 5 )
@@ -104,6 +107,7 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl2.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserName )
 		self.m_textCtrl3.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserSurname )
 		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
+		self.m_checkBox2.Bind( wx.EVT_CHECKBOX, self.onCheck2 )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.onButton1 )
 		self.m_button3.Bind( wx.EVT_BUTTON, self.onClickResetUser )
 		self.m_button_rendernow.Bind( wx.EVT_BUTTON, self.onClickRenderNow )
@@ -123,6 +127,9 @@ class MyFrame1 ( wx.Frame ):
 		event.Skip()
 
 	def onCheck1( self, event ):
+		event.Skip()
+
+	def onCheck2( self, event ):
 		event.Skip()
 
 	def onButton1( self, event ):

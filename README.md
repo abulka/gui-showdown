@@ -61,10 +61,10 @@ The GUI displays:
     - top right: message + user
 - text entry, which allows editing of the welcome message
 - text entry, which allows editing of the user name and surname
-- checkbox, which converts the welcome message uppercase/lowercase
-- checkbox, which converts top right message to uppercase TODO
-- button, which resets the welcome message to "Hi"
-- button, which resets the user to "Fred"
+- checkbox1, which toggles the model welcome message uppercase/lowercase
+- checkbox2, which toggles the top right user to uppercase (not via model)
+- button1, which resets the welcome message to "Hi"
+- button2, which resets the user to "Fred Flinstone"
 
 On Observers and Dirty
 ----------------------

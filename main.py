@@ -43,6 +43,11 @@ class GUITC:  # Text Control Gui ref
 # class CALC:  # some sort of calc between two model refs or a model ref and a str or something
 #     ops: list
 
+@dataclass
+class UPR:  # flag to make upper right message uppercase or not
+    pass
+
+
 class RenderProcessor(esper.Processor):
     def __init__(self):
         super().__init__()
@@ -64,7 +69,15 @@ class RenderProcessor(esper.Processor):
 
         for ent, (mw, mu, mus, guist, d) in self.world.get_components(MW, MU, MUS, GUIST, Dirty):
             print("mw mu mus top right")
-            guist.ref.SetLabel(f"{mw.model[mw.key]} {mu.model[mu.key]} {mus.model[mus.key]}")
+            welcome = mw.model[mw.key]
+            user = f"{mu.model[mu.key]} {mus.model[mus.key]}"
+
+            # See if additional behaviour is needed
+            if self.world.has_component(ent, UPR):
+                welcome = welcome.upper()
+                user = user.upper()
+
+            guist.ref.SetLabel(f"{welcome} {user}")
             ents.add(ent)
 
         for ent, (mu, guitc, d) in self.world.get_components(MU, GUITC, Dirty):
@@ -83,7 +96,7 @@ class RenderProcessor(esper.Processor):
 class MyFrame1A(MyFrame1):
     def onButton1(self, event):
         model["welcome_msg"] = "Hi"
-        dirty_all()
+        dirty(MW)
         world.process()
 
     def onCheck1(self, event):
@@ -91,9 +104,23 @@ class MyFrame1A(MyFrame1):
         dirty(MW)
         world.process()
 
+    def onCheck2(self, event):
+        # don't change the model - only the UI display
+        # how do we tell the 'system' logic to do this?  need a flag or an extra component
+        # looks like its going to be an extra component. Pity - that's inefficient and complex.
+        #
+        # perhaps we need a two pass render which converts model info to plain info then the uppercase/lowercase
+        # can furth act on that plain info before rendering.
+        if frame.m_checkBox2.IsChecked():
+            world.add_component(entity_welcome_user_right, UPR())
+        else:
+            world.remove_component(entity_welcome_user_right, UPR)
+        dirty("just top right")
+        world.process()
+
     def onEnter(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
-        dirty_all()
+        dirty(MW)
         world.process()
 
     def onClickResetUser( self, event ):
@@ -164,6 +191,7 @@ dirty_model_to_entities = {
     MW: [entity_welcome_left, entity_welcome_user_right],
     MU: [entity_welcome_user_right, entity_edit_user_name_msg],
     MUS: [entity_welcome_user_right, entity_edit_user_surname_msg],
+    "just top right": [entity_welcome_user_right],
 }
 
 def dirty_all():
