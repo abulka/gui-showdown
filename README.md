@@ -1,5 +1,4 @@
-wx_esper
-========
+# wx_esper
 
 An attempt to use esper ECS for traditional GUI programming.
 
@@ -11,9 +10,8 @@ A downside of this naive approach is that if the model is changed by other means
 (not by gui clicks but by other parts of the software system) then those changes are
 not reflected in the gui.
 
-A MGM pattern approach would have any changes to the model via setters notify
-mediators whose job it is to update the gui widgets.  Click and other events thus
-need only make changes to the model and the model will notify the mediators as necessary.
+A MGM pattern (or MVC) approach would have any changes to the model via setters notify
+mediators (controllers) whose job it is to update the gui widgets (view).  Click and other events thus need only make changes to the model and the model will notify the mediators (controllers) as necessary.
 
 To implement the MGM pattern using an ECS (entity component system) architectural
 approach is conceptually challenging, because ECS has its roots in game architectures
@@ -21,8 +19,7 @@ where entities are game objects which are typically sprites which are rendered b
 which draw onto a canvas.  How do models, mediators and gui widgets map to ECS concepts,
 and how to we remove most of the OO from them, in order to do things the ECS way?
 
-Using ECS approach to implement the MGM design pattern.
--------------------------------------------------------
+## Using ECS approach to implement the MGM / MVC design pattern.
 
 Whilst there are many possible solutions, the cleanest solution which might be able to be
 used across a whole application in a way that makes use of the benefits of ECS is as follows.
@@ -36,8 +33,8 @@ OO Models are as they were, or they can be converted to nested dictionaries, it 
 If ECS is being used in other areas of your application, then your OO model object might turn
 into entities with their own components - not really relevant to this project.
 
-Thus
-----
+### Thus
+
 Entities are the mediators, with components being things like model references, gui widget 
 references. This is the data that the mediator typically needs, except its broken out as components.
 
@@ -48,8 +45,9 @@ certain combination of components and knows what to do with them.
 The checkbox and button events change the model, then in the asence of a observer pattern,
 simply trigger a world.process() to render.  A bit inefficient, but I hope to introduce a dirty flag.
 
-Behaviour we are modelling
---------------------------
+## Code Example
+
+The behaviour we are modelling is:
 
 Model:
 - a welcome message, default "Hi"
@@ -66,8 +64,8 @@ The GUI displays:
 - button1, which resets the welcome message to "Hi"
 - button2, which resets the user to "Fred Flinstone"
 
-On Observers and Dirty
-----------------------
+## On Observers and Dirty
+
 ** Note that in the absence of an observer pattern being implemented, you can instead
 simply loop through all mediators and trigger them, thus updating the GUI to the state of the
 current model. This loop could be called periodically and strategically.  Its a cheap way.
@@ -102,8 +100,8 @@ There are some discussions here about implementing observer in ECS:
 
 more thinking required...
 
-Interim Observer Solution
--------------------------
+### Interim Observer Solution
+
 Is to pass a parameter to `dirty()` which 
 tells us which model each mediator entity cares about, like observer pattern mappings.
 
@@ -120,8 +118,7 @@ dirty_model_to_entities = {
 }
 ```
 
-View Model in the future?
--------------------------
+## View Model in the future?
 
 ```python
 # Not used - but would be nice to integrate something like this into the ECS
@@ -135,8 +132,7 @@ view_model = {
 But no point adding more and more complexity till the flaws are worked out, or this approach
 abandoned.
 
-Evaluation So Far - Flaws
--------------------------
+# Evaluation So Far - Flaws
 
 The implementation is quite big and complex with some flaws:
 
@@ -149,5 +145,29 @@ The hacky observer implementation means maintaining a table of keys to mediator 
 
 Needing to call `world.process()` after each event is a bit annoying. On the other hand we have the opportunity to delay calling that and putting it into some other background update loop.  Possibly integrate it with the main wx loop, the way I once did with pygame and the way wxasync library does.
 
-SUMMARY:
+Adding addition components like `UPR()` to mediator entities to flag extra mediator behaviour like performing an uppercase operation seems a little extreme - was thinking that a simple flag on an existing component would be better?
+
+### SUMMARY OF WHAT'S BAD
 The explosion of components is a worry, and the duplicate renderings is a worry.
+The additional components just to flag uppercase etc. is a bit much.
+
+### SUMMARY OF WHAT'S GOOD
+What's nice is the setup of the mediators is quite clear and centralised e.g.
+
+```python
+world.add_component(entity_welcome_left, MW(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_left, GUIST(ref=frame.m_staticText1))
+
+world.add_component(entity_welcome_user_right, MW(model=model, key="welcome_msg"))
+world.add_component(entity_welcome_user_right, MU(model=model["user"], key="name"))
+world.add_component(entity_welcome_user_right, MUS(model=model["user"], key="surname"))
+world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
+
+# etc.
+```
+
+## TODO
+
+Perhaps the rendering 'system' can be cleaned up.  Instead of doing the fancy queries which return more than we need etc.  We could simplify and interrogate the entities whether they posses certain components.
+
+Or even better, have multiple systems doing a staged approach. E.g. A compute text stage which creates a final component containing the string to render.  The render stage then only targets those final components.
