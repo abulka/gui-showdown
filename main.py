@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass
 
 model = {
-    "welcome_msg": "Hi",
+    "welcome_msg": "Welcome",
     "user": {
         "name": "Sam",
         "surname": "Smith",
@@ -173,19 +173,11 @@ class MyFrame1A(MyFrame1):
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
-        component_switch(UP_L_AND_R_WELCOME_ONLY, 
-                         frame.m_checkBox1A.IsChecked(), 
-                         [entity_welcome_left, entity_welcome_user_right])
-
-        # if frame.m_checkBox1A.IsChecked():
-        #     world.add_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY())
-        #     world.add_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY())
-        # else:
-        #     if world.has_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY):
-        #         world.remove_component(entity_welcome_left, UP_L_AND_R_WELCOME_ONLY)
-        #     if world.has_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY):
-        #         world.remove_component(entity_welcome_user_right, UP_L_AND_R_WELCOME_ONLY)
-        dirty("welcome outputs only")  # doesn't affect welcome edit field
+        add_component(
+            condition=frame.m_checkBox1A.IsChecked(), 
+            component_Class=UP_L_AND_R_WELCOME_ONLY, 
+            entities=[entity_welcome_left, entity_welcome_user_right])
+        dirty("welcome display only, not via model")  # doesn't affect welcome edit field
         world.process()
 
     def onCheck2(self, event):
@@ -240,7 +232,7 @@ world.add_processor(HousekeepingProcessor())
 app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
-frame.SetSize((400, 400))
+frame.SetSize((500, 400))
 
 entity_welcome_left = world.create_entity()
 entity_welcome_user_right = world.create_entity()
@@ -289,19 +281,20 @@ world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_tex
 # We even have arbitrary keys which are more verbose model descriptions to make it easier
 dirty_model_to_entities = {
     ModelWelcome: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
-    "welcome outputs only": [entity_welcome_left, entity_welcome_user_right],
+    "welcome display only, not via model": [entity_welcome_left, entity_welcome_user_right],
     ModelFirstname: [entity_welcome_user_right, entity_edit_user_name_msg],
     ModelSurname: [entity_welcome_user_right, entity_edit_user_surname_msg],
     "just top right": [entity_welcome_user_right],
 }
 
-def component_switch(Komponent, on: bool, entities: list):
+def add_component(condition: bool, component_Class, entities: list):
     for ent in entities:
-        if on:
-            world.add_component(ent, Komponent())
+        if condition:
+            world.add_component(ent, component_Class())
         else:
-            if world.has_component(ent, Komponent):
-                world.remove_component(ent, Komponent)
+            if world.has_component(ent, component_Class):
+                world.remove_component(ent, component_Class)
+
 def dirty_all():
     for e in mediators:
         world.add_component(e, Dirty())

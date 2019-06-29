@@ -17,7 +17,7 @@ import wx.xrc
 class MyFrame1 ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 500,360 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 486,360 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -84,7 +84,7 @@ class MyFrame1 ( wx.Frame ):
 		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
 
-		self.m_checkBox1A = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (outputs only)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_checkBox1A = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (display only, not via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer1.Add( self.m_checkBox1A, 0, wx.ALL, 5 )
 
 		self.m_checkBox2 = wx.CheckBox( self, wx.ID_ANY, u"Change case of top right message", wx.DefaultPosition, wx.DefaultSize, 0 )
