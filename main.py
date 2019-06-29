@@ -69,12 +69,7 @@ class MyFrame1A(MyFrame1):
 
     def onCheck1(self, event):
         model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
-
-        # dirty_all()
-        # More efficient to dirty certain mediators, but is this complexity worth it?
-        world.add_component(entity_welcome_left, Dirty())
-        world.add_component(entity_welcome_user_right, Dirty())
-
+        dirty(MW)
         world.process()
 
     def onEnter(self, event):
@@ -110,9 +105,23 @@ world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 world.add_component(entity_edit_welcome_msg, MW(model=model, key="welcome_msg"))
 world.add_component(entity_edit_welcome_msg, GUITC(ref=frame.m_textCtrl1))
 
+# Tells us which model each mediator entity cares about, 
+# note this uses the model component ref class, rather than anything about the model dict itself
+dirty_model_to_entities = {
+    MW: [entity_welcome_left, entity_welcome_user_right],
+    MU: [entity_welcome_user_right],
+}
+
 def dirty_all():
     for e in mediators:
         world.add_component(e, Dirty())
+
+def dirty(component_class):
+    for mediator in dirty_model_to_entities[component_class]:
+        world.add_component(mediator, Dirty())
+
+    # world.add_component(entity_welcome_left, Dirty())
+    # world.add_component(entity_welcome_user_right, Dirty())
 
 dirty_all()    
 world.process()
