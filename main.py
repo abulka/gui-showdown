@@ -68,6 +68,11 @@ class FinalSurname:
 
 
 class ModelExtractProcessor(esper.Processor):
+    """
+    Extract info from models and stage them in Final* components, so that the transform phase
+    can alter them without altering the model.  This will allow for multiple transformations and
+    is decoupled from the final output/rendering system stage.
+    """
     def process(self):
         print("--Model Extract System---")
         for ent, (mw, d) in self.world.get_components(ModelWelcome, Dirty):
@@ -89,18 +94,17 @@ class ModelExtractProcessor(esper.Processor):
 class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
+        def up(ent, f):
+            f.s = f.s.upper()
+            dump(f, ent)
         for ent, (f, uprw, d) in self.world.get_components(FinalWelcome, UP_L_AND_R_WELCOME_ONLY, Dirty):
-            f.s = f.s.upper()
-            dump(f, ent)
+            up(ent, f)
         for ent, (f, upr, d) in self.world.get_components(FinalWelcome, UP_R_WHOLE, Dirty):
-            f.s = f.s.upper()
-            dump(f, ent)
+            up(ent, f)
         for ent, (f, upr, d) in self.world.get_components(FinalFirstname, UP_R_WHOLE, Dirty):
-            f.s = f.s.upper()
-            dump(f, ent)
+            up(ent, f)
         for ent, (f, upr, d) in self.world.get_components(FinalSurname, UP_R_WHOLE, Dirty):
-            f.s = f.s.upper()
-            dump(f, ent)
+            up(ent, f)
 
 
 class RenderProcessor(esper.Processor):

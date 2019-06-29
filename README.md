@@ -166,8 +166,11 @@ world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 # etc.
 ```
 
-## TODO
+## Multiple Systems
 
-Perhaps the rendering 'system' can be cleaned up.  Instead of doing the fancy queries which return more than we need etc.  We could simplify and interrogate the entities whether they posses certain components.
+We now have multiple systems doing a staged approach. E.g. A compute text stage which creates a final component containing the string to render.  The render stage then only targets those final components.  Seems to work and feels a bit better.
 
-Or even better, have multiple systems doing a staged approach. E.g. A compute text stage which creates a final component containing the string to render.  The render stage then only targets those final components.
+## Logic in Checkbox handlers
+
+Is too complex and intense.  Need to fix this.
+
