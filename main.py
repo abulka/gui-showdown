@@ -112,7 +112,7 @@ class RenderProcessor(esper.Processor):
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
             render_text_control(Component)
 
-        do.dirty_all(False)
+        do.dirty_all(False, entities=mediators)
 
 class HousekeepingProcessor(esper.Processor):
     def process(self):
@@ -232,14 +232,14 @@ world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCt
 world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
 world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
 
-do = DirtyObserver(mediators, world)
+do = DirtyObserver(world)
 do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
 do.add_dependency(ModelFirstname, [entity_welcome_user_right, entity_edit_user_name_msg])
 do.add_dependency(ModelSurname, [entity_welcome_user_right, entity_edit_user_surname_msg])
 do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
 do.add_dependency("just top right", [entity_welcome_user_right])
 
-do.dirty_all()    
+do.dirty_all(entities=mediators)    
 world.process()
 
 app.MainLoop()
