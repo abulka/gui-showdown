@@ -89,33 +89,27 @@ class CaseTransformProcessor(esper.Processor):
 class RenderProcessor(esper.Processor):
     def process(self):
         print("--Render System--")
-        ents = set()
 
         def render_text_control(Component):
             for ent, (component, gui, d) in self.world.get_components(Component, GuiTextControl, Dirty):
                 print("render textctrl for", component)
                 gui.ref.SetValue(component.finalstr)
-                ents.add(ent)
 
         def render_static_text(Component):
             for ent, (component, gui, d) in self.world.get_components(Component, GuiStaticText, Dirty):
                 print("render static text for", component)
                 gui.ref.SetLabel(component.finalstr)
-                ents.add(ent)
 
         render_static_text(ModelWelcome)
 
         for ent, (mw, mf, ms, guist, d) in self.world.get_components(ModelWelcome, ModelFirstname, ModelSurname, GuiStaticText, Dirty):
             print("top right")
             guist.ref.SetLabel(f"{mw.finalstr} {mf.finalstr} {ms.finalstr}")
-            ents.add(ent)
 
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
             render_text_control(Component)
 
-        for ent in list(ents):
-            world.remove_component(ent, Dirty)
-
+        dirty_all(False)
 
 class HousekeepingProcessor(esper.Processor):
     def process(self):
@@ -125,7 +119,6 @@ class HousekeepingProcessor(esper.Processor):
             frame.m_checkBox1A.Disable()
         else:
             frame.m_checkBox1A.Enable()
-
 
 
 def model_welcome_toggle():
@@ -265,9 +258,8 @@ def add_or_remove_component(condition: bool, component_Class, entities: list):
             if world.has_component(ent, component_Class):
                 world.remove_component(ent, component_Class)
 
-def dirty_all():
-    for e in mediators:
-        world.add_component(e, Dirty())
+def dirty_all(condition=True):
+    add_or_remove_component(condition, Dirty, entities=mediators)
 
 def dirty(component_class):
     for mediator in dirty_model_to_entities[component_class]:
