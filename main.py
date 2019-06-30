@@ -23,38 +23,25 @@ view_model = {
 }
 
 @dataclass
-class ModelWelcome:  # Welcome model ref
+class ModelRef:  # Mediator (entity + this component) needs to know about model. Model specific
     model: dict
     key: str
     finalstr: str = ""
+class ModelWelcome(ModelRef): pass
+class ModelFirstname(ModelRef): pass
+class ModelSurname(ModelRef): pass
 
 @dataclass
-class ModelFirstname:  # User model ref
-    model: dict
-    key: str
-    finalstr: str = ""
-
-@dataclass
-class ModelSurname:  # User surname model ref
-    model: dict
-    key: str
-    finalstr: str = ""
-
-@dataclass
-class GuiStaticText:  # Static Text Gui ref
+class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
     ref: object
+class GuiStaticText(GuiControlRef): pass  # Static Text Gui ref
+class GuiTextControl(GuiControlRef): pass  # Text Control Gui ref
 
 @dataclass
-class GuiTextControl:  # Text Control Gui ref
-    ref: object
-
-@dataclass
-class UP_R_WHOLE:  # flag to make upper right message uppercase or not
+class Flag:  # Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
     pass
-
-@dataclass
-class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
-    pass
+class UP_R_WHOLE(Flag): pass  # flag to make upper right message uppercase or not
+class UP_L_AND_R_WELCOME_ONLY(Flag): pass  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
 
 
 def dump(component, entity):  # simple logging
