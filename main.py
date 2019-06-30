@@ -68,7 +68,7 @@ class ModelExtractProcessor(esper.Processor):
     def process(self):
         print("--Model Extract System---")
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
-            for ent, (component, dirty) in self.world.get_components(Component, Dirty):
+            for ent, (component, _) in self.world.get_components(Component, Dirty):
                 component.finalstr = component.model[component.key]
                 dump(component, ent)
 
@@ -78,11 +78,11 @@ class CaseTransformProcessor(esper.Processor):
         print("--Case transform System---")
 
         for Component in (ModelWelcome,):
-            for ent, (component, up_l_and_r, dirty) in self.world.get_components(Component, UP_L_AND_R_WELCOME_ONLY, Dirty):
+            for ent, (component, _, _) in self.world.get_components(Component, UP_L_AND_R_WELCOME_ONLY, Dirty):
                 component.finalstr = component.finalstr.upper()
                 dump(component, ent)
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
-            for ent, (component, up_r_whole, dirty) in self.world.get_components(Component, UP_R_WHOLE, Dirty):
+            for ent, (component, _, _) in self.world.get_components(Component, UP_R_WHOLE, Dirty):
                 component.finalstr = component.finalstr.upper()
                 dump(component, ent)
 
@@ -92,19 +92,19 @@ class RenderProcessor(esper.Processor):
         print("--Render System--")
 
         def render_text_control(Component):
-            for ent, (component, gui, d) in self.world.get_components(Component, GuiTextControl, Dirty):
-                print("render textctrl for", component)
+            for ent, (component, gui, _) in self.world.get_components(Component, GuiTextControl, Dirty):
+                print("render textctrl for", component, ent)
                 gui.ref.SetValue(component.finalstr)
 
         def render_static_text(Component):
-            for ent, (component, gui, d) in self.world.get_components(Component, GuiStaticText, Dirty):
-                print("render static text for", component)
+            for ent, (component, gui, _) in self.world.get_components(Component, GuiStaticText, Dirty):
+                print("render static text for", component, ent)
                 gui.ref.SetLabel(component.finalstr)
 
         render_static_text(ModelWelcome)
 
-        for ent, (mw, mf, ms, guist, d) in self.world.get_components(ModelWelcome, ModelFirstname, ModelSurname, GuiStaticText, Dirty):
-            print("top right")
+        for ent, (mw, mf, ms, guist, _) in self.world.get_components(ModelWelcome, ModelFirstname, ModelSurname, GuiStaticText, Dirty):
+            print("top right", ent)
             guist.ref.SetLabel(f"{mw.finalstr} {mf.finalstr} {ms.finalstr}")
 
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
