@@ -94,9 +94,11 @@ class ModelExtractProcessor(esper.Processor):
 class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
+
         def up(ent, f):
             f.s = f.s.upper()
             dump(f, ent)
+
         for ent, (f, uprw, d) in self.world.get_components(FinalWelcome, UP_L_AND_R_WELCOME_ONLY, Dirty):
             up(ent, f)
         for ent, (f, upr, d) in self.world.get_components(FinalWelcome, UP_R_WHOLE, Dirty):
@@ -135,10 +137,6 @@ class RenderProcessor(esper.Processor):
             ents.add(ent)
 
         for ent in list(ents):
-            if world.has_component(ent, UP_R_WHOLE):
-                world.remove_component(ent, UP_R_WHOLE)
-            if world.has_component(ent, UP_L_AND_R_WELCOME_ONLY):
-                world.remove_component(ent, UP_L_AND_R_WELCOME_ONLY)
             world.remove_component(ent, Dirty)
 
 class HousekeepingProcessor(esper.Processor):
@@ -281,6 +279,7 @@ dirty_model_to_entities = {
 }
 
 def add_or_remove_component(condition: bool, component_Class, entities: list):
+    # Adds or removes component from each entity in list, depending on condition
     for ent in entities:
         if condition:
             world.add_component(ent, component_Class())
@@ -293,8 +292,6 @@ def dirty_all():
         world.add_component(e, Dirty())
 
 def dirty(component_class):
-    # dirty_all()
-    # return
     for mediator in dirty_model_to_entities[component_class]:
         print(f"dirty: {mediator} because {component_class}")
         world.add_component(mediator, Dirty())
