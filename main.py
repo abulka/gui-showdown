@@ -91,30 +91,31 @@ class RenderProcessor(esper.Processor):
         print("--Render System--")
         ents = set()
 
-        for ent, (mw, guist, d) in self.world.get_components(ModelWelcome, GuiStaticText, Dirty):
-            print("top left", ent)
-            guist.ref.SetLabel(mw.finalstr)
-            ents.add(ent)
+        def render_text_control(Component):
+            for ent, (component, gui, d) in self.world.get_components(Component, GuiTextControl, Dirty):
+                print("render textctrl for", component)
+                gui.ref.SetValue(component.finalstr)
+                ents.add(ent)
+
+        def render_static_text(Component):
+            for ent, (component, gui, d) in self.world.get_components(Component, GuiStaticText, Dirty):
+                print("render static text for", component)
+                gui.ref.SetLabel(component.finalstr)
+                ents.add(ent)
+
+        render_static_text(ModelWelcome)
+
         for ent, (mw, mf, ms, guist, d) in self.world.get_components(ModelWelcome, ModelFirstname, ModelSurname, GuiStaticText, Dirty):
             print("top right")
             guist.ref.SetLabel(f"{mw.finalstr} {mf.finalstr} {ms.finalstr}")
             ents.add(ent)
-        for ent, (mw, guitc, d) in self.world.get_components(ModelWelcome, GuiTextControl, Dirty):
-            print("mw textctrl")
-            guitc.ref.SetValue(mw.finalstr)
-            ents.add(ent)
-        # wish we didn't have two loops
-        for ent, (mf, guitc, d) in self.world.get_components(ModelFirstname, GuiTextControl, Dirty):
-            print("mf textctrl (name)")
-            guitc.ref.SetValue(mf.finalstr)
-            ents.add(ent)
-        for ent, (ms, guitc, d) in self.world.get_components(ModelSurname, GuiTextControl, Dirty):
-            print("ms textctrl (surname)")
-            guitc.ref.SetValue(ms.finalstr)
-            ents.add(ent)
+
+        for Component in (ModelWelcome, ModelFirstname, ModelSurname):
+            render_text_control(Component)
 
         for ent in list(ents):
             world.remove_component(ent, Dirty)
+
 
 class HousekeepingProcessor(esper.Processor):
     def process(self):
