@@ -26,7 +26,7 @@ class DirtyObserver:
     signal names (strings) which are descriptive of the spefic subset of mediators we are
     targeting.
 
-    Benefits over a traditional Observer system:
+    ### Benefits over a traditional Observer system:
     
     We centralise all the dependencies in one data structure 'affected_entities' rather
     than having each model inherit from Observable and do its own secret thing. This potentially
@@ -40,12 +40,12 @@ class DirtyObserver:
     class, which inherits from Observable.  It thus doesn't require the model to be 
     interspersed with observers.Notify() broadcast calls within itself.
 
-    Similarities:
+    ### Similarities:
 
     The builder of the application has to register dependencies between models and mediators.
     Traditionally done by model.addObserver(), here done by add_dependency(). 
 
-    Downsides:
+    ### Downsides:
     
     However the traditional approach was set and forget, whereas the new approach requires
     that the user of the model send a signal, albiet a usefully abstract named one.
@@ -55,13 +55,16 @@ class DirtyObserver:
 
     Both these downsides mean that the traditional
 
+        ```python
         # one time setup
         model.addObserver(mediator)
 
         model.info = 100
+        ```
 
     is enough to trigger the mediator whereas the new system requires
 
+        ```python
         # one time setup
         do = DirtyObserver()
         do.add_dependency('model info changed', mediator)
@@ -69,6 +72,7 @@ class DirtyObserver:
         model.info = 100
         do.dirty('model info changed')  # downside, but at least its explicit not magical
         world.process()                 # downside, but can be deferred, which is a benefit
+        ```
 
     to achive the same thing.
     """
