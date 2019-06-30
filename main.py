@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass
 from typing import List
 from esper_extras import add_or_remove_component
-
+from esper_observer import DirtyObserver, Dirty
 
 model = {
     "welcome_msg": "Welcome",
@@ -21,10 +21,6 @@ view_model = {
     "uppercase welcome outputs": False,
     "uppercase top right": False,
 }
-
-@dataclass
-class Dirty:  # Mark that component needs rendering
-    pass 
 
 @dataclass
 class ModelWelcome:  # Welcome model ref
@@ -59,6 +55,10 @@ class UP_R_WHOLE:  # flag to make upper right message uppercase or not
 @dataclass
 class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
     pass
+
+
+def dump(component, entity):  # simple logging
+    print(f"added {component} to {nice_entity_name[entity]}")
 
 
 class ModelExtractProcessor(esper.Processor):
@@ -112,7 +112,7 @@ class RenderProcessor(esper.Processor):
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
             render_text_control(Component)
 
-        dirty_all(False)
+        do.dirty_all(False)
 
 class HousekeepingProcessor(esper.Processor):
     def process(self):
@@ -134,13 +134,13 @@ def model_setter_welcome(msg):
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        dirty(ModelWelcome)
+        do.dirty(ModelWelcome)
         world.process()
 
     def onCheck1(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        dirty(ModelWelcome)
+        do.dirty(ModelWelcome)
         world.process()
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
@@ -150,7 +150,7 @@ class MyFrame1A(MyFrame1):
             condition=frame.m_checkBox1A.IsChecked(), 
             component_Class=UP_L_AND_R_WELCOME_ONLY, 
             entities=[entity_welcome_left, entity_welcome_user_right])
-        dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
+        do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def onCheck2(self, event):
@@ -160,29 +160,29 @@ class MyFrame1A(MyFrame1):
             condition=frame.m_checkBox2.IsChecked(), 
             component_Class=UP_R_WHOLE, 
             entities=[entity_welcome_user_right])
-        dirty("just top right")
+        do.dirty("just top right")
         world.process()
 
     def onEnter(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
-        dirty(ModelWelcome)
+        do.dirty(ModelWelcome)
         world.process()
 
     def onClickResetUser( self, event ):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        dirty(ModelFirstname)
-        dirty(ModelSurname)
+        do.dirty(ModelFirstname)
+        do.dirty(ModelSurname)
         world.process()
 
     def onEnterUserName( self, event ):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        dirty(ModelFirstname)
+        do.dirty(ModelFirstname)
         world.process()
 
     def onEnterUserSurname( self, event ):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
-        dirty(ModelSurname)
+        do.dirty(ModelSurname)
         world.process()
 
     def onClickRenderNow( self, event ):
@@ -232,30 +232,14 @@ world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCt
 world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
 world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
 
+do = DirtyObserver(mediators, world)
+do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
+do.add_dependency(ModelFirstname, [entity_welcome_user_right, entity_edit_user_name_msg])
+do.add_dependency(ModelSurname, [entity_welcome_user_right, entity_edit_user_surname_msg])
+do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
+do.add_dependency("just top right", [entity_welcome_user_right])
 
-# Tells us which model each mediator entity cares about, like observer pattern mappings.
-# Note this uses the model component ref class, rather than anything about the model dict itself
-# We even have arbitrary keys which are more verbose model descriptions to make it easier
-dirty_model_to_entities = {
-    ModelWelcome: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
-    ModelFirstname: [entity_welcome_user_right, entity_edit_user_name_msg],
-    ModelSurname: [entity_welcome_user_right, entity_edit_user_surname_msg],
-    "welcome display only, not via model": [entity_welcome_left, entity_welcome_user_right],
-    "just top right": [entity_welcome_user_right],
-}
-
-def dump(component, entity):
-    print(f"added {component} to {nice_entity_name[entity]}")
-
-def dirty_all(condition=True):
-    add_or_remove_component(world, condition, Dirty, entities=mediators)
-
-def dirty(component_class):
-    for mediator in dirty_model_to_entities[component_class]:
-        print(f"dirty: {mediator} because {component_class}")
-        world.add_component(mediator, Dirty())
-
-dirty_all()    
+do.dirty_all()    
 world.process()
 
 app.MainLoop()
