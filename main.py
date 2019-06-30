@@ -4,6 +4,8 @@ import esper
 import time
 from dataclasses import dataclass
 from typing import List
+from esper_extras import add_or_remove_component
+
 
 model = {
     "welcome_msg": "Welcome",
@@ -144,6 +146,7 @@ class MyFrame1A(MyFrame1):
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
         add_or_remove_component(
+            world, 
             condition=frame.m_checkBox1A.IsChecked(), 
             component_Class=UP_L_AND_R_WELCOME_ONLY, 
             entities=[entity_welcome_left, entity_welcome_user_right])
@@ -153,6 +156,7 @@ class MyFrame1A(MyFrame1):
     def onCheck2(self, event):
         # don't change the model - only the UI display
         add_or_remove_component(
+            world, 
             condition=frame.m_checkBox2.IsChecked(), 
             component_Class=UP_R_WHOLE, 
             entities=[entity_welcome_user_right])
@@ -185,17 +189,16 @@ class MyFrame1A(MyFrame1):
         world.process()
 
 
+app = wx.App()
+frame = MyFrame1A(None)
+frame.Show()
+frame.SetSize((500, 400))
+
 world = esper.World()
 world.add_processor(ModelExtractProcessor())
 world.add_processor(CaseTransformProcessor())
 world.add_processor(RenderProcessor())
 world.add_processor(HousekeepingProcessor())
-
-
-app = wx.App()
-frame = MyFrame1A(None)
-frame.Show()
-frame.SetSize((500, 400))
 
 entity_welcome_left = world.create_entity()
 entity_welcome_user_right = world.create_entity()
@@ -212,9 +215,6 @@ nice_entity_name = {  # can't we get esper to give us this info?
 }
 mediators: List[int] = list(nice_entity_name.keys())
 
-def dump(component, entity):
-    print(f"added {component} to {nice_entity_name[entity]}")
- 
 world.add_component(entity_welcome_left, ModelWelcome(model=model, key="welcome_msg"))
 world.add_component(entity_welcome_left, GuiStaticText(ref=frame.m_staticText1))
 
@@ -238,23 +238,17 @@ world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_tex
 # We even have arbitrary keys which are more verbose model descriptions to make it easier
 dirty_model_to_entities = {
     ModelWelcome: [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg],
-    "welcome display only, not via model": [entity_welcome_left, entity_welcome_user_right],
     ModelFirstname: [entity_welcome_user_right, entity_edit_user_name_msg],
     ModelSurname: [entity_welcome_user_right, entity_edit_user_surname_msg],
+    "welcome display only, not via model": [entity_welcome_left, entity_welcome_user_right],
     "just top right": [entity_welcome_user_right],
 }
 
-def add_or_remove_component(condition: bool, component_Class, entities: list):
-    # Adds or removes component from each entity in list, depending on condition
-    for ent in entities:
-        if condition:
-            world.add_component(ent, component_Class())
-        else:
-            if world.has_component(ent, component_Class):
-                world.remove_component(ent, component_Class)
+def dump(component, entity):
+    print(f"added {component} to {nice_entity_name[entity]}")
 
 def dirty_all(condition=True):
-    add_or_remove_component(condition, Dirty, entities=mediators)
+    add_or_remove_component(world, condition, Dirty, entities=mediators)
 
 def dirty(component_class):
     for mediator in dirty_model_to_entities[component_class]:
