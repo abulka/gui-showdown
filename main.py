@@ -3,6 +3,7 @@ from gui import MyFrame1  #  <--- the wxformbuilder generated python module
 import esper
 import time
 from dataclasses import dataclass
+from typing import List
 
 model = {
     "welcome_msg": "Welcome",
@@ -202,20 +203,14 @@ entity_edit_welcome_msg = world.create_entity()
 entity_edit_user_name_msg = world.create_entity()
 entity_edit_user_surname_msg = world.create_entity()
 
-mediators = [entity_welcome_left,
-            entity_welcome_user_right,
-            entity_edit_welcome_msg,
-            entity_edit_user_name_msg,
-            entity_edit_user_surname_msg,
-            ]
-
 nice_entity_name = {  # can't we get esper to give us this info?
-    1: "entity_welcome_left",
-    2: "entity_welcome_user_right",
-    3: "entity_edit_welcome_msg",
-    4: "entity_edit_user_name_msg",
-    5: "entity_edit_user_surname_msg",
+    entity_welcome_left: "entity_welcome_left",
+    entity_welcome_user_right: "entity_welcome_user_right",
+    entity_edit_welcome_msg: "entity_edit_welcome_msg",
+    entity_edit_user_name_msg: "entity_edit_user_name_msg",
+    entity_edit_user_surname_msg: "entity_edit_user_surname_msg",
 }
+mediators: List[int] = list(nice_entity_name.keys())
 
 def dump(component, entity):
     print(f"added {component} to {nice_entity_name[entity]}")
