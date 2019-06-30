@@ -166,24 +166,24 @@ call to world.process()
 
 Both these downsides mean that the traditional
 
-    ```python
-    # one time setup
-    model.addObserver(mediator)
+```python
+# one time setup
+model.addObserver(mediator)
 
-    model.info = 100
-    ```
+model.info = 100
+```
 
 is enough to trigger the mediator whereas the new system requires
 
-    ```python
-    # one time setup
-    do = DirtyObserver()
-    do.add_dependency('model info changed', mediator)
+```python
+# one time setup
+do = DirtyObserver()
+do.add_dependency('model info changed', mediator)
 
-    model.info = 100
-    do.dirty('model info changed')  # downside, but at least its explicit not magical
-    world.process()                 # downside, but can be deferred, which is a benefit
-    ```
+model.info = 100
+do.dirty('model info changed')  # downside, but at least its explicit not magical
+world.process()                 # downside, but can be deferred, which is a benefit
+```
 
 to achive the same thing.
 
