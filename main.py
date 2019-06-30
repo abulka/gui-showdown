@@ -206,12 +206,12 @@ entity_edit_welcome_msg = world.create_entity()
 entity_edit_user_name_msg = world.create_entity()
 entity_edit_user_surname_msg = world.create_entity()
 
-nice_entity_name = {  # can't we get esper to give us this info?
-    entity_welcome_left: "entity_welcome_left",
-    entity_welcome_user_right: "entity_welcome_user_right",
-    entity_edit_welcome_msg: "entity_edit_welcome_msg",
-    entity_edit_user_name_msg: "entity_edit_user_name_msg",
-    entity_edit_user_surname_msg: "entity_edit_user_surname_msg",
+nice_entity_name = {
+    entity_welcome_left: "mediator for welcome_left",
+    entity_welcome_user_right: "mediator for welcome_user_right",
+    entity_edit_welcome_msg: "mediator for edit_welcome_msg",
+    entity_edit_user_name_msg: "mediator for edit_user_name_msg",
+    entity_edit_user_surname_msg: "mediator for edit_user_surname_msg",
 }
 mediators: List[int] = list(nice_entity_name.keys())
 

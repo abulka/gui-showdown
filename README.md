@@ -117,6 +117,7 @@ dirty_model_to_entities = {
     "just top right": [entity_welcome_user_right],
 }
 ```
+SEE HEAPS MORE DOCO IN THE `esper_observer.py` file.
 
 ## View Model in the future?
 
@@ -170,7 +171,28 @@ world.add_component(entity_welcome_user_right, GUIST(ref=frame.m_staticText2))
 
 We now have multiple systems doing a staged approach. E.g. A compute text stage which creates a final component containing the string to render.  The render stage then only targets those final components.  Seems to work and feels a bit better.
 
-## Logic in Checkbox handlers
+# Retrospective on Component types
 
-Is too complex and intense.  Need to fix this.
+Components for entities (mediators) represent
+- how to get to specific bits of models information (model obj or dict, key) - different components need to be created for each model field to allow targeted behaviour.  If targeted behaviour is not necessary that more course grained components could be used.
+- how to get to gui widgets (gui ref components) - different ones for each gui widget type e.g. static vs textentry
+- flags for whether a system should render e.g. `Dirty` component
+- flags for extra transformations like uppercase something
+
+So in a sense, a traditional mediator would be an class containing
+
+    class Mediator:
+        model reference
+        gui reference
+
+a component approach makes a mediator a mere entity with the components
+
+    model ref component
+        model reference
+    gui ref component
+        gui reference
+
+Note that a model reference could be a single pointer to a field if the model is an object, or a combination of dict reference and a key, if the model is a dict.
+
+Note that a gui reference is simply a reference to a widget control e.g. `GuiStaticText(ref=frame.m_staticText2)`
 
