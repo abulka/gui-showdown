@@ -27,16 +27,19 @@ class Dirty:  # Mark that component needs rendering
 class ModelWelcome:  # Welcome model ref
     model: dict
     key: str
+    finalstr: str = ""
 
 @dataclass
 class ModelFirstname:  # User model ref
     model: dict
     key: str
+    finalstr: str = ""
 
 @dataclass
 class ModelSurname:  # User surname model ref
     model: dict
     key: str
+    finalstr: str = ""
 
 @dataclass
 class GuiStaticText:  # Static Text Gui ref
@@ -54,59 +57,33 @@ class UP_R_WHOLE:  # flag to make upper right message uppercase or not
 class UP_L_AND_R_WELCOME_ONLY:  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
     pass
 
-@dataclass
-class FinalWelcome:
-    s: str
-
-@dataclass
-class FinalFirstname:
-    s: str
-
-@dataclass
-class FinalSurname:
-    s: str
-
 
 class ModelExtractProcessor(esper.Processor):
     """
-    Extract info from models and stage them in Final* components, so that the transform phase
-    can alter them without altering the model.  This will allow for multiple transformations and
-    is decoupled from the final output/rendering system stage.
+    Extract info from models and stage them in the component in 'finalstr', so that the transform phase
+    can alter that info without altering the model.  This makes use of multiple 'system' transformations e.g.
+    and decouples transformation from the final output/rendering system stage.
     """
     def process(self):
         print("--Model Extract System---")
-        for ent, (mw, d) in self.world.get_components(ModelWelcome, Dirty):
-            f = FinalWelcome(s=mw.model[mw.key])
-            world.add_component(ent, f)
-            dump(f, ent)
-
-        for ent, (mu, d) in self.world.get_components(ModelFirstname, Dirty):
-            f = FinalFirstname(s=mu.model[mu.key])
-            world.add_component(ent, f)
-            dump(f, ent)
-
-        for ent, (mus, d) in self.world.get_components(ModelSurname, Dirty):
-            f = FinalSurname(s=mus.model[mus.key])
-            world.add_component(ent, f)
-            dump(f, ent)
+        for Component in (ModelWelcome, ModelFirstname, ModelSurname):
+            for ent, (component, dirty) in self.world.get_components(Component, Dirty):
+                component.finalstr = component.model[component.key]
+                dump(component, ent)
 
 
 class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
 
-        def up(ent, f):
-            f.s = f.s.upper()
-            dump(f, ent)
-
-        for ent, (f, uprw, d) in self.world.get_components(FinalWelcome, UP_L_AND_R_WELCOME_ONLY, Dirty):
-            up(ent, f)
-        for ent, (f, upr, d) in self.world.get_components(FinalWelcome, UP_R_WHOLE, Dirty):
-            up(ent, f)
-        for ent, (f, upr, d) in self.world.get_components(FinalFirstname, UP_R_WHOLE, Dirty):
-            up(ent, f)
-        for ent, (f, upr, d) in self.world.get_components(FinalSurname, UP_R_WHOLE, Dirty):
-            up(ent, f)
+        for Component in (ModelWelcome,):
+            for ent, (component, up_l_and_r, dirty) in self.world.get_components(Component, UP_L_AND_R_WELCOME_ONLY, Dirty):
+                component.finalstr = component.finalstr.upper()
+                dump(component, ent)
+        for Component in (ModelWelcome, ModelFirstname, ModelSurname):
+            for ent, (component, up_r_whole, dirty) in self.world.get_components(Component, UP_R_WHOLE, Dirty):
+                component.finalstr = component.finalstr.upper()
+                dump(component, ent)
 
 
 class RenderProcessor(esper.Processor):
@@ -114,26 +91,26 @@ class RenderProcessor(esper.Processor):
         print("--Render System--")
         ents = set()
 
-        for ent, (finalw, guist, d) in self.world.get_components(FinalWelcome, GuiStaticText, Dirty):
+        for ent, (mw, guist, d) in self.world.get_components(ModelWelcome, GuiStaticText, Dirty):
             print("top left", ent)
-            guist.ref.SetLabel(finalw.s)
+            guist.ref.SetLabel(mw.finalstr)
             ents.add(ent)
-        for ent, (finalw, finalf, finals, guist, d) in self.world.get_components(FinalWelcome, FinalFirstname, FinalSurname, GuiStaticText, Dirty):
+        for ent, (mw, mf, ms, guist, d) in self.world.get_components(ModelWelcome, ModelFirstname, ModelSurname, GuiStaticText, Dirty):
             print("top right")
-            guist.ref.SetLabel(f"{finalw.s} {finalf.s} {finals.s}")
+            guist.ref.SetLabel(f"{mw.finalstr} {mf.finalstr} {ms.finalstr}")
             ents.add(ent)
-        for ent, (f, guitc, d) in self.world.get_components(FinalWelcome, GuiTextControl, Dirty):
+        for ent, (mw, guitc, d) in self.world.get_components(ModelWelcome, GuiTextControl, Dirty):
             print("mw textctrl")
-            guitc.ref.SetValue(f.s)
+            guitc.ref.SetValue(mw.finalstr)
             ents.add(ent)
         # wish we didn't have two loops
-        for ent, (f, guitc, d) in self.world.get_components(FinalFirstname, GuiTextControl, Dirty):
-            print("mu textctrl (name)")
-            guitc.ref.SetValue(f.s)
+        for ent, (mf, guitc, d) in self.world.get_components(ModelFirstname, GuiTextControl, Dirty):
+            print("mf textctrl (name)")
+            guitc.ref.SetValue(mf.finalstr)
             ents.add(ent)
-        for ent, (f, guitc, d) in self.world.get_components(FinalSurname, GuiTextControl, Dirty):
-            print("mu textctrl (surname)")
-            guitc.ref.SetValue(f.s)
+        for ent, (ms, guitc, d) in self.world.get_components(ModelSurname, GuiTextControl, Dirty):
+            print("ms textctrl (surname)")
+            guitc.ref.SetValue(ms.finalstr)
             ents.add(ent)
 
         for ent in list(ents):
