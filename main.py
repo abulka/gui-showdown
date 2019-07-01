@@ -2,11 +2,14 @@ import wx
 from gui import MyFrame1  #  <--- the wxformbuilder generated python module
 import esper
 import time
+import random
 from dataclasses import dataclass
-from typing import List
+from typing import List, Any
 from esper_extras import add_or_remove_component
 from esper_observer import DirtyObserver, Dirty
 
+# The only reason we have a deep model like this, is because it is shared and manipulated by
+# many things.  Other 'model' data bits can be put into components directly as a sole place.
 model = {
     "welcome_msg": "Welcome",
     "user": {
@@ -16,6 +19,8 @@ model = {
 }
 
 # Not used - but would be nice to integrate something like this into the ECS
+# but then again, the data components attached to a mediator entity is like a view model, so
+# why replicate that information uncessessarily.  
 view_model = {
     "uppercase welcome model": False,
     "uppercase welcome outputs": False,
@@ -42,6 +47,14 @@ class Flag:  # Mediator (entity + this component) might have a flag to indicate 
     pass
 class UP_R_WHOLE(Flag): pass  # flag to make upper right message uppercase or not
 class UP_L_AND_R_WELCOME_ONLY(Flag): pass  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+
+@dataclass
+class FrameAdornments:
+    frame_title: str = ""
+    frame_ref: Any = None
+    panel_colour: Any = None
+    panel_ref : Any= None
+    panel_colour_randomise : bool = False
 
 
 def dump(component, entity):  # simple logging
@@ -109,6 +122,15 @@ class HousekeepingProcessor(esper.Processor):
             frame.m_checkBox1A.Disable()
         else:
             frame.m_checkBox1A.Enable()
+
+class FunProcessor(esper.Processor):
+    def process(self):
+        print("--Fun System--")
+
+        for _, (f,) in self.world.get_components(FrameAdornments):
+            f.frame_ref.SetTitle(f.frame_title + " " + time.asctime())
+            f.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if f.panel_colour_randomise else f.panel_colour)
+            f.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
 
 def model_welcome_toggle():
@@ -186,6 +208,7 @@ world.add_processor(ModelExtractProcessor())
 world.add_processor(CaseTransformProcessor())
 world.add_processor(RenderProcessor())
 world.add_processor(HousekeepingProcessor())
+world.add_processor(FunProcessor())
 
 entity_welcome_left = world.create_entity()
 entity_welcome_user_right = world.create_entity()
@@ -218,6 +241,13 @@ world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCt
 
 world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
 world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
+
+world.add_component(entity_edit_user_surname_msg, FrameAdornments(frame_title="Gui wired via ESC",
+                                                                  frame_ref=frame,
+                                                                  panel_colour=wx.Colour( 255, 255, 135 ),
+                                                                  panel_ref=frame.m_panel1,
+                                                                  panel_colour_randomise=True
+                                                                  ))
 
 do = DirtyObserver(world)
 do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
