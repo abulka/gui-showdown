@@ -18,14 +18,6 @@ model = {
     }
 }
 
-# Not used - but would be nice to integrate something like this into the ECS
-# but then again, the data components attached to a mediator entity is like a view model, so
-# why replicate that information uncessessarily.  
-view_model = {
-    "uppercase welcome model": False,
-    "uppercase welcome outputs": False,
-    "uppercase top right": False,
-}
 
 @dataclass
 class ModelRef:  # Mediator (entity + this component) needs to know about model. Model specific
@@ -55,10 +47,6 @@ class FrameAdornments:
     panel_colour: Any = None
     panel_ref : Any= None
     panel_colour_randomise : bool = False
-
-
-def dump(component, entity):  # simple logging
-    print(f"added {component} to {nice_entity_name[entity]}")
 
 
 class ModelExtractProcessor(esper.Processor):
@@ -133,13 +121,27 @@ class FunProcessor(esper.Processor):
             f.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
 
-def model_welcome_toggle():
-        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+# Not used - but would be nice to integrate something like this into the ECS
+# but then again, the data components attached to a mediator entity is like a view model, so
+# why replicate that information uncessessarily.  
+view_model = {
+    "uppercase welcome model": False,
+    "uppercase welcome outputs": False,
+    "uppercase top right": False,
+}
+
+def dump(component, entity):  # simple logging
+    print(f"have set {component} for {nice_entity_name[entity]}")
 
 def model_setter_welcome(msg):
         model["welcome_msg"] = msg
         model_welcome_toggle()
 
+def model_welcome_toggle():
+        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+
+
+# Frame
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected

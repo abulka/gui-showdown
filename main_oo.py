@@ -6,15 +6,7 @@ from dataclasses import dataclass, astuple
 from typing import List, Any
 from observer import Observable, Observer
 
-# # The only reason we have a deep model like this, is because it is shared and manipulated by
-# # many things.  Other 'model' data bits can be put into components directly as a sole place.
-# model = {
-#     "welcome_msg": "Welcome",
-#     "user": {
-#         "name": "Sam",
-#         "surname": "Smith",
-#     }
-# }
+# The Welcome model and User model are Observable.
 
 @dataclass
 class BaseModel(Observable):
@@ -92,6 +84,7 @@ class MediatorWelcomeLeft(Mediator):
         print("top left")
         msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
         self.gui_ref.SetLabel(msg)
+        dump(self.welcome, self)
 
 @dataclass
 class MediatorWelcomeUserRight(Mediator):
@@ -111,6 +104,8 @@ class MediatorWelcomeUserRight(Mediator):
         else:
             msg = f"{self.welcome.message} {self.user.firstname} {self.user.surname}"
         self.gui_ref.SetLabel(msg)
+        dump(self.welcome, self)
+        dump(self.user, self)
 
 @dataclass
 class MediatorEditWelcome(Mediator):
@@ -120,6 +115,7 @@ class MediatorEditWelcome(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit welcome")
         self.gui_ref.SetValue(self.welcome.message)
+        dump(self.welcome, self)
 
 @dataclass
 class MediatorEditUserFirstName(Mediator):
@@ -129,6 +125,7 @@ class MediatorEditUserFirstName(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit user firstname")
         self.gui_ref.SetValue(self.user.firstname)
+        dump(self.user, self)
 
 @dataclass
 class MediatorEditUserSurName(Mediator):
@@ -138,6 +135,7 @@ class MediatorEditUserSurName(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit user surname")
         self.gui_ref.SetValue(self.user.surname)
+        dump(self.user, self)
 
 
 @dataclass
@@ -152,7 +150,21 @@ class MediatorFrameAdornments(Mediator):
         self.frame_ref.SetTitle(self.frame_title + " " + time.asctime())
         self.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour)
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
+        dump(self, self)
 
+
+# Not used - but would be nice to integrate something like this into the MVC
+# but then again, the mediators themselves have these attributes, each mediator entity is like a view model, so
+# why replicate that information uncessessarily.  
+view_model = {
+    "uppercase welcome model": False,
+    "uppercase welcome outputs": False,
+    "uppercase top right": False,
+}
+
+
+def dump(o, mediator):  # simple logging
+    print(f"have set {o} in {nice_mediator_name[id(mediator)]}")
 
 def housekeeping():
     if frame.m_checkBox1.IsChecked():
@@ -163,6 +175,8 @@ def housekeeping():
 def model_welcome_toggle():
         model.welcome.message = model.welcome.message.upper() if frame.m_checkBox1.IsChecked() else model.welcome.message.lower()
 
+
+# Frame
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
         model.welcome.message = "Hello"
@@ -241,15 +255,15 @@ appgui = MediatorFrameAdornments(
     panel_colour_randomise=True
 )
 
-# nice_mediator_name = {
-#     mediator_welcome_left: "mediator for welcome_left",
-#     mediator_welcome_user_right: "mediator for welcome_user_right",
-#     mediator_edit_welcome_msg: "mediator for edit_welcome_msg",
-#     mediator_edit_user_name_msg: "mediator for edit_user_name_msg",
-#     mediator_edit_user_surname_msg: "mediator for edit_user_surname_msg",
-#     appgui: "mediator for app frame etc",
-# }
-# mediators: List[int] = list(nice_mediator_name.keys())
+nice_mediator_name = {
+    id(mediator_welcome_left): "mediator for welcome_left",
+    id(mediator_welcome_user_right): "mediator for welcome_user_right",
+    id(mediator_edit_welcome_msg): "mediator for edit_welcome_msg",
+    id(mediator_edit_user_name_msg): "mediator for edit_user_name_msg",
+    id(mediator_edit_user_surname_msg): "mediator for edit_user_surname_msg",
+    id(appgui): "mediator for app frame etc",
+}
+mediators: List[int] = list(nice_mediator_name.keys())
 
 # Observer Wiring
 model.welcome.AddObserver(mediator_welcome_left)
