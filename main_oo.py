@@ -69,28 +69,32 @@ class Models:
 
 @dataclass
 class MediatorWelcomeLeft(Observer):
-    model: Welcome
+    welcome: Welcome
     gui_ref: wx.StaticText
+    uppercase_welcome: bool = False
 
     def __post_init__(self):
         super().__init__()
 
     def Notify(self, target, notification_event_type):
         print("top left")
-        self.gui_ref.SetLabel(self.model.message)
+        msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
+        self.gui_ref.SetLabel(msg)
 
 @dataclass
 class MediatorWelcomeUserRight(Observer):
     welcome: Welcome
     user: User
     gui_ref: wx.StaticText
+    uppercase_welcome: bool = False
 
     def __post_init__(self):
         super().__init__()
 
     def Notify(self, target, notification_event_type):
         print("top right")
-        self.gui_ref.SetLabel(f"{self.welcome.message} {self.user.firstname} {self.user.surname}")
+        msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
+        self.gui_ref.SetLabel(f"{msg} {self.user.firstname} {self.user.surname}")
 
 @dataclass
 class MediatorEditWelcome(Observer):
@@ -154,13 +158,10 @@ class MyFrame1A(MyFrame1):
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
-        add_or_remove_component(
-            world, 
-            condition=frame.m_checkBox1A.IsChecked(), 
-            component_Class=UP_L_AND_R_WELCOME_ONLY, 
-            entities=[entity_welcome_left, entity_welcome_user_right])
-        do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
-        world.process()
+        mediator_welcome_left.uppercase_welcome = True if frame.m_checkBox1A.IsChecked() else False
+        mediator_welcome_user_right.uppercase_welcome = True if frame.m_checkBox1A.IsChecked() else False
+        mediator_welcome_left.Notify(None, "checked event")  # bit weird having target=None
+        mediator_welcome_user_right.Notify(None, "checked event")
 
     def onCheck2(self, event):
         # don't change the model - only the UI display
@@ -200,7 +201,7 @@ models = Models(
 )
 
 mediator_welcome_left = MediatorWelcomeLeft(
-    model=models.welcome, 
+    welcome=models.welcome, 
     gui_ref=frame.m_staticText1
 )
 mediator_welcome_user_right = MediatorWelcomeUserRight(
