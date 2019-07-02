@@ -73,15 +73,26 @@ class MediatorWelcomeLeft(Observer):
         super().__init__()
 
     def Notify(self, target, notification_event_ype):
-        print("got notified")
+        print("top left")
         self.gui_ref.SetLabel(self.model.message)
+
+@dataclass
+class MediatorWelcomeUserRight(Observer):
+    welcome: Welcome
+    user: User
+    gui_ref: wx.StaticText
+
+    def __post_init__(self):
+        super().__init__()
+
+    def Notify(self, target, notification_event_ype):
+        print("top right")
+        self.gui_ref.SetLabel(f"{self.welcome.message} {self.user.firstname} {self.user.surname}")
 
 
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
-        model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        do.dirty(ModelWelcome)
-        world.process()
+        models.welcome.message = "Hello"
 
     def onCheck1(self, event):
         # toggle the case of the model's welcome message
@@ -149,9 +160,15 @@ mediator_welcome_left = MediatorWelcomeLeft(
     model=models.welcome, 
     gui_ref=frame.m_staticText1
 )
+mediator_welcome_user_right = MediatorWelcomeUserRight(
+    welcome=models.welcome,
+    user=models.user,
+    gui_ref=frame.m_staticText2
+) 
 models.welcome.AddObserver(mediator_welcome_left)
+models.welcome.AddObserver(mediator_welcome_user_right)
+models.user.AddObserver(mediator_welcome_user_right)
 models.welcome.message = "howdy"
-
 
 # world = esper.World()
 # world.add_processor(ModelExtractProcessor())
