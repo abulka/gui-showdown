@@ -265,3 +265,40 @@ Note that a model reference could be a single pointer to a field if the model is
 
 Note that a gui reference is simply a reference to a widget control e.g. `GuiStaticText(ref=frame.m_staticText2)`
 
+# View Model
+
+Something like
+
+```python
+view_model = {
+    "uppercase welcome model": False, 
+    "uppercase welcome outputs": False, 
+    "uppercase top right": False
+}
+```
+
+## In ECS
+Not used - but would be nice to integrate something like this into the ECS
+but then again, the data components attached to a mediator entity is like a view model, so
+why replicate that information uncessessarily.
+
+## In MVC
+Not used - but would be nice to integrate something like this into the MVC
+but then again, the mediators themselves have these attributes, each mediator entity is like a view model, so
+why replicate that information uncessessarily.
+
+# The model
+
+The only reason we have a deep model like this, is because it is shared and manipulated by
+many things.  Other 'model' data bits can be put into components directly as a sole place.
+
+ECS version:
+
+```python
+model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
+```
+
+MVC version:
+
+A bunch of models classes, implementing Observer.
+

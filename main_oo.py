@@ -6,16 +6,15 @@ from dataclasses import dataclass, astuple
 from typing import List, Any
 from observer import Observable, Observer
 
-# The Welcome model and User model are Observable.
+#
+# Model - The Welcome model and User model are Observable.
+#
 
 
 @dataclass
 class BaseModel(Observable):
     def __post_init__(self):
         super().__init__()
-
-    # def __hash__(self):
-    #     return hash(tuple(self))
 
 
 @dataclass
@@ -58,12 +57,19 @@ class User(BaseModel):
 
 @dataclass
 class Model:
+    """Main model, contains both the welcome model and the user model"""
+
     welcome: Welcome
     user: User
 
     def dirty_all(self):
         self.welcome.NotifyAll("init dirty")
         self.user.NotifyAll("init dirty")
+
+
+#
+# Mediators - are implemented as Observer classes, contain the behaviour
+#
 
 
 @dataclass
@@ -160,10 +166,9 @@ class MediatorFrameAdornments(Mediator):
         logsimple(self, self)
 
 
-# Not used - but would be nice to integrate something like this into the MVC
-# but then again, the mediators themselves have these attributes, each mediator entity is like a view model, so
-# why replicate that information uncessessarily.
-view_model = {"uppercase welcome model": False, "uppercase welcome outputs": False, "uppercase top right": False}
+#
+# Util
+#
 
 
 def logsimple(o, mediator):  # simple logging
@@ -181,7 +186,11 @@ def model_welcome_toggle():
     model.welcome.message = model.welcome.message.upper() if frame.m_checkBox1.IsChecked() else model.welcome.message.lower()
 
 
-# Frame
+#
+# Frame with GUI events
+#
+
+
 class MyFrame1A(MyFrame1):
     def on_button_reset_welcome(self, event):
         model.welcome.message = "Hello"
@@ -221,13 +230,20 @@ class MyFrame1A(MyFrame1):
         world.process()
 
 
+#
+# Init WxPython
+#
+
 app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
 frame.SetSize((500, 400))
 
-model = Model(Welcome(), User())
+#
+# Wire up and build everything
+#
 
+model = Model(Welcome(), User())
 mediator_welcome_left = MediatorWelcomeLeft(welcome=model.welcome, gui_ref=frame.m_staticText1)
 mediator_welcome_user_right = MediatorWelcomeUserRight(welcome=model.welcome, user=model.user, gui_ref=frame.m_staticText2)
 mediator_edit_welcome_msg = MediatorEditWelcome(welcome=model.welcome, gui_ref=frame.m_textCtrl1)
