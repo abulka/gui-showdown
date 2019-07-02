@@ -89,6 +89,42 @@ class MediatorWelcomeUserRight(Observer):
         print("top right")
         self.gui_ref.SetLabel(f"{self.welcome.message} {self.user.firstname} {self.user.surname}")
 
+@dataclass
+class MediatorEditWelcome(Observer):
+    welcome: Welcome
+    gui_ref: wx.TextCtrl
+
+    def __post_init__(self):
+        super().__init__()
+
+    def Notify(self, target, notification_event_ype):
+        print("edit welcome")
+        self.gui_ref.SetValue(self.welcome.message)
+
+@dataclass
+class MediatorEditUserFirstName(Observer):
+    user: User
+    gui_ref: wx.TextCtrl
+
+    def __post_init__(self):
+        super().__init__()
+
+    def Notify(self, target, notification_event_ype):
+        print("edit user firstname")
+        self.gui_ref.SetValue(self.user.firstname)
+
+@dataclass
+class MediatorEditUserSurName(Observer):
+    user: User
+    gui_ref: wx.TextCtrl
+
+    def __post_init__(self):
+        super().__init__()
+
+    def Notify(self, target, notification_event_ype):
+        print("edit user surname")
+        self.gui_ref.SetValue(self.user.surname)
+
 
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
@@ -165,10 +201,29 @@ mediator_welcome_user_right = MediatorWelcomeUserRight(
     user=models.user,
     gui_ref=frame.m_staticText2
 ) 
+mediator_edit_welcome_msg = MediatorEditWelcome(
+    welcome=models.welcome, 
+    gui_ref=frame.m_textCtrl1
+)
+mediator_edit_user_name_msg = MediatorEditUserFirstName(
+    user=models.user,
+    gui_ref=frame.m_textCtrl2
+)
+mediator_edit_user_surname_msg = MediatorEditUserSurName(
+    user=models.user,
+    gui_ref=frame.m_textCtrl3
+)
+
 models.welcome.AddObserver(mediator_welcome_left)
 models.welcome.AddObserver(mediator_welcome_user_right)
+models.welcome.AddObserver(mediator_edit_welcome_msg)
 models.user.AddObserver(mediator_welcome_user_right)
+models.user.AddObserver(mediator_edit_user_name_msg)
+models.user.AddObserver(mediator_edit_user_surname_msg)
+
 models.welcome.message = "howdy"
+models.user.firstname = "Andy"
+models.user.surname = "BBB"
 
 # world = esper.World()
 # world.add_processor(ModelExtractProcessor())
