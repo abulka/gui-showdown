@@ -63,7 +63,7 @@ class Models:
     welcome: Welcome
     user: User
 
-    def NotifyAll(self):
+    def dirty_all(self):
         self.welcome.NotifyAll('init dirty')
         self.user.NotifyAll('init dirty')
 
@@ -75,7 +75,7 @@ class MediatorWelcomeLeft(Observer):
     def __post_init__(self):
         super().__init__()
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         print("top left")
         self.gui_ref.SetLabel(self.model.message)
 
@@ -88,7 +88,7 @@ class MediatorWelcomeUserRight(Observer):
     def __post_init__(self):
         super().__init__()
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         print("top right")
         self.gui_ref.SetLabel(f"{self.welcome.message} {self.user.firstname} {self.user.surname}")
 
@@ -100,7 +100,7 @@ class MediatorEditWelcome(Observer):
     def __post_init__(self):
         super().__init__()
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         print("edit welcome")
         self.gui_ref.SetValue(self.welcome.message)
 
@@ -112,7 +112,7 @@ class MediatorEditUserFirstName(Observer):
     def __post_init__(self):
         super().__init__()
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         print("edit user firstname")
         self.gui_ref.SetValue(self.user.firstname)
 
@@ -124,7 +124,7 @@ class MediatorEditUserSurName(Observer):
     def __post_init__(self):
         super().__init__()
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         print("edit user surname")
         self.gui_ref.SetValue(self.user.surname)
 
@@ -136,11 +136,13 @@ class MediatorFrameAdornments(Observer):
     panel_ref: wx.Panel
     panel_colour_randomise: bool
 
-    def Notify(self, target, notification_event_ype):
+    def Notify(self, target, notification_event_type):
         self.frame_ref.SetTitle(self.frame_title + " " + time.asctime())
         self.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour)
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
+def model_welcome_toggle():
+        models.welcome.message = models.welcome.message.upper() if frame.m_checkBox1.IsChecked() else models.welcome.message.lower()
 
 class MyFrame1A(MyFrame1):
     def onResetWelcome(self, event):
@@ -149,8 +151,6 @@ class MyFrame1A(MyFrame1):
     def onCheck1(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        do.dirty(ModelWelcome)
-        world.process()
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
@@ -221,7 +221,7 @@ mediator_edit_user_surname_msg = MediatorEditUserSurName(
     gui_ref=frame.m_textCtrl3
 )
 appgui = MediatorFrameAdornments(
-    frame_title="Gui wired via ESC",
+    frame_title="Gui wired via MVC",
     frame_ref=frame,
     panel_colour=wx.Colour( 255, 255, 135 ),
     panel_ref=frame.m_panel1,
@@ -237,7 +237,7 @@ models.user.AddObserver(mediator_edit_user_name_msg)
 models.user.AddObserver(mediator_edit_user_surname_msg)
 models.user.AddObserver(appgui)
 
-models.NotifyAll()  # initialise the gui with initial model values
+models.dirty_all()  # initialise the gui with initial model values
 
 # world = esper.World()
 # world.add_processor(ModelExtractProcessor())
