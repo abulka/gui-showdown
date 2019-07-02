@@ -21,14 +21,16 @@ class Welcome(Observable):
     _msg: str = "Welcome"
 
     @property
-    def name(self) -> str:
+    def message(self) -> str:
         return self._msg
 
-    @name.setter
-    def name(self, v: str) -> None:
+    @message.setter
+    def message(self, v: str) -> None:
         self._msg = v
         self.NotifyAll(notificationEventType='')
 
+    def __post_init__(self):
+        super().__init__()
 
 @dataclass
 class User(Observable):
@@ -53,12 +55,26 @@ class User(Observable):
         self._surname = v
         self.NotifyAll(notificationEventType='')
 
+    def __post_init__(self):
+        super().__init__()
+
 @dataclass
-class Model:
+class Models:
     welcome: Welcome
     user: User
 
-model = Model(Welcome(), User())
+
+@dataclass
+class MediatorWelcomeLeft(Observer):
+    model: Welcome
+    gui_ref: wx.StaticText
+
+    def __post_init__(self):
+        super().__init__()
+
+    def Notify(self, target, notification_event_ype):
+        print("got notified")
+        self.gui_ref.SetLabel(self.model.message)
 
 
 class MyFrame1A(MyFrame1):
@@ -123,6 +139,19 @@ app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
 frame.SetSize((500, 400))
+
+models = Models(
+    Welcome(), 
+    User()
+)
+
+mediator_welcome_left = MediatorWelcomeLeft(
+    model=models.welcome, 
+    gui_ref=frame.m_staticText1
+)
+models.welcome.AddObserver(mediator_welcome_left)
+models.welcome.message = "howdy"
+
 
 # world = esper.World()
 # world.add_processor(ModelExtractProcessor())
