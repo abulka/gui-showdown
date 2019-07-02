@@ -210,11 +210,28 @@ world.add_processor(RenderProcessor())
 world.add_processor(HousekeepingProcessor())
 world.add_processor(FunProcessor())
 
-entity_welcome_left = world.create_entity()
-entity_welcome_user_right = world.create_entity()
-entity_edit_welcome_msg = world.create_entity()
-entity_edit_user_name_msg = world.create_entity()
-entity_edit_user_surname_msg = world.create_entity()
+entity_welcome_left = world.create_entity(
+    ModelWelcome(model=model, key="welcome_msg"),
+    GuiStaticText(ref=frame.m_staticText1)
+)
+entity_welcome_user_right = world.create_entity(
+    ModelWelcome(model=model, key="welcome_msg"),
+    ModelFirstname(model=model["user"], key="name"),
+    ModelSurname(model=model["user"], key="surname"),
+    GuiStaticText(ref=frame.m_staticText2)
+)
+entity_edit_welcome_msg = world.create_entity(
+    ModelWelcome(model=model, key="welcome_msg"),
+    GuiTextControl(ref=frame.m_textCtrl1)
+)
+entity_edit_user_name_msg = world.create_entity(
+    ModelFirstname(model=model["user"], key="name"),
+    GuiTextControl(ref=frame.m_textCtrl2)
+)
+entity_edit_user_surname_msg = world.create_entity(
+    ModelSurname(model=model["user"], key="surname"),
+    GuiTextControl(ref=frame.m_textCtrl3)
+)
 
 nice_entity_name = {
     entity_welcome_left: "mediator for welcome_left",
@@ -225,29 +242,14 @@ nice_entity_name = {
 }
 mediators: List[int] = list(nice_entity_name.keys())
 
-world.add_component(entity_welcome_left, ModelWelcome(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_left, GuiStaticText(ref=frame.m_staticText1))
-
-world.add_component(entity_welcome_user_right, ModelWelcome(model=model, key="welcome_msg"))
-world.add_component(entity_welcome_user_right, ModelFirstname(model=model["user"], key="name"))
-world.add_component(entity_welcome_user_right, ModelSurname(model=model["user"], key="surname"))
-world.add_component(entity_welcome_user_right, GuiStaticText(ref=frame.m_staticText2))
-
-world.add_component(entity_edit_welcome_msg, ModelWelcome(model=model, key="welcome_msg"))
-world.add_component(entity_edit_welcome_msg, GuiTextControl(ref=frame.m_textCtrl1))
-
-world.add_component(entity_edit_user_name_msg, ModelFirstname(model=model["user"], key="name"))
-world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCtrl2))
-
-world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
-world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
-
-world.add_component(entity_edit_user_surname_msg, FrameAdornments(frame_title="Gui wired via ESC",
-                                                                  frame_ref=frame,
-                                                                  panel_colour=wx.Colour( 255, 255, 135 ),
-                                                                  panel_ref=frame.m_panel1,
-                                                                  panel_colour_randomise=True
-                                                                  ))
+appgui = world.create_entity()
+world.add_component(appgui, FrameAdornments(
+    frame_title="Gui wired via ESC",
+    frame_ref=frame,
+    panel_colour=wx.Colour( 255, 255, 135 ),
+    panel_ref=frame.m_panel1,
+    panel_colour_randomise=True
+    ))
 
 do = DirtyObserver(world)
 do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
