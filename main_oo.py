@@ -152,6 +152,12 @@ class MediatorFrameAdornments(Observer):
         self.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour)
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
+def housekeeping():
+    if frame.m_checkBox1.IsChecked():
+        frame.m_checkBox1A.Disable()
+    else:
+        frame.m_checkBox1A.Enable()
+
 def model_welcome_toggle():
         models.welcome.message = models.welcome.message.upper() if frame.m_checkBox1.IsChecked() else models.welcome.message.lower()
 
@@ -162,6 +168,7 @@ class MyFrame1A(MyFrame1):
     def onCheck1(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
+        housekeeping()
 
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
@@ -169,6 +176,7 @@ class MyFrame1A(MyFrame1):
         mediator_welcome_user_right.uppercase_welcome = True if frame.m_checkBox1A.IsChecked() else False
         mediator_welcome_left.Notify(None, "checked event")  # bit weird having target=None
         mediator_welcome_user_right.Notify(None, "checked event")
+        housekeeping()
 
     def onCheck2(self, event):
         # don't change the model - only the UI display
@@ -242,19 +250,6 @@ models.user.AddObserver(appgui)
 
 models.dirty_all()  # initialise the gui with initial model values
 
-# world = esper.World()
-# world.add_processor(ModelExtractProcessor())
-# world.add_processor(CaseTransformProcessor())
-# world.add_processor(RenderProcessor())
-# world.add_processor(HousekeepingProcessor())
-# world.add_processor(FunProcessor())
-
-# entity_welcome_left = world.create_entity()
-# entity_welcome_user_right = world.create_entity()
-# entity_edit_welcome_msg = world.create_entity()
-# entity_edit_user_name_msg = world.create_entity()
-# entity_edit_user_surname_msg = world.create_entity()
-
 # nice_entity_name = {
 #     entity_welcome_left: "mediator for welcome_left",
 #     entity_welcome_user_right: "mediator for welcome_user_right",
@@ -263,39 +258,5 @@ models.dirty_all()  # initialise the gui with initial model values
 #     entity_edit_user_surname_msg: "mediator for edit_user_surname_msg",
 # }
 # mediators: List[int] = list(nice_entity_name.keys())
-
-# world.add_component(entity_welcome_left, ModelWelcome(model=model, key="welcome_msg"))
-# world.add_component(entity_welcome_left, GuiStaticText(ref=frame.m_staticText1))
-
-# world.add_component(entity_welcome_user_right, ModelWelcome(model=model, key="welcome_msg"))
-# world.add_component(entity_welcome_user_right, ModelFirstname(model=model["user"], key="name"))
-# world.add_component(entity_welcome_user_right, ModelSurname(model=model["user"], key="surname"))
-# world.add_component(entity_welcome_user_right, GuiStaticText(ref=frame.m_staticText2))
-
-# world.add_component(entity_edit_welcome_msg, ModelWelcome(model=model, key="welcome_msg"))
-# world.add_component(entity_edit_welcome_msg, GuiTextControl(ref=frame.m_textCtrl1))
-
-# world.add_component(entity_edit_user_name_msg, ModelFirstname(model=model["user"], key="name"))
-# world.add_component(entity_edit_user_name_msg, GuiTextControl(ref=frame.m_textCtrl2))
-
-# world.add_component(entity_edit_user_surname_msg, ModelSurname(model=model["user"], key="surname"))
-# world.add_component(entity_edit_user_surname_msg, GuiTextControl(ref=frame.m_textCtrl3))
-
-# world.add_component(entity_edit_user_surname_msg, FrameAdornments(frame_title="Gui wired via ESC",
-#                                                                   frame_ref=frame,
-#                                                                   panel_colour=wx.Colour( 255, 255, 135 ),
-#                                                                   panel_ref=frame.m_panel1,
-#                                                                   panel_colour_randomise=True
-#                                                                   ))
-
-# do = DirtyObserver(world)
-# do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
-# do.add_dependency(ModelFirstname, [entity_welcome_user_right, entity_edit_user_name_msg])
-# do.add_dependency(ModelSurname, [entity_welcome_user_right, entity_edit_user_surname_msg])
-# do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
-# do.add_dependency("just top right", [entity_welcome_user_right])
-
-# do.dirty_all(entities=mediators)    
-# world.process()
 
 app.MainLoop()
