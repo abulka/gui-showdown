@@ -157,26 +157,17 @@ class MyFrame1A(MyFrame1):
         world.process()
 
     def onEnter(self, event):
-        model["welcome_msg"] = frame.m_textCtrl1.GetValue()
-        do.dirty(ModelWelcome)
-        world.process()
+        models.welcome.message = frame.m_textCtrl1.GetValue()
 
     def onClickResetUser( self, event ):
-        model["user"]["name"] = "Fred"
-        model["user"]["surname"] = "Flinstone"
-        do.dirty(ModelFirstname)
-        do.dirty(ModelSurname)
-        world.process()
+        models.user.firstname = "Fred"
+        models.user.surname = "Flinstone"
 
     def onEnterUserName( self, event ):
-        model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        do.dirty(ModelFirstname)
-        world.process()
+        models.user.firstname = frame.m_textCtrl2.GetValue()
 
     def onEnterUserSurname( self, event ):
-        model["user"]["surname"] = frame.m_textCtrl3.GetValue()
-        do.dirty(ModelSurname)
-        world.process()
+        models.user.surname = frame.m_textCtrl3.GetValue()
 
     def onClickRenderNow( self, event ):
         world.process()
