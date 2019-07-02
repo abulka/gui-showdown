@@ -63,6 +63,9 @@ class Models:
     welcome: Welcome
     user: User
 
+    def NotifyAll(self):
+        self.welcome.NotifyAll('init dirty')
+        self.user.NotifyAll('init dirty')
 
 @dataclass
 class MediatorWelcomeLeft(Observer):
@@ -124,6 +127,19 @@ class MediatorEditUserSurName(Observer):
     def Notify(self, target, notification_event_ype):
         print("edit user surname")
         self.gui_ref.SetValue(self.user.surname)
+
+@dataclass
+class MediatorFrameAdornments(Observer):
+    frame_title: str
+    frame_ref: wx.Frame
+    panel_colour: wx.Colour
+    panel_ref: wx.Panel
+    panel_colour_randomise: bool
+
+    def Notify(self, target, notification_event_ype):
+        self.frame_ref.SetTitle(self.frame_title + " " + time.asctime())
+        self.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour)
+        self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
 
 class MyFrame1A(MyFrame1):
@@ -204,17 +220,24 @@ mediator_edit_user_surname_msg = MediatorEditUserSurName(
     user=models.user,
     gui_ref=frame.m_textCtrl3
 )
+appgui = MediatorFrameAdornments(
+    frame_title="Gui wired via ESC",
+    frame_ref=frame,
+    panel_colour=wx.Colour( 255, 255, 135 ),
+    panel_ref=frame.m_panel1,
+    panel_colour_randomise=True
+)
 
 models.welcome.AddObserver(mediator_welcome_left)
 models.welcome.AddObserver(mediator_welcome_user_right)
 models.welcome.AddObserver(mediator_edit_welcome_msg)
+models.welcome.AddObserver(appgui)
 models.user.AddObserver(mediator_welcome_user_right)
 models.user.AddObserver(mediator_edit_user_name_msg)
 models.user.AddObserver(mediator_edit_user_surname_msg)
+models.user.AddObserver(appgui)
 
-models.welcome.message = "howdy"
-models.user.firstname = "Andy"
-models.user.surname = "BBB"
+models.NotifyAll()  # initialise the gui with initial model values
 
 # world = esper.World()
 # world.add_processor(ModelExtractProcessor())
