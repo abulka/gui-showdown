@@ -10,13 +10,7 @@ from esper_observer import DirtyObserver, Dirty
 
 # The only reason we have a deep model like this, is because it is shared and manipulated by
 # many things.  Other 'model' data bits can be put into components directly as a sole place.
-model = {
-    "welcome_msg": "Welcome",
-    "user": {
-        "name": "Sam",
-        "surname": "Smith",
-    }
-}
+model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
 
 
 @dataclass
@@ -24,29 +18,53 @@ class ModelRef:  # Mediator (entity + this component) needs to know about model.
     model: dict
     key: str
     finalstr: str = ""
-class ModelWelcome(ModelRef): pass
-class ModelFirstname(ModelRef): pass
-class ModelSurname(ModelRef): pass
+
+
+class ModelWelcome(ModelRef):
+    pass
+
+
+class ModelFirstname(ModelRef):
+    pass
+
+
+class ModelSurname(ModelRef):
+    pass
+
 
 @dataclass
 class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
     ref: object
-class GuiStaticText(GuiControlRef): pass  # Static Text Gui ref
-class GuiTextControl(GuiControlRef): pass  # Text Control Gui ref
+
+
+class GuiStaticText(GuiControlRef):
+    pass  # Static Text Gui ref
+
+
+class GuiTextControl(GuiControlRef):
+    pass  # Text Control Gui ref
+
 
 @dataclass
 class Flag:  # Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
     pass
-class UP_R_WHOLE(Flag): pass  # flag to make upper right message uppercase or not
-class UP_L_AND_R_WELCOME_ONLY(Flag): pass  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+
+
+class UP_R_WHOLE(Flag):
+    pass  # flag to make upper right message uppercase or not
+
+
+class UP_L_AND_R_WELCOME_ONLY(Flag):
+    pass  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+
 
 @dataclass
 class FrameAdornments:
     frame_title: str = ""
     frame_ref: Any = None
     panel_colour: Any = None
-    panel_ref : Any= None
-    panel_colour_randomise : bool = False
+    panel_ref: Any = None
+    panel_colour_randomise: bool = False
 
 
 class ModelExtractProcessor(esper.Processor):
@@ -55,6 +73,7 @@ class ModelExtractProcessor(esper.Processor):
     can alter that info without altering the model.  This makes use of multiple 'system' transformations e.g.
     and decouples transformation from the final output/rendering system stage.
     """
+
     def process(self):
         print("--Model Extract System---")
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
@@ -102,6 +121,7 @@ class RenderProcessor(esper.Processor):
 
         do.dirty_all(False, entities=mediators)
 
+
 class HousekeepingProcessor(esper.Processor):
     def process(self):
         print("--Housekeeping System--")
@@ -111,34 +131,36 @@ class HousekeepingProcessor(esper.Processor):
         else:
             frame.m_checkBox1A.Enable()
 
+
 class FunProcessor(esper.Processor):
     def process(self):
         print("--Fun System--")
 
         for _, (f,) in self.world.get_components(FrameAdornments):
             f.frame_ref.SetTitle(f.frame_title + " " + time.asctime())
-            f.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if f.panel_colour_randomise else f.panel_colour)
+            f.panel_ref.SetBackgroundColour(
+                wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if f.panel_colour_randomise else f.panel_colour
+            )
             f.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
 
 
 # Not used - but would be nice to integrate something like this into the ECS
 # but then again, the data components attached to a mediator entity is like a view model, so
-# why replicate that information uncessessarily.  
-view_model = {
-    "uppercase welcome model": False,
-    "uppercase welcome outputs": False,
-    "uppercase top right": False,
-}
+# why replicate that information uncessessarily.
+view_model = {"uppercase welcome model": False, "uppercase welcome outputs": False, "uppercase top right": False}
+
 
 def dump(component, entity):  # simple logging
     print(f"have set {component} for {nice_entity_name[entity]}")
 
+
 def model_setter_welcome(msg):
-        model["welcome_msg"] = msg
-        model_welcome_toggle()
+    model["welcome_msg"] = msg
+    model_welcome_toggle()
+
 
 def model_welcome_toggle():
-        model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+    model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
 
 
 # Frame
@@ -157,20 +179,19 @@ class MyFrame1A(MyFrame1):
     def onCheckToggleWelcomeOutputsOnly(self, event):
         # toggle the case of the welcome output messages only - do not affect model
         add_or_remove_component(
-            world, 
-            condition=frame.m_checkBox1A.IsChecked(), 
-            component_Class=UP_L_AND_R_WELCOME_ONLY, 
-            entities=[entity_welcome_left, entity_welcome_user_right])
+            world,
+            condition=frame.m_checkBox1A.IsChecked(),
+            component_Class=UP_L_AND_R_WELCOME_ONLY,
+            entities=[entity_welcome_left, entity_welcome_user_right],
+        )
         do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def onCheck2(self, event):
         # don't change the model - only the UI display
         add_or_remove_component(
-            world, 
-            condition=frame.m_checkBox2.IsChecked(), 
-            component_Class=UP_R_WHOLE, 
-            entities=[entity_welcome_user_right])
+            world, condition=frame.m_checkBox2.IsChecked(), component_Class=UP_R_WHOLE, entities=[entity_welcome_user_right]
+        )
         do.dirty("just top right")
         world.process()
 
@@ -179,24 +200,24 @@ class MyFrame1A(MyFrame1):
         do.dirty(ModelWelcome)
         world.process()
 
-    def onClickResetUser( self, event ):
+    def onClickResetUser(self, event):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
         do.dirty(ModelFirstname)
         do.dirty(ModelSurname)
         world.process()
 
-    def onEnterUserName( self, event ):
+    def onEnterUserName(self, event):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
         do.dirty(ModelFirstname)
         world.process()
 
-    def onEnterUserSurname( self, event ):
+    def onEnterUserSurname(self, event):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
         do.dirty(ModelSurname)
         world.process()
 
-    def onClickRenderNow( self, event ):
+    def onClickRenderNow(self, event):
         world.process()
 
 
@@ -212,36 +233,27 @@ world.add_processor(RenderProcessor())
 world.add_processor(HousekeepingProcessor())
 world.add_processor(FunProcessor())
 
-entity_welcome_left = world.create_entity(
-    ModelWelcome(model=model, key="welcome_msg"),
-    GuiStaticText(ref=frame.m_staticText1)
-)
+entity_welcome_left = world.create_entity(ModelWelcome(model=model, key="welcome_msg"), GuiStaticText(ref=frame.m_staticText1))
 entity_welcome_user_right = world.create_entity(
     ModelWelcome(model=model, key="welcome_msg"),
     ModelFirstname(model=model["user"], key="name"),
     ModelSurname(model=model["user"], key="surname"),
-    GuiStaticText(ref=frame.m_staticText2)
+    GuiStaticText(ref=frame.m_staticText2),
 )
-entity_edit_welcome_msg = world.create_entity(
-    ModelWelcome(model=model, key="welcome_msg"),
-    GuiTextControl(ref=frame.m_textCtrl1)
+entity_edit_welcome_msg = world.create_entity(ModelWelcome(model=model, key="welcome_msg"), GuiTextControl(ref=frame.m_textCtrl1))
+entity_edit_user_name_msg = world.create_entity(ModelFirstname(model=model["user"], key="name"), GuiTextControl(ref=frame.m_textCtrl2))
+entity_edit_user_surname_msg = world.create_entity(ModelSurname(model=model["user"], key="surname"), GuiTextControl(ref=frame.m_textCtrl3))
+appgui = world.create_entity()  # slightly different style, create entiry then add components
+world.add_component(
+    appgui,
+    FrameAdornments(
+        frame_title="Gui wired via ESC",
+        frame_ref=frame,
+        panel_colour=wx.Colour(255, 255, 135),
+        panel_ref=frame.m_panel1,
+        panel_colour_randomise=True,
+    ),
 )
-entity_edit_user_name_msg = world.create_entity(
-    ModelFirstname(model=model["user"], key="name"),
-    GuiTextControl(ref=frame.m_textCtrl2)
-)
-entity_edit_user_surname_msg = world.create_entity(
-    ModelSurname(model=model["user"], key="surname"),
-    GuiTextControl(ref=frame.m_textCtrl3)
-)
-appgui = world.create_entity()
-world.add_component(appgui, FrameAdornments(
-    frame_title="Gui wired via ESC",
-    frame_ref=frame,
-    panel_colour=wx.Colour( 255, 255, 135 ),
-    panel_ref=frame.m_panel1,
-    panel_colour_randomise=True
-    ))
 
 nice_entity_name = {
     entity_welcome_left: "mediator for welcome_left",

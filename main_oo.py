@@ -8,14 +8,15 @@ from observer import Observable, Observer
 
 # The Welcome model and User model are Observable.
 
+
 @dataclass
 class BaseModel(Observable):
-
     def __post_init__(self):
         super().__init__()
 
     # def __hash__(self):
     #     return hash(tuple(self))
+
 
 @dataclass
 class Welcome(BaseModel):
@@ -28,7 +29,7 @@ class Welcome(BaseModel):
     @message.setter
     def message(self, v: str) -> None:
         self._msg = v
-        self.NotifyAll(notificationEventType='')
+        self.NotifyAll(notificationEventType="")
 
 
 @dataclass
@@ -43,7 +44,7 @@ class User(BaseModel):
     @firstname.setter
     def firstname(self, v: str) -> None:
         self._firstname = v
-        self.NotifyAll(notificationEventType='')
+        self.NotifyAll(notificationEventType="")
 
     @property
     def surname(self) -> str:
@@ -52,7 +53,7 @@ class User(BaseModel):
     @surname.setter
     def surname(self, v: str) -> None:
         self._surname = v
-        self.NotifyAll(notificationEventType='')
+        self.NotifyAll(notificationEventType="")
 
 
 @dataclass
@@ -61,18 +62,18 @@ class Model:
     user: User
 
     def dirty_all(self):
-        self.welcome.NotifyAll('init dirty')
-        self.user.NotifyAll('init dirty')
+        self.welcome.NotifyAll("init dirty")
+        self.user.NotifyAll("init dirty")
 
 
 @dataclass
 class Mediator(Observer):
-
     def __post_init__(self):
         super().__init__()
 
     def __hash__(self):
         return hash(tuple(self))
+
 
 @dataclass
 class MediatorWelcomeLeft(Mediator):
@@ -85,6 +86,7 @@ class MediatorWelcomeLeft(Mediator):
         msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
         self.gui_ref.SetLabel(msg)
         dump(self.welcome, self)
+
 
 @dataclass
 class MediatorWelcomeUserRight(Mediator):
@@ -107,6 +109,7 @@ class MediatorWelcomeUserRight(Mediator):
         dump(self.welcome, self)
         dump(self.user, self)
 
+
 @dataclass
 class MediatorEditWelcome(Mediator):
     welcome: Welcome
@@ -117,6 +120,7 @@ class MediatorEditWelcome(Mediator):
         self.gui_ref.SetValue(self.welcome.message)
         dump(self.welcome, self)
 
+
 @dataclass
 class MediatorEditUserFirstName(Mediator):
     user: User
@@ -126,6 +130,7 @@ class MediatorEditUserFirstName(Mediator):
         print("edit user firstname")
         self.gui_ref.SetValue(self.user.firstname)
         dump(self.user, self)
+
 
 @dataclass
 class MediatorEditUserSurName(Mediator):
@@ -148,23 +153,22 @@ class MediatorFrameAdornments(Mediator):
 
     def Notify(self, target, notification_event_type):
         self.frame_ref.SetTitle(self.frame_title + " " + time.asctime())
-        self.panel_ref.SetBackgroundColour(wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour)
+        self.panel_ref.SetBackgroundColour(
+            wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour
+        )
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
         dump(self, self)
 
 
 # Not used - but would be nice to integrate something like this into the MVC
 # but then again, the mediators themselves have these attributes, each mediator entity is like a view model, so
-# why replicate that information uncessessarily.  
-view_model = {
-    "uppercase welcome model": False,
-    "uppercase welcome outputs": False,
-    "uppercase top right": False,
-}
+# why replicate that information uncessessarily.
+view_model = {"uppercase welcome model": False, "uppercase welcome outputs": False, "uppercase top right": False}
 
 
 def dump(o, mediator):  # simple logging
     print(f"have set {o} in {nice_mediator_name[id(mediator)]}")
+
 
 def housekeeping():
     if frame.m_checkBox1.IsChecked():
@@ -172,8 +176,9 @@ def housekeeping():
     else:
         frame.m_checkBox1A.Enable()
 
+
 def model_welcome_toggle():
-        model.welcome.message = model.welcome.message.upper() if frame.m_checkBox1.IsChecked() else model.welcome.message.lower()
+    model.welcome.message = model.welcome.message.upper() if frame.m_checkBox1.IsChecked() else model.welcome.message.lower()
 
 
 # Frame
@@ -202,17 +207,17 @@ class MyFrame1A(MyFrame1):
     def onEnter(self, event):
         model.welcome.message = frame.m_textCtrl1.GetValue()
 
-    def onClickResetUser( self, event ):
+    def onClickResetUser(self, event):
         model.user.firstname = "Fred"
         model.user.surname = "Flinstone"
 
-    def onEnterUserName( self, event ):
+    def onEnterUserName(self, event):
         model.user.firstname = frame.m_textCtrl2.GetValue()
 
-    def onEnterUserSurname( self, event ):
+    def onEnterUserSurname(self, event):
         model.user.surname = frame.m_textCtrl3.GetValue()
 
-    def onClickRenderNow( self, event ):
+    def onClickRenderNow(self, event):
         world.process()
 
 
@@ -221,38 +226,19 @@ frame = MyFrame1A(None)
 frame.Show()
 frame.SetSize((500, 400))
 
-model = Model(
-    Welcome(), 
-    User()
-)
+model = Model(Welcome(), User())
 
-mediator_welcome_left = MediatorWelcomeLeft(
-    welcome=model.welcome, 
-    gui_ref=frame.m_staticText1
-)
-mediator_welcome_user_right = MediatorWelcomeUserRight(
-    welcome=model.welcome,
-    user=model.user,
-    gui_ref=frame.m_staticText2
-) 
-mediator_edit_welcome_msg = MediatorEditWelcome(
-    welcome=model.welcome, 
-    gui_ref=frame.m_textCtrl1
-)
-mediator_edit_user_name_msg = MediatorEditUserFirstName(
-    user=model.user,
-    gui_ref=frame.m_textCtrl2
-)
-mediator_edit_user_surname_msg = MediatorEditUserSurName(
-    user=model.user,
-    gui_ref=frame.m_textCtrl3
-)
+mediator_welcome_left = MediatorWelcomeLeft(welcome=model.welcome, gui_ref=frame.m_staticText1)
+mediator_welcome_user_right = MediatorWelcomeUserRight(welcome=model.welcome, user=model.user, gui_ref=frame.m_staticText2)
+mediator_edit_welcome_msg = MediatorEditWelcome(welcome=model.welcome, gui_ref=frame.m_textCtrl1)
+mediator_edit_user_name_msg = MediatorEditUserFirstName(user=model.user, gui_ref=frame.m_textCtrl2)
+mediator_edit_user_surname_msg = MediatorEditUserSurName(user=model.user, gui_ref=frame.m_textCtrl3)
 appgui = MediatorFrameAdornments(
     frame_title="Gui wired via MVC",
     frame_ref=frame,
-    panel_colour=wx.Colour( 255, 255, 135 ),
+    panel_colour=wx.Colour(255, 255, 135),
     panel_ref=frame.m_panel1,
-    panel_colour_randomise=True
+    panel_colour_randomise=True,
 )
 
 nice_mediator_name = {

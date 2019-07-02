@@ -3,9 +3,10 @@ from typing import List
 from esper_extras import add_or_remove_component
 import esper
 
+
 @dataclass
 class Dirty:  # Mark that component needs rendering
-    pass 
+    pass
 
 
 @dataclass
@@ -76,6 +77,7 @@ class DirtyObserver:
 
     to achive the same thing.
     """
+
     affected_entities = {}
     world: esper.World
 
@@ -90,4 +92,3 @@ class DirtyObserver:
         for mediator in self.affected_entities[signal]:
             print(f"dirty: {mediator} because of {signal}")
             self.world.add_component(mediator, Dirty())
-

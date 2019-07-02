@@ -6,5 +6,3 @@ def add_or_remove_component(world, condition: bool, component_Class, entities: l
         else:
             if world.has_component(ent, component_Class):
                 world.remove_component(ent, component_Class)
-
- 
