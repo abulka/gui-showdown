@@ -87,14 +87,21 @@ class MediatorWelcomeUserRight(Observer):
     user: User
     gui_ref: wx.StaticText
     uppercase_welcome: bool = False
+    uppercase_all: bool = False
 
     def __post_init__(self):
         super().__init__()
 
     def Notify(self, target, notification_event_type):
         print("top right")
-        msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
-        self.gui_ref.SetLabel(f"{msg} {self.user.firstname} {self.user.surname}")
+        if self.uppercase_all:
+            msg = f"{self.welcome.message} {self.user.firstname} {self.user.surname}"
+            msg = msg.upper()
+        elif self.uppercase_welcome:
+            msg = f"{self.welcome.message.upper()} {self.user.firstname} {self.user.surname}"
+        else:
+            msg = f"{self.welcome.message} {self.user.firstname} {self.user.surname}"
+        self.gui_ref.SetLabel(msg)
 
 @dataclass
 class MediatorEditWelcome(Observer):
@@ -165,13 +172,8 @@ class MyFrame1A(MyFrame1):
 
     def onCheck2(self, event):
         # don't change the model - only the UI display
-        add_or_remove_component(
-            world, 
-            condition=frame.m_checkBox2.IsChecked(), 
-            component_Class=UP_R_WHOLE, 
-            entities=[entity_welcome_user_right])
-        do.dirty("just top right")
-        world.process()
+        mediator_welcome_user_right.uppercase_all = True if frame.m_checkBox2.IsChecked() else False
+        mediator_welcome_user_right.Notify(None, "checked event")  # bit weird having target=None
 
     def onEnter(self, event):
         models.welcome.message = frame.m_textCtrl1.GetValue()
