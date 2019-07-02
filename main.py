@@ -232,16 +232,6 @@ entity_edit_user_surname_msg = world.create_entity(
     ModelSurname(model=model["user"], key="surname"),
     GuiTextControl(ref=frame.m_textCtrl3)
 )
-
-nice_entity_name = {
-    entity_welcome_left: "mediator for welcome_left",
-    entity_welcome_user_right: "mediator for welcome_user_right",
-    entity_edit_welcome_msg: "mediator for edit_welcome_msg",
-    entity_edit_user_name_msg: "mediator for edit_user_name_msg",
-    entity_edit_user_surname_msg: "mediator for edit_user_surname_msg",
-}
-mediators: List[int] = list(nice_entity_name.keys())
-
 appgui = world.create_entity()
 world.add_component(appgui, FrameAdornments(
     frame_title="Gui wired via ESC",
@@ -251,6 +241,17 @@ world.add_component(appgui, FrameAdornments(
     panel_colour_randomise=True
     ))
 
+nice_entity_name = {
+    entity_welcome_left: "mediator for welcome_left",
+    entity_welcome_user_right: "mediator for welcome_user_right",
+    entity_edit_welcome_msg: "mediator for edit_welcome_msg",
+    entity_edit_user_name_msg: "mediator for edit_user_name_msg",
+    entity_edit_user_surname_msg: "mediator for edit_user_surname_msg",
+    appgui: "mediator for app frame etc",
+}
+mediators: List[int] = list(nice_entity_name.keys())
+
+# Observer Wiring
 do = DirtyObserver(world)
 do.add_dependency(ModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
 do.add_dependency(ModelFirstname, [entity_welcome_user_right, entity_edit_user_name_msg])
@@ -258,7 +259,7 @@ do.add_dependency(ModelSurname, [entity_welcome_user_right, entity_edit_user_sur
 do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
 do.add_dependency("just top right", [entity_welcome_user_right])
 
-do.dirty_all(entities=mediators)    
+do.dirty_all(entities=mediators)  # initialise the gui with initial model values
 world.process()
 
 app.MainLoop()
