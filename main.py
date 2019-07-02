@@ -79,7 +79,7 @@ class ModelExtractProcessor(esper.Processor):
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
             for ent, (component, _) in self.world.get_components(Component, Dirty):
                 component.finalstr = component.model[component.key]
-                dump(component, ent)
+                logsimple(component, ent)
 
 
 class CaseTransformProcessor(esper.Processor):
@@ -89,11 +89,11 @@ class CaseTransformProcessor(esper.Processor):
         for Component in (ModelWelcome,):
             for ent, (component, _, _) in self.world.get_components(Component, UP_L_AND_R_WELCOME_ONLY, Dirty):
                 component.finalstr = component.finalstr.upper()
-                dump(component, ent)
+                logsimple(component, ent)
         for Component in (ModelWelcome, ModelFirstname, ModelSurname):
             for ent, (component, _, _) in self.world.get_components(Component, UP_R_WHOLE, Dirty):
                 component.finalstr = component.finalstr.upper()
-                dump(component, ent)
+                logsimple(component, ent)
 
 
 class RenderProcessor(esper.Processor):
@@ -150,7 +150,7 @@ class FunProcessor(esper.Processor):
 view_model = {"uppercase welcome model": False, "uppercase welcome outputs": False, "uppercase top right": False}
 
 
-def dump(component, entity):  # simple logging
+def logsimple(component, entity):  # simple logging
     print(f"have set {component} for {nice_entity_name[entity]}")
 
 

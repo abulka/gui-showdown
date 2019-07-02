@@ -85,7 +85,7 @@ class MediatorWelcomeLeft(Mediator):
         print("top left")
         msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
         self.gui_ref.SetLabel(msg)
-        dump(self.welcome, self)
+        logsimple(self.welcome, self)
 
 
 @dataclass
@@ -106,8 +106,8 @@ class MediatorWelcomeUserRight(Mediator):
         else:
             msg = f"{self.welcome.message} {self.user.firstname} {self.user.surname}"
         self.gui_ref.SetLabel(msg)
-        dump(self.welcome, self)
-        dump(self.user, self)
+        logsimple(self.welcome, self)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -118,7 +118,7 @@ class MediatorEditWelcome(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit welcome")
         self.gui_ref.SetValue(self.welcome.message)
-        dump(self.welcome, self)
+        logsimple(self.welcome, self)
 
 
 @dataclass
@@ -129,7 +129,7 @@ class MediatorEditUserFirstName(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit user firstname")
         self.gui_ref.SetValue(self.user.firstname)
-        dump(self.user, self)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -140,7 +140,7 @@ class MediatorEditUserSurName(Mediator):
     def Notify(self, target, notification_event_type):
         print("edit user surname")
         self.gui_ref.SetValue(self.user.surname)
-        dump(self.user, self)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -157,7 +157,7 @@ class MediatorFrameAdornments(Mediator):
             wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour
         )
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
-        dump(self, self)
+        logsimple(self, self)
 
 
 # Not used - but would be nice to integrate something like this into the MVC
@@ -166,7 +166,7 @@ class MediatorFrameAdornments(Mediator):
 view_model = {"uppercase welcome model": False, "uppercase welcome outputs": False, "uppercase top right": False}
 
 
-def dump(o, mediator):  # simple logging
+def logsimple(o, mediator):  # simple logging
     print(f"have set {o} in {nice_mediator_name[id(mediator)]}")
 
 
