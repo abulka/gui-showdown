@@ -170,7 +170,7 @@ class MyFrame1A(MyFrame1):
         do.dirty(ModelWelcome)
         world.process()
 
-    def onCheck1(self, event):
+    def on_check_welcome_model(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
         do.dirty(ModelWelcome)

@@ -109,7 +109,7 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl1.Bind( wx.EVT_TEXT_ENTER, self.onEnter )
 		self.m_textCtrl2.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserName )
 		self.m_textCtrl3.Bind( wx.EVT_TEXT_ENTER, self.onEnterUserSurname )
-		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.onCheck1 )
+		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.on_check_welcome_model )
 		self.m_checkBox1A.Bind( wx.EVT_CHECKBOX, self.onCheckToggleWelcomeOutputsOnly )
 		self.m_checkBox2.Bind( wx.EVT_CHECKBOX, self.onCheck2 )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.onResetWelcome )
@@ -130,7 +130,7 @@ class MyFrame1 ( wx.Frame ):
 	def onEnterUserSurname( self, event ):
 		event.Skip()
 
-	def onCheck1( self, event ):
+	def on_check_welcome_model( self, event ):
 		event.Skip()
 
 	def onCheckToggleWelcomeOutputsOnly( self, event ):
