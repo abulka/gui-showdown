@@ -183,15 +183,19 @@ def model_welcome_toggle():
 
 # Frame
 class MyFrame1A(MyFrame1):
-    def onResetWelcome(self, event):
+    def on_button_reset_welcome(self, event):
         model.welcome.message = "Hello"
+
+    def on_button_reset_user(self, event):
+        model.user.firstname = "Fred"
+        model.user.surname = "Flinstone"
 
     def on_check_welcome_model(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
         housekeeping()
 
-    def onCheckToggleWelcomeOutputsOnly(self, event):
+    def on_check_toggle_welcome_outputs_only(self, event):
         # toggle the case of the welcome output messages only - do not affect model
         mediator_welcome_left.uppercase_welcome = True if frame.m_checkBox1A.IsChecked() else False
         mediator_welcome_user_right.uppercase_welcome = True if frame.m_checkBox1A.IsChecked() else False
@@ -199,22 +203,18 @@ class MyFrame1A(MyFrame1):
         mediator_welcome_user_right.Notify(None, "checked event")
         housekeeping()
 
-    def onCheck2(self, event):
+    def on_check_upper_entire_top_right_output(self, event):
         # don't change the model - only the UI display
         mediator_welcome_user_right.uppercase_all = True if frame.m_checkBox2.IsChecked() else False
         mediator_welcome_user_right.Notify(None, "checked event")  # bit weird having target=None
 
-    def onEnter(self, event):
+    def on_enter_welcome(self, event):
         model.welcome.message = frame.m_textCtrl1.GetValue()
 
-    def onClickResetUser(self, event):
-        model.user.firstname = "Fred"
-        model.user.surname = "Flinstone"
-
-    def onEnterUserName(self, event):
+    def on_enter_user_firstname(self, event):
         model.user.firstname = frame.m_textCtrl2.GetValue()
 
-    def onEnterUserSurname(self, event):
+    def on_enter_user_surname(self, event):
         model.user.surname = frame.m_textCtrl3.GetValue()
 
     def onClickRenderNow(self, event):

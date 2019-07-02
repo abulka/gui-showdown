@@ -165,9 +165,16 @@ def model_welcome_toggle():
 
 # Frame
 class MyFrame1A(MyFrame1):
-    def onResetWelcome(self, event):
+    def on_button_reset_welcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
         do.dirty(ModelWelcome)
+        world.process()
+
+    def on_button_reset_user(self, event):
+        model["user"]["name"] = "Fred"
+        model["user"]["surname"] = "Flinstone"
+        do.dirty(ModelFirstname)
+        do.dirty(ModelSurname)
         world.process()
 
     def on_check_welcome_model(self, event):
@@ -176,7 +183,7 @@ class MyFrame1A(MyFrame1):
         do.dirty(ModelWelcome)
         world.process()
 
-    def onCheckToggleWelcomeOutputsOnly(self, event):
+    def on_check_toggle_welcome_outputs_only(self, event):
         # toggle the case of the welcome output messages only - do not affect model
         add_or_remove_component(
             world,
@@ -187,7 +194,7 @@ class MyFrame1A(MyFrame1):
         do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
-    def onCheck2(self, event):
+    def on_check_upper_entire_top_right_output(self, event):
         # don't change the model - only the UI display
         add_or_remove_component(
             world, condition=frame.m_checkBox2.IsChecked(), component_Class=UP_R_WHOLE, entities=[entity_welcome_user_right]
@@ -195,24 +202,17 @@ class MyFrame1A(MyFrame1):
         do.dirty("just top right")
         world.process()
 
-    def onEnter(self, event):
+    def on_enter_welcome(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
         do.dirty(ModelWelcome)
         world.process()
 
-    def onClickResetUser(self, event):
-        model["user"]["name"] = "Fred"
-        model["user"]["surname"] = "Flinstone"
-        do.dirty(ModelFirstname)
-        do.dirty(ModelSurname)
-        world.process()
-
-    def onEnterUserName(self, event):
+    def on_enter_user_firstname(self, event):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
         do.dirty(ModelFirstname)
         world.process()
 
-    def onEnterUserSurname(self, event):
+    def on_enter_user_surname(self, event):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
         do.dirty(ModelSurname)
         world.process()
