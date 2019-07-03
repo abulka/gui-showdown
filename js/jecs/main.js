@@ -2,8 +2,28 @@ model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
 
 const world = new Ecs();
 
+class ModelRef {  // Mediator (entity + this component) needs to know about model. Model specific
+  constructor(model, key) {
+    this.model = model;
+    this.key = key;
+    this.finalstr = "";
+  }
+}
+class ComponentModelWelcome extends ModelRef {}
+class ComponentModelFirstname extends ModelRef {}
+class ComponentModelSurname extends ModelRef {}
+
+class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
+  constructor(ref) {
+    this.ref = ref
+  }
+}
+class ComponentGuiDiv extends ModelRef {}
+class ComponentGuiInput extends ModelRef {}
+
 const entity_welcome_left = world.entity('entity_welcome_left')
-entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+// entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg', finalstr: '' });
+entity_welcome_left.setComponent('ComponentModelWelcome', new ComponentModelWelcome(model, 'welcome_msg'));
 entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });  // id of div to hold welcome message, top left
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
@@ -97,16 +117,18 @@ world.system('RenderProcessor5', ['ComponentModelSurname', 'ComponentGuiInput'],
   $(`input[name=${ComponentGuiInput.ref}]`).val(surname)
 });
 
+function model_setter_welcome(msg) {
+    model["welcome_msg"] = msg
+    model_welcome_toggle()
+}
+
 function model_welcome_toggle() {
-  // model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
   model["welcome_msg"] = $('input[name=check1]').prop('checked') ? model["welcome_msg"].toUpperCase() : model["welcome_msg"].toLowerCase()
   world.tick()
 }
 
 $('#reset-welcome').on('click', function(e) {
-  console.log('ddd')
-  model_welcome_toggle()
-
+  model_setter_welcome("Hello")  // so that welcome uppercase toggle is respected
 })
 
 $('#reset-user').on('click', function(e) {
