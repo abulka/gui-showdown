@@ -1,26 +1,51 @@
-// import Ecs from 'jecs';
- 
-// Instantiate a new ecs engine
-const ecs = new Ecs();
- 
+model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
+
+const world = new Ecs();
+
+const entity_welcome_left = world.entity('entity_welcome_left')
+entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });
+console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
+
+const fred = world.entity('fred')
+fred.setComponent('mary_jane', { x: 0, y: 0 });
+
 // Declare a 'player' entity
-const player = ecs.entity('player');
- 
+const player = world.entity('player');
 // Associate the player entity to components.
 // In this case we set 'position' and 'speed'.
 player.setComponent('position', { x: 0, y: 0 });
 player.setComponent('speed', { x: 0.5, y: 0.7 });
- 
 // Define a 'move' system for updating position of
 // entities associated to components 'position' and 'speed'
-ecs.system('move', ['position', 'speed'], (entity, {position, speed}) => {
+world.system('move', ['position', 'speed'], (entity, {position, speed}) => {
   position.x += speed.x;
   position.y += speed.y;
-
-  $('#log').html(`x=${position.x} <br>y=${position.y}`)
+  $('#log').html(`x=${position.x} <br>y=${position.y}<br>entity=${entity}`)
+  console.log(`move: entity ${entity} has component position ${position} component speed ${speed}`)
 });
- 
-ecs.tick()
+
+// AHA - the variables receiving the component must be named exactly the same as the component name
+
+// world.system('DebugSystem1', ['ComponentModelWelcome'], (entity, {ComponentModelWelcome,}) => {
+//   console.log(`DebugSystem1 - ComponentModelWelcome: entity ${entity} has component ${ComponentModelWelcome}`)
+// });
+
+// world.system('DebugSystem2', ['position'], (entity, {position,}) => {
+//   console.log(`DebugSystem2 - position: entity ${entity} has component ${position}`)
+// });
+
+// world.system('DebugSystem3', ['mary_jane'], (entity, {mary_jane,}) => {
+//   console.log(`DebugSystem3 - mary: entity ${entity} has component ${mary_jane}`)
+// });
+
+world.system('RenderProcessor', ['ComponentModelWelcome', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentGuiDiv}) => {
+  console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
+  let s = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  $('#' + ComponentGuiDiv.ref).html(s)
+});
+
+world.tick()
 
 // // Instantiate a simulator
 // // If you prefer, you can avoid using simulator and start
