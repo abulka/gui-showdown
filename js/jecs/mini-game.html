@@ -1,0 +1,204 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Jecs Mini Game Demo">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <script src="jecs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <style lang="text/css">
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        font-family: sans-serif;
+        text-align: center;
+        background-color: #fff;
+        font-size: 50%;
+      }
+
+      #game {
+        text-align: initial;
+        height: 100%;
+      }
+
+      #title {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #888;
+
+        /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e2e2e2+0,dbdbdb+50,d1d1d1+51,fefefe+100;Grey+Gloss+%231 */
+        background: rgb(226,226,226); /* Old browsers */
+        background: -moz-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+      }
+
+      h1 {
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 0.8em;
+        font-weight: normal;
+        text-align: center;
+      }
+
+      #screen-cont {
+        text-align: center;
+      }
+
+      #screen {
+        display: inline-block;
+        font-family: monospace;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        background-color: #000;
+        color: #0f0;
+        border: 2px solid #000;
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: initial;
+      }
+
+      #log {
+        border-top: 1px solid #888;
+        font-family: monospace;
+        padding: 0.5rem;
+        overflow: auto;
+        background-color: #eee;
+      }
+
+      .buttons {
+        text-align: center;
+      }
+
+      button {
+        font-size: 1em;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+
+      select {
+        font-size: 1em;
+      }
+
+      @media screen and (min-width: 320px) {
+        body {
+          font-size: 75%;
+        }
+      }
+
+      @media screen and (min-width: 480px) {
+        body {
+          font-size: 110%;
+        }
+      }
+
+      @media screen and (min-width: 640px) {
+        body {
+          font-size: 150%;
+        }
+      }
+
+      @media screen and (min-width: 768px) {
+        body {
+          font-size: 200%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="https://www.npmjs.com/package/jecs">doco</a>
+    
+    <div id="game">
+      <div id="title">
+        <h1>Jecs mini game demo</h1>
+        <h2>find the source in the "docs/example/mini-game" directory.</h1>
+      </div>
+      
+      <div class="buttons">
+        <button id="start">start</button>
+        <button id="reset">reset</button>
+        <select id="fps-limit">
+          <option value="1">1 fps</option>
+          <option value="5">5 fps</option>
+          <option value="10" selected="selected">10 fps</option>
+          <option value="60">60 fps</option>
+          <option value="0">No limit</option>
+        </select>
+      </div>
+
+      <div id="screen-cont">
+        <div id="screen"></div>
+      </div>
+
+      <div id="log-cont">
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <script src="mini-game.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var $gameBox = $('#game');
+        var $logBox = $('#log');
+
+        var startBut = document.getElementById('start');
+        var resetBut = document.getElementById('reset');
+        var fpsSelect = document.getElementById('fps-limit');
+
+        function updateLogSize() {
+          $logBox.css('height', ($gameBox.innerHeight() - $logBox.offset().top) + 'px');
+        }
+
+        $(window).resize(updateLogSize);
+        updateLogSize();
+
+        function updateFps(fps) {
+          game.simulator.setFps(parseInt(fps));
+        }
+        
+        startBut.onclick = function() {
+          if(game.simulator.isRunning()) {
+            game.simulator.pause();
+            startBut.innerHTML = "start";
+          } else {
+            game.simulator.start();
+            startBut.innerHTML = "pause";
+          }
+        };
+
+        resetBut.onclick = function() {
+          $logBox.text('');
+          game.simulator.stop();
+          game.reset();
+          startBut.innerHTML = "start";
+        };
+
+        fpsSelect.onchange = function() {
+          updateFps(fpsSelect.value);
+        }
+
+        // Init FPS
+        updateFps(fpsSelect.value);
+      });
+    </script>
+  </body>
+</html>
+
