@@ -33,15 +33,15 @@ entity_welcome_user_right.setComponent('c_gui_div', new ComponentGuiDiv('welcome
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
 entity_edit_welcome_msg.setComponent('c_welcome', { model: model, key: 'welcome_msg' });
-entity_edit_welcome_msg.setComponent('ComponentGuiInput', { ref: 'welcome' });  // name (not id) of input to hold welcome message
+entity_edit_welcome_msg.setComponent('c_gui_input', new ComponentGuiInput('welcome'));  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
 entity_edit_user_name_msg.setComponent('c_firstname', new ComponentModelFirstname(model["user"], 'name'));
-entity_edit_user_name_msg.setComponent('ComponentGuiInput', { ref: 'firstname' });  // name (not id) of input to hold first name
+entity_edit_user_name_msg.setComponent('c_gui_input', new ComponentGuiInput('firstname'));  // name (not id) of input to hold first name
 
 const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
 entity_edit_user_surname_msg.setComponent('c_surname', new ComponentModelSurname(model["user"], 'surname'));
-entity_edit_user_surname_msg.setComponent('ComponentGuiInput', { ref: 'surname' });  // name (not id) of input to hold first name
+entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
 
 
 // ComponentModelFirstname
@@ -98,22 +98,22 @@ world.system('RenderProcessor2', ['c_welcome', 'c_firstname', 'c_surname', 'c_gu
   $('#' + c_gui_div.ref).html(msg)
 });
 
-world.system('RenderProcessor3', ['c_welcome', 'ComponentGuiInput'], (entity, {c_welcome, ComponentGuiInput}) => {
+world.system('RenderProcessor3', ['c_welcome', 'c_gui_input'], (entity, {c_welcome, c_gui_input}) => {
   console.log("welcome text input", entity)
   let welcome = c_welcome.model[c_welcome.key]
-  $(`input[name=${ComponentGuiInput.ref}]`).val(welcome)
+  $(`input[name=${c_gui_input.ref}]`).val(welcome)
 });
 
-world.system('RenderProcessor4', ['c_firstname', 'ComponentGuiInput'], (entity, {c_firstname, ComponentGuiInput}) => {
+world.system('RenderProcessor4', ['c_firstname', 'c_gui_input'], (entity, {c_firstname, c_gui_input}) => {
   console.log("firstname text input", entity)
   let firstname = c_firstname.model[c_firstname.key]
-  $(`input[name=${ComponentGuiInput.ref}]`).val(firstname)
+  $(`input[name=${c_gui_input.ref}]`).val(firstname)
 });
 
-world.system('RenderProcessor5', ['c_surname', 'ComponentGuiInput'], (entity, {c_surname, ComponentGuiInput}) => {
+world.system('RenderProcessor5', ['c_surname', 'c_gui_input'], (entity, {c_surname, c_gui_input}) => {
   console.log("surname text input", entity)
   let surname = c_surname.model[c_surname.key]
-  $(`input[name=${ComponentGuiInput.ref}]`).val(surname)
+  $(`input[name=${c_gui_input.ref}]`).val(surname)
 });
 
 function model_setter_welcome(msg) {
