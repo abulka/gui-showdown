@@ -21,6 +21,10 @@ class GuiControlRef {  // Mediator (entity + this component) needs to know about
 class ComponentGuiDiv extends GuiControlRef {}
 class ComponentGuiInput extends GuiControlRef {}
 
+class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
+class ComponentUppercaseAll extends Flag {}
+class ComponentUppercaseWelcome extends Flag {}
+
 const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('c_welcome', new ComponentModelWelcome(model, 'welcome_msg'))
 entity_welcome_left.setComponent('c_gui_div', new ComponentGuiDiv('welcome'))  // id of div to hold welcome message, top left
@@ -43,31 +47,124 @@ const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg'
 entity_edit_user_surname_msg.setComponent('c_surname', new ComponentModelSurname(model["user"], 'surname'));
 entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
 
+// Extract
 
-// ComponentModelFirstname
-// ComponentModelSurname
-// ComponentGuiInput
-// $('input[name=welcome]')
+world.system('extract-welcome-system', ['c_welcome'], (entity, {c_welcome}) => {
+  c_welcome.finalstr = c_welcome.model[c_welcome.key]
+  console.log("c_welcome.finalstr", c_welcome.finalstr)
+});
+world.system('extract-firstname-system', ['c_firstname'], (entity, {c_firstname}) => {
+  c_firstname.finalstr = c_firstname.model[c_firstname.key]
+  console.log("c_firstname.finalstr", c_firstname.finalstr)
+});
+world.system('extract-surname-system', ['c_surname'], (entity, {c_surname}) => {
+  c_surname.finalstr = c_surname.model[c_surname.key]
+  console.log("c_surname.finalstr", c_surname.finalstr)
+});
 
-// console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
+// Case transform
 
-// const fred = world.entity('fred')
-// fred.setComponent('mary_jane', { x: 0, y: 0 });
+world.system('case-transform-uppercase-welcome', ['c_welcome', 'c_uppercase_welcome'], (entity, {c_welcome, c_uppercase_welcome}) => {
+  c_welcome.finalstr = c_welcome.finalstr.toUpperCase()
+});
+world.system('case-transform-uppercase_all-welcome', ['c_welcome', 'c_uppercase_all'], (entity, {c_welcome, c_uppercase_all}) => {
+  c_welcome.finalstr = c_welcome.finalstr.toUpperCase()
+});
+world.system('case-transform-uppercase_all-firstname', ['c_firstname', 'c_uppercase_all'], (entity, {c_firstname, c_uppercase_all}) => {
+  c_firstname.finalstr = c_firstname.finalstr.toUpperCase()
+});
+world.system('case-transform-uppercase_all-surname', ['c_surname', 'c_uppercase_all'], (entity, {c_surname, c_uppercase_all}) => {
+  c_surname.finalstr = c_surname.finalstr.toUpperCase()
+});
 
-// // Declare a 'player' entity
-// const player = world.entity('player');
-// // Associate the player entity to components.
-// // In this case we set 'position' and 'speed'.
-// player.setComponent('position', { x: 0, y: 0 });
-// player.setComponent('speed', { x: 0.5, y: 0.7 });
-// // Define a 'move' system for updating position of
-// // entities associated to components 'position' and 'speed'
-// world.system('move', ['position', 'speed'], (entity, {position, speed}) => {
-//   position.x += speed.x;
-//   position.y += speed.y;
-//   $('#log').html(`x=${position.x} <br>y=${position.y}<br>entity=${entity}`)
-//   console.log(`move: entity ${entity} has component position ${position} component speed ${speed}`)
+
+// Render Systems
+
+world.system('render-system-top-left', ['c_welcome', 'c_gui_div'], (entity, {c_welcome, c_gui_div}) => {
+  $('#' + c_gui_div.ref).html(c_welcome.finalstr)
+});
+
+world.system('render-system-top-right', ['c_welcome', 'c_firstname', 'c_surname', 'c_gui_div'], (entity, {c_welcome, c_firstname, c_surname, c_gui_div}) => {
+  $('#' + c_gui_div.ref).html(`${c_welcome.finalstr} ${c_firstname.finalstr} ${c_surname.finalstr}`)
+});
+
+world.system('render-system-welcome-text-input', ['c_welcome', 'c_gui_input'], (entity, {c_welcome, c_gui_input}) => {
+  $(`input[name=${c_gui_input.ref}]`).val(c_welcome.finalstr)
+});
+world.system('render-system-firstname-text-input', ['c_firstname', 'c_gui_input'], (entity, {c_firstname, c_gui_input}) => {
+  $(`input[name=${c_gui_input.ref}]`).val(c_firstname.finalstr)
+});
+world.system('render-system-surname-text-input', ['c_surname', 'c_gui_input'], (entity, {c_surname, c_gui_input}) => {
+  $(`input[name=${c_gui_input.ref}]`).val(c_surname.finalstr)
+});
+
+
+// Util
+
+function model_setter_welcome(msg) {
+    model["welcome_msg"] = msg
+    model_welcome_toggle()
+}
+
+function model_welcome_toggle() {
+  model["welcome_msg"] = $('input[name=check1]').prop('checked') ? model["welcome_msg"].toUpperCase() : model["welcome_msg"].toLowerCase()
+}
+
+$('#reset-welcome').on('click', function(e) {
+  model_setter_welcome("Hello")  // so that welcome uppercase toggle is respected
+  world.tick()
+})
+
+$('#reset-user').on('click', function(e) {
+  model["user"]["name"] = "Fred"
+  model["user"]["surname"] = "Flinstone"
+  world.tick()
+})
+
+$("input[name=check1]").change(function(e) {  // on_check_welcome_model
+  // toggle the case of the model's welcome message
+  model_welcome_toggle()
+  world.tick()
+})
+
+$("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs_only
+  // toggle the case of the welcome output messages only - do not affect model
+  // add_or_remove_component(
+  //     world,
+  //     condition=frame.m_checkBox1A.IsChecked(),
+  //     component_Class=ComponentUppercaseWelcome,
+  //     entities=[entity_welcome_left, entity_welcome_user_right],
+  // )
+  // TODO need to remove as well as add
+  entity_welcome_left.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
+  entity_welcome_user_right.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
+  world.tick()
+
+})
+
+$("input[name=check3]").change(function(e){
+  // don't change the model - only the UI display
+//   add_or_remove_component(
+//     world, condition=frame.m_checkBox2.IsChecked(), component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right]
+// )
+// TODO need to remove as well as add
+  entity_welcome_user_right.setComponent('c_uppercase_all', new ComponentUppercaseAll())
+  world.tick()
+});
+
+// $("input").change(function(){
+//   alert("The text has been changed.");
 // });
+
+world.tick()
+
+
+
+
+
+
+
+
 
 // AHA - the variables receiving the component must be named exactly the same as the component name
 
@@ -83,58 +180,11 @@ entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('
 //   console.log(`DebugSystem3 - mary: entity ${entity} has component ${mary_jane}`)
 // });
 
-world.system('RenderProcessor', ['c_welcome', 'c_gui_div'], (entity, {c_welcome, c_gui_div}) => {
-  // console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
-  let msg = c_welcome.model[c_welcome.key]
-  $('#' + c_gui_div.ref).html(msg)
-});
 
-world.system('RenderProcessor2', ['c_welcome', 'c_firstname', 'c_surname', 'c_gui_div'], (entity, {c_welcome, c_firstname, c_surname, c_gui_div}) => {
-  console.log("top right", entity)
-  let welcome = c_welcome.model[c_welcome.key]
-  let firstname = c_firstname.model[c_firstname.key]
-  let surname = c_surname.model[c_surname.key]
-  let msg = `${welcome} ${firstname} ${surname}`  // need surname, need model extract processor stage first
-  $('#' + c_gui_div.ref).html(msg)
-});
 
-world.system('RenderProcessor3', ['c_welcome', 'c_gui_input'], (entity, {c_welcome, c_gui_input}) => {
-  console.log("welcome text input", entity)
-  let welcome = c_welcome.model[c_welcome.key]
-  $(`input[name=${c_gui_input.ref}]`).val(welcome)
-});
 
-world.system('RenderProcessor4', ['c_firstname', 'c_gui_input'], (entity, {c_firstname, c_gui_input}) => {
-  console.log("firstname text input", entity)
-  let firstname = c_firstname.model[c_firstname.key]
-  $(`input[name=${c_gui_input.ref}]`).val(firstname)
-});
 
-world.system('RenderProcessor5', ['c_surname', 'c_gui_input'], (entity, {c_surname, c_gui_input}) => {
-  console.log("surname text input", entity)
-  let surname = c_surname.model[c_surname.key]
-  $(`input[name=${c_gui_input.ref}]`).val(surname)
-});
 
-function model_setter_welcome(msg) {
-    model["welcome_msg"] = msg
-    model_welcome_toggle()
-}
-
-function model_welcome_toggle() {
-  model["welcome_msg"] = $('input[name=check1]').prop('checked') ? model["welcome_msg"].toUpperCase() : model["welcome_msg"].toLowerCase()
-  world.tick()
-}
-
-$('#reset-welcome').on('click', function(e) {
-  model_setter_welcome("Hello")  // so that welcome uppercase toggle is respected
-})
-
-$('#reset-user').on('click', function(e) {
-  console.log('eee')
-})
-
-world.tick()
 
 // // Instantiate a simulator
 // // If you prefer, you can avoid using simulator and start
