@@ -27,8 +27,8 @@ entity_welcome_left.setComponent('c_gui_div', new ComponentGuiDiv('welcome'))  /
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
 entity_welcome_user_right.setComponent('c_welcome', { model: model, key: 'welcome_msg' });
-entity_welcome_user_right.setComponent('ComponentModelFirstname', { model: model["user"], key: 'name' });
-entity_welcome_user_right.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
+entity_welcome_user_right.setComponent('c_firstname', new ComponentModelFirstname(model["user"], 'name'));
+entity_welcome_user_right.setComponent('c_surname', new ComponentModelSurname(model["user"], 'surname'));
 entity_welcome_user_right.setComponent('c_gui_div', new ComponentGuiDiv('welcome-user'));  // id of div to hold welcome + user message, top right
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
@@ -36,11 +36,11 @@ entity_edit_welcome_msg.setComponent('c_welcome', { model: model, key: 'welcome_
 entity_edit_welcome_msg.setComponent('ComponentGuiInput', { ref: 'welcome' });  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
-entity_edit_user_name_msg.setComponent('ComponentModelFirstname', { model: model["user"], key: 'name' });
+entity_edit_user_name_msg.setComponent('c_firstname', new ComponentModelFirstname(model["user"], 'name'));
 entity_edit_user_name_msg.setComponent('ComponentGuiInput', { ref: 'firstname' });  // name (not id) of input to hold first name
 
 const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
-entity_edit_user_surname_msg.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
+entity_edit_user_surname_msg.setComponent('c_surname', new ComponentModelSurname(model["user"], 'surname'));
 entity_edit_user_surname_msg.setComponent('ComponentGuiInput', { ref: 'surname' });  // name (not id) of input to hold first name
 
 
@@ -89,11 +89,11 @@ world.system('RenderProcessor', ['c_welcome', 'c_gui_div'], (entity, {c_welcome,
   $('#' + c_gui_div.ref).html(msg)
 });
 
-world.system('RenderProcessor2', ['c_welcome', 'ComponentModelFirstname', 'ComponentModelSurname', 'c_gui_div'], (entity, {c_welcome, ComponentModelFirstname, ComponentModelSurname, c_gui_div}) => {
+world.system('RenderProcessor2', ['c_welcome', 'c_firstname', 'c_surname', 'c_gui_div'], (entity, {c_welcome, c_firstname, c_surname, c_gui_div}) => {
   console.log("top right", entity)
   let welcome = c_welcome.model[c_welcome.key]
-  let firstname = ComponentModelFirstname.model[ComponentModelFirstname.key]
-  let surname = ComponentModelSurname.model[ComponentModelSurname.key]
+  let firstname = c_firstname.model[c_firstname.key]
+  let surname = c_surname.model[c_surname.key]
   let msg = `${welcome} ${firstname} ${surname}`  // need surname, need model extract processor stage first
   $('#' + c_gui_div.ref).html(msg)
 });
@@ -104,15 +104,15 @@ world.system('RenderProcessor3', ['c_welcome', 'ComponentGuiInput'], (entity, {c
   $(`input[name=${ComponentGuiInput.ref}]`).val(welcome)
 });
 
-world.system('RenderProcessor4', ['ComponentModelFirstname', 'ComponentGuiInput'], (entity, {ComponentModelFirstname, ComponentGuiInput}) => {
+world.system('RenderProcessor4', ['c_firstname', 'ComponentGuiInput'], (entity, {c_firstname, ComponentGuiInput}) => {
   console.log("firstname text input", entity)
-  let firstname = ComponentModelFirstname.model[ComponentModelFirstname.key]
+  let firstname = c_firstname.model[c_firstname.key]
   $(`input[name=${ComponentGuiInput.ref}]`).val(firstname)
 });
 
-world.system('RenderProcessor5', ['ComponentModelSurname', 'ComponentGuiInput'], (entity, {ComponentModelSurname, ComponentGuiInput}) => {
+world.system('RenderProcessor5', ['c_surname', 'ComponentGuiInput'], (entity, {c_surname, ComponentGuiInput}) => {
   console.log("surname text input", entity)
-  let surname = ComponentModelSurname.model[ComponentModelSurname.key]
+  let surname = c_surname.model[c_surname.key]
   $(`input[name=${ComponentGuiInput.ref}]`).val(surname)
 });
 
