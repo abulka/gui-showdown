@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta title="Andy Main">
+    <meta title="Gui wired via ESC">
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
 
@@ -10,6 +10,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <style lang="text/css">
+      .row {
+        display: flex;
+      }
+
+      .column {
+        flex: 33.33%;
+        padding: 5px;
+      }    
+      .yell {
+        background-color: rgb(244, 241, 173);
+      }
+      .bl {
+        background-color: rgb(166, 186, 242);
+        margin: 4px;
+      }
+    </style>
+
+    <!-- <style lang="text/css">
       * {
         padding: 0;
         margin: 0;
@@ -120,20 +138,46 @@
           font-size: 200%;
         }
       }
-    </style>
+    </style> -->
   </head>
 
   <body>
-    <p>
-    <a href="https://www.npmjs.com/package/jecs">hey here is the doco</a>
-    </p>
+    <div id="title">
+      <h1>Gui wired via ESC</h1>
+    </div>
 
-    <div id="game">
-      <div id="title">
-        <h1>Andy Main</h1>
+    <form>
+      <div class="row yell">
+        <div id="welcome" class="column">aaa</div>
+        <div id="welcome_user" class="column bl">bbb<br>BB</div>
       </div>
+      <br>
+      Welcome Message (model): <input type="text" name="welcome"><br>
+      <br>
+      User (model): <input type="text" name="firstname"> <input type="text" name="lastname">
+      <br>
+      <br>
+
+      <input type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)<br>
+      <br>
+      <input type="checkbox" name="check2" value="check2"> Change case of welcome message (display only, not via model)<br>
+      <br>
+      <input type="checkbox" name="check3" value="check3"> Change case of top right message<br>
+      <br>
+
+      <button type="button" onclick="alert('Hello World!')">Reset Welcome</button>
+      <br>
+      <br>
+      <button type="button" onclick="alert('Hello World!')">Reset User</button>
+
+    </form>
+
+    <br>
+    <br>
+    <hr>
+    <div id="game">
       
-      <div class="buttons">
+      <!-- <div class="buttons">
         <button id="start">start</button>
         <button id="reset">reset</button>
         <select id="fps-limit">
@@ -143,16 +187,21 @@
           <option value="60">60 fps</option>
           <option value="0">No limit</option>
         </select>
-      </div>
+      </div> -->
 
-      <div id="screen-cont">
+      <!-- <div id="screen-cont">
         <div id="screen"></div>
-      </div>
+      </div> -->
 
       <div id="log-cont">
         <div id="log"></div>
       </div>
     </div>
+
+    <br>
+    <br>
+    <p><a href="https://www.npmjs.com/package/jecs">hey here is the doco</a></p>
+
 
     <script src="main.js"></script>
     <script type="text/javascript">

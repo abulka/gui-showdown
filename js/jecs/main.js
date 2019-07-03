@@ -20,19 +20,21 @@ ecs.system('move', ['position', 'speed'], (entity, {position, speed}) => {
   $('#log').html(`x=${position.x} <br>y=${position.y}`)
 });
  
-// Instantiate a simulator
-// If you prefer, you can avoid using simulator and start
-// engine iterations manually by calling ecs.tick() in a loop.
-const sim = new Ecs.Simulator(ecs);
- 
-// Limit the fps to 60
-// sim.setFps(60);
-sim.setFps(6);
- 
-// Start simulator
-sim.start();
+ecs.tick()
 
-console.log("sim", sim)
+// // Instantiate a simulator
+// // If you prefer, you can avoid using simulator and start
+// // engine iterations manually by calling ecs.tick() in a loop.
+// const sim = new Ecs.Simulator(ecs);
+ 
+// // Limit the fps to 60
+// // sim.setFps(60);
+// sim.setFps(6);
+ 
+// // Start simulator
+// sim.start();
+
+// console.log("sim", sim)
 
 
 // var game = (function () {
