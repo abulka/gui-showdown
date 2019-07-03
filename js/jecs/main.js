@@ -136,10 +136,15 @@ $("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs
   //     entities=[entity_welcome_left, entity_welcome_user_right],
   // )
   // TODO need to remove as well as add
-  entity_welcome_left.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
-  entity_welcome_user_right.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
-  world.tick()
+  // entity_welcome_left.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
+  // entity_welcome_user_right.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
 
+  add_or_remove_component(world, 
+                          $('input[name=check2]').prop('checked'), 
+                          'c_uppercase_welcome', 
+                          ComponentUppercaseWelcome, 
+                          [entity_welcome_left, entity_welcome_user_right])
+  world.tick()
 })
 
 $("input[name=check3]").change(function(e){
