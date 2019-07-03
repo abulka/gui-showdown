@@ -6,6 +6,16 @@ const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
 entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });  // id of div to hold welcome message, top left
 
+const entity_welcome_user_right = world.entity('entity_welcome_user_right')
+entity_welcome_user_right.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+entity_welcome_user_right.setComponent('ComponentModelFirstname', { model: model["user"], key: 'name' });
+entity_welcome_user_right.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
+entity_welcome_user_right.setComponent('ComponentGuiDiv', { ref: 'welcome-user' });  // id of div to hold welcome + user message, top right
+
+// ComponentModelFirstname
+// ComponentModelSurname
+// ComponentGuiInput
+
 // console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
 
 // const fred = world.entity('fred')
@@ -43,6 +53,14 @@ entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });  // id 
 world.system('RenderProcessor', ['ComponentModelWelcome', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentGuiDiv}) => {
   // console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
   let msg = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  $('#' + ComponentGuiDiv.ref).html(msg)
+});
+
+world.system('RenderProcessor2', ['ComponentModelWelcome', 'ComponentModelFirstname', 'ComponentModelSurname', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname, ComponentGuiDiv}) => {
+  console.log("top right", entity)
+  let welcome = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  let user = ComponentModelFirstname.model[ComponentModelFirstname.key]
+  let msg = `${welcome} ${user}`  // need surname, need model extract processor stage first
   $('#' + ComponentGuiDiv.ref).html(msg)
 });
 
