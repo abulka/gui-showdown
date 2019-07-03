@@ -151,6 +151,25 @@ $("input[name=check3]").change(function(e){
 //   alert("The text has been changed.");
 // });
 
+$("input[name=welcome]").change(function(e) {  // on_enter_welcome
+    model["welcome_msg"] = $(e.target).val()
+    world.tick()
+})
+
+$("input[name=firstname]").change(function(e) {  // on_enter_user_firstname
+  model["user"]["name"] = $(e.target).val()
+    world.tick()
+})
+
+$("input[name=surname]").change(function(e) {  // on_enter_user_surname
+  model["user"]["surname"] = $(e.target).val()
+    world.tick()
+})
+
+$('#render-now').on('click', function(e) {
+  world.tick()
+})
+
 world.tick()
 
 
