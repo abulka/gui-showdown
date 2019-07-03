@@ -4,26 +4,27 @@ const world = new Ecs();
 
 const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
-entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });
-console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
+entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });  // id of div to hold welcome message, top left
 
-const fred = world.entity('fred')
-fred.setComponent('mary_jane', { x: 0, y: 0 });
+// console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
 
-// Declare a 'player' entity
-const player = world.entity('player');
-// Associate the player entity to components.
-// In this case we set 'position' and 'speed'.
-player.setComponent('position', { x: 0, y: 0 });
-player.setComponent('speed', { x: 0.5, y: 0.7 });
-// Define a 'move' system for updating position of
-// entities associated to components 'position' and 'speed'
-world.system('move', ['position', 'speed'], (entity, {position, speed}) => {
-  position.x += speed.x;
-  position.y += speed.y;
-  $('#log').html(`x=${position.x} <br>y=${position.y}<br>entity=${entity}`)
-  console.log(`move: entity ${entity} has component position ${position} component speed ${speed}`)
-});
+// const fred = world.entity('fred')
+// fred.setComponent('mary_jane', { x: 0, y: 0 });
+
+// // Declare a 'player' entity
+// const player = world.entity('player');
+// // Associate the player entity to components.
+// // In this case we set 'position' and 'speed'.
+// player.setComponent('position', { x: 0, y: 0 });
+// player.setComponent('speed', { x: 0.5, y: 0.7 });
+// // Define a 'move' system for updating position of
+// // entities associated to components 'position' and 'speed'
+// world.system('move', ['position', 'speed'], (entity, {position, speed}) => {
+//   position.x += speed.x;
+//   position.y += speed.y;
+//   $('#log').html(`x=${position.x} <br>y=${position.y}<br>entity=${entity}`)
+//   console.log(`move: entity ${entity} has component position ${position} component speed ${speed}`)
+// });
 
 // AHA - the variables receiving the component must be named exactly the same as the component name
 
@@ -40,9 +41,9 @@ world.system('move', ['position', 'speed'], (entity, {position, speed}) => {
 // });
 
 world.system('RenderProcessor', ['ComponentModelWelcome', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentGuiDiv}) => {
-  console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
-  let s = ComponentModelWelcome.model[ComponentModelWelcome.key]
-  $('#' + ComponentGuiDiv.ref).html(s)
+  // console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
+  let msg = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  $('#' + ComponentGuiDiv.ref).html(msg)
 });
 
 world.tick()
