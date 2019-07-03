@@ -302,3 +302,53 @@ MVC version:
 
 A bunch of models classes, implementing Observer.
 
+# Learnings from the javascript version
+
+Both the Python and Javascript 'extract' systems extract the same entities several times, which is redundant. 
+
+Python:
+
+    --Model Extract System---
+    have set ComponentModelWelcome(model={'welcome_msg': 'Welcome', 'user': {'name': 'Sam', 'surname': 'Smith'}}, key='welcome_msg', finalstr='Welcome') for mediator for welcome_left
+    have set ComponentModelWelcome(model={'welcome_msg': 'Welcome', 'user': {'name': 'Sam', 'surname': 'Smith'}}, key='welcome_msg', finalstr='Welcome') for mediator for welcome_user_right
+    have set ComponentModelWelcome(model={'welcome_msg': 'Welcome', 'user': {'name': 'Sam', 'surname': 'Smith'}}, key='welcome_msg', finalstr='Welcome') for mediator for edit_welcome_msg
+    have set ComponentModelFirstname(model={'name': 'Sam', 'surname': 'Smith'}, key='name', finalstr='Sam') for mediator for welcome_user_right
+    have set ComponentModelFirstname(model={'name': 'Sam', 'surname': 'Smith'}, key='name', finalstr='Sam') for mediator for edit_user_name_msg
+    have set ComponentModelSurname(model={'name': 'Sam', 'surname': 'Smith'}, key='surname', finalstr='Smith') for mediator for welcome_user_right
+    have set ComponentModelSurname(model={'name': 'Sam', 'surname': 'Smith'}, key='surname', finalstr='Smith') for mediator for edit_user_surname_msg
+
+Javascript:
+
+    3 c_welcome.finalstr Welcome
+    2 main.js:52 c_firstname.finalstr Sam
+    2 main.js:56 c_surname.finalstr Smith
+
+This is because we are matching entities (mediators) that have the component e.g. c_welcome - which is basically many entities.  Actually now that I think about it - perhaps this is the CORRECT behaviour since each mediator has its own copy!
+
+## Trying to make systems more efficiently in Javascript
+
+Fails because the `jecs` framework has a particular way of building systems that does not lend itself to meta looping around it:
+
+This Python technique:
+
+```python
+for Component in (ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname):
+  for ent, (component, _) in self.world.get_components(Component, Dirty):
+    component.finalstr = component.model[component.key]
+    logsimple(component, ent)
+```
+
+does not translate well into 
+
+```javascript
+for (let component of ['c_welcome', 'c_firstname', 'c_surname']) {
+  let processor_name = 'extract-' + component + '-processor'
+  world.system(processor_name, [component], (entity, {componentXXXXXXXXX}) => {
+    entity.finalstr = component.model[component.key]
+    console.log("entity.finalstr", entity.finalstr)
+  });
+}
+```
+
+because the ATTEMPT AT JAVASCRIPT TRANSLATION DOESN'T WORK BECAUSE componentXXXXXXXXX NEEDS TO BE A VARIABLE NOT A STRING
+
