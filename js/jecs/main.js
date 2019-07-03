@@ -12,9 +12,23 @@ entity_welcome_user_right.setComponent('ComponentModelFirstname', { model: model
 entity_welcome_user_right.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
 entity_welcome_user_right.setComponent('ComponentGuiDiv', { ref: 'welcome-user' });  // id of div to hold welcome + user message, top right
 
+const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
+entity_edit_welcome_msg.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+entity_edit_welcome_msg.setComponent('ComponentGuiInput', { ref: 'welcome' });  // name (not id) of input to hold welcome message
+
+const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
+entity_edit_user_name_msg.setComponent('ComponentModelFirstname', { model: model["user"], key: 'name' });
+entity_edit_user_name_msg.setComponent('ComponentGuiInput', { ref: 'firstname' });  // name (not id) of input to hold first name
+
+const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
+entity_edit_user_surname_msg.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
+entity_edit_user_surname_msg.setComponent('ComponentGuiInput', { ref: 'surname' });  // name (not id) of input to hold first name
+
+
 // ComponentModelFirstname
 // ComponentModelSurname
 // ComponentGuiInput
+// $('input[name=welcome]')
 
 // console.log(`entity_welcome_left has ComponentModelWelcome? ${entity_welcome_left.hasComponent('ComponentModelWelcome')}`)
 
@@ -59,9 +73,28 @@ world.system('RenderProcessor', ['ComponentModelWelcome', 'ComponentGuiDiv'], (e
 world.system('RenderProcessor2', ['ComponentModelWelcome', 'ComponentModelFirstname', 'ComponentModelSurname', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname, ComponentGuiDiv}) => {
   console.log("top right", entity)
   let welcome = ComponentModelWelcome.model[ComponentModelWelcome.key]
-  let user = ComponentModelFirstname.model[ComponentModelFirstname.key]
-  let msg = `${welcome} ${user}`  // need surname, need model extract processor stage first
+  let firstname = ComponentModelFirstname.model[ComponentModelFirstname.key]
+  let surname = ComponentModelSurname.model[ComponentModelSurname.key]
+  let msg = `${welcome} ${firstname} ${surname}`  // need surname, need model extract processor stage first
   $('#' + ComponentGuiDiv.ref).html(msg)
+});
+
+world.system('RenderProcessor3', ['ComponentModelWelcome', 'ComponentGuiInput'], (entity, {ComponentModelWelcome, ComponentGuiInput}) => {
+  console.log("welcome text input", entity)
+  let welcome = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  $(`input[name=${ComponentGuiInput.ref}]`).val(welcome)
+});
+
+world.system('RenderProcessor4', ['ComponentModelFirstname', 'ComponentGuiInput'], (entity, {ComponentModelFirstname, ComponentGuiInput}) => {
+  console.log("firstname text input", entity)
+  let firstname = ComponentModelFirstname.model[ComponentModelFirstname.key]
+  $(`input[name=${ComponentGuiInput.ref}]`).val(firstname)
+});
+
+world.system('RenderProcessor5', ['ComponentModelSurname', 'ComponentGuiInput'], (entity, {ComponentModelSurname, ComponentGuiInput}) => {
+  console.log("surname text input", entity)
+  let surname = ComponentModelSurname.model[ComponentModelSurname.key]
+  $(`input[name=${ComponentGuiInput.ref}]`).val(surname)
 });
 
 world.tick()
