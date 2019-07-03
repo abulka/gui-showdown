@@ -22,18 +22,17 @@ class ComponentGuiDiv extends ModelRef {}
 class ComponentGuiInput extends ModelRef {}
 
 const entity_welcome_left = world.entity('entity_welcome_left')
-// entity_welcome_left.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg', finalstr: '' });
-entity_welcome_left.setComponent('ComponentModelWelcome', new ComponentModelWelcome(model, 'welcome_msg'));
+entity_welcome_left.setComponent('c_welcome', new ComponentModelWelcome(model, 'welcome_msg'));
 entity_welcome_left.setComponent('ComponentGuiDiv', { ref: 'welcome' });  // id of div to hold welcome message, top left
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
-entity_welcome_user_right.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+entity_welcome_user_right.setComponent('c_welcome', { model: model, key: 'welcome_msg' });
 entity_welcome_user_right.setComponent('ComponentModelFirstname', { model: model["user"], key: 'name' });
 entity_welcome_user_right.setComponent('ComponentModelSurname', { model: model["user"], key: 'surname' });
 entity_welcome_user_right.setComponent('ComponentGuiDiv', { ref: 'welcome-user' });  // id of div to hold welcome + user message, top right
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
-entity_edit_welcome_msg.setComponent('ComponentModelWelcome', { model: model, key: 'welcome_msg' });
+entity_edit_welcome_msg.setComponent('c_welcome', { model: model, key: 'welcome_msg' });
 entity_edit_welcome_msg.setComponent('ComponentGuiInput', { ref: 'welcome' });  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
@@ -84,24 +83,24 @@ entity_edit_user_surname_msg.setComponent('ComponentGuiInput', { ref: 'surname' 
 //   console.log(`DebugSystem3 - mary: entity ${entity} has component ${mary_jane}`)
 // });
 
-world.system('RenderProcessor', ['ComponentModelWelcome', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentGuiDiv}) => {
+world.system('RenderProcessor', ['c_welcome', 'ComponentGuiDiv'], (entity, {c_welcome, ComponentGuiDiv}) => {
   // console.log("render textctrl for component", ComponentModelWelcome, "component", ComponentGuiDiv, "entity is", entity)
-  let msg = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  let msg = c_welcome.model[c_welcome.key]
   $('#' + ComponentGuiDiv.ref).html(msg)
 });
 
-world.system('RenderProcessor2', ['ComponentModelWelcome', 'ComponentModelFirstname', 'ComponentModelSurname', 'ComponentGuiDiv'], (entity, {ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname, ComponentGuiDiv}) => {
+world.system('RenderProcessor2', ['c_welcome', 'ComponentModelFirstname', 'ComponentModelSurname', 'ComponentGuiDiv'], (entity, {c_welcome, ComponentModelFirstname, ComponentModelSurname, ComponentGuiDiv}) => {
   console.log("top right", entity)
-  let welcome = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  let welcome = c_welcome.model[c_welcome.key]
   let firstname = ComponentModelFirstname.model[ComponentModelFirstname.key]
   let surname = ComponentModelSurname.model[ComponentModelSurname.key]
   let msg = `${welcome} ${firstname} ${surname}`  // need surname, need model extract processor stage first
   $('#' + ComponentGuiDiv.ref).html(msg)
 });
 
-world.system('RenderProcessor3', ['ComponentModelWelcome', 'ComponentGuiInput'], (entity, {ComponentModelWelcome, ComponentGuiInput}) => {
+world.system('RenderProcessor3', ['c_welcome', 'ComponentGuiInput'], (entity, {c_welcome, ComponentGuiInput}) => {
   console.log("welcome text input", entity)
-  let welcome = ComponentModelWelcome.model[ComponentModelWelcome.key]
+  let welcome = c_welcome.model[c_welcome.key]
   $(`input[name=${ComponentGuiInput.ref}]`).val(welcome)
 });
 
