@@ -129,16 +129,6 @@ $("input[name=check1]").change(function(e) {  // on_check_welcome_model
 
 $("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs_only
   // toggle the case of the welcome output messages only - do not affect model
-  // add_or_remove_component(
-  //     world,
-  //     condition=frame.m_checkBox1A.IsChecked(),
-  //     component_Class=ComponentUppercaseWelcome,
-  //     entities=[entity_welcome_left, entity_welcome_user_right],
-  // )
-  // TODO need to remove as well as add
-  // entity_welcome_left.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
-  // entity_welcome_user_right.setComponent('c_uppercase_welcome', new ComponentUppercaseWelcome())
-
   add_or_remove_component(world, 
                           $('input[name=check2]').prop('checked'), 
                           'c_uppercase_welcome', 
@@ -149,11 +139,11 @@ $("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs
 
 $("input[name=check3]").change(function(e){
   // don't change the model - only the UI display
-//   add_or_remove_component(
-//     world, condition=frame.m_checkBox2.IsChecked(), component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right]
-// )
-// TODO need to remove as well as add
-  entity_welcome_user_right.setComponent('c_uppercase_all', new ComponentUppercaseAll())
+  add_or_remove_component(world, 
+    $('input[name=check3]').prop('checked'), 
+    'c_uppercase_all', 
+    ComponentUppercaseAll, 
+    [entity_welcome_user_right])
   world.tick()
 });
 
