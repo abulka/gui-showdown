@@ -2,11 +2,11 @@
 
 <html>
   <head>
-    <meta title="Jecs Mini Game Demo">
+    <meta title="Andy Main">
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
 
-    <script src="jecs_min.js"></script>
+    <script src="jecs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <style lang="text/css">
@@ -124,12 +124,13 @@
   </head>
 
   <body>
-    <a href="https://www.npmjs.com/package/jecs">doco</a>
-    
+    <p>
+    <a href="https://www.npmjs.com/package/jecs">hey here is the doco</a>
+    </p>
+
     <div id="game">
       <div id="title">
-        <h1>Jecs mini game demo</h1>
-        <h2>find the source in the "docs/example/mini-game" directory.</h1>
+        <h1>Andy Main</h1>
       </div>
       
       <div class="buttons">
@@ -153,50 +154,53 @@
       </div>
     </div>
 
-    <script src="mini-game.js"></script>
+    <script src="main.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
-        var $gameBox = $('#game');
-        var $logBox = $('#log');
-
-        var startBut = document.getElementById('start');
-        var resetBut = document.getElementById('reset');
-        var fpsSelect = document.getElementById('fps-limit');
-
-        function updateLogSize() {
-          $logBox.css('height', ($gameBox.innerHeight() - $logBox.offset().top) + 'px');
-        }
-
-        $(window).resize(updateLogSize);
-        updateLogSize();
-
-        function updateFps(fps) {
-          game.simulator.setFps(parseInt(fps));
-        }
         
-        startBut.onclick = function() {
-          if(game.simulator.isRunning()) {
-            game.simulator.pause();
-            startBut.innerHTML = "start";
-          } else {
-            game.simulator.start();
-            startBut.innerHTML = "pause";
-          }
-        };
+        // var $gameBox = $('#game');
+        // var $logBox = $('#log');
 
-        resetBut.onclick = function() {
-          $logBox.text('');
-          game.simulator.stop();
-          game.reset();
-          startBut.innerHTML = "start";
-        };
+        // var startBut = document.getElementById('start');
+        // var resetBut = document.getElementById('reset');
+        // var fpsSelect = document.getElementById('fps-limit');
 
-        fpsSelect.onchange = function() {
-          updateFps(fpsSelect.value);
-        }
+        // function updateLogSize() {
+        //   $logBox.css('height', ($gameBox.innerHeight() - $logBox.offset().top) + 'px');
+        // }
 
-        // Init FPS
-        updateFps(fpsSelect.value);
+        // $(window).resize(updateLogSize);
+        // updateLogSize();
+
+        // function updateFps(fps) {
+        //   game.simulator.setFps(parseInt(fps));
+        // }
+        
+        // startBut.onclick = function() {
+        //   if(game.simulator.isRunning()) {
+        //     game.simulator.pause();
+        //     startBut.innerHTML = "start";
+        //   } else {
+        //     game.simulator.start();
+        //     startBut.innerHTML = "pause";
+        //   }
+        // };
+
+        // resetBut.onclick = function() {
+        //   $logBox.text('');
+        //   game.simulator.stop();
+        //   game.reset();
+        //   startBut.innerHTML = "start";
+        // };
+
+        // fpsSelect.onchange = function() {
+        //   updateFps(fpsSelect.value);
+        // }
+
+        // // Init FPS
+        // updateFps(fpsSelect.value);
+
+
       });
     </script>
   </body>
