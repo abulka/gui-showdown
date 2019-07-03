@@ -97,6 +97,22 @@ world.system('RenderProcessor5', ['ComponentModelSurname', 'ComponentGuiInput'],
   $(`input[name=${ComponentGuiInput.ref}]`).val(surname)
 });
 
+function model_welcome_toggle() {
+  // model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+  model["welcome_msg"] = $('input[name=check1]').prop('checked') ? model["welcome_msg"].toUpperCase() : model["welcome_msg"].toLowerCase()
+  world.tick()
+}
+
+$('#reset-welcome').on('click', function(e) {
+  console.log('ddd')
+  model_welcome_toggle()
+
+})
+
+$('#reset-user').on('click', function(e) {
+  console.log('eee')
+})
+
 world.tick()
 
 // // Instantiate a simulator
