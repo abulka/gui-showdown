@@ -115,18 +115,18 @@ class RenderProcessor(esper.Processor):
 
         for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiStaticText, Dirty):
             if component.key == "welcome_msg":
-                print("render static text for", component, ent)
+                print("render static text for", ent)
                 gui.ref.SetLabel(component.finalstr)
 
         msg = {}  # can't target how model ref components get found, so build up what we need here
         for ent, (component, guist, _) in self.world.get_components(MultiModelRef, ComponentGuiStaticText, Dirty):
             for model_ref in component.refs:
                 msg[model_ref.key] = model_ref.finalstr
-                print("top right", "building", msg)
             guist.ref.SetLabel(f"{msg['welcome_msg']} {msg['name']} {msg['surname']}")
+            print("render staticText for", ent)
 
         for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiTextControl, Dirty):
-            print("render textctrl for", component, ent)
+            print("render textctrl for", ent)
             gui.ref.SetValue(component.finalstr)
 
         do.dirty_all(False, entities=mediators)
@@ -180,7 +180,7 @@ def model_welcome_toggle():
 class MyFrame1A(MyFrame1):
     def on_button_reset_welcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        do.dirty(ModelRef)
+        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -194,7 +194,7 @@ class MyFrame1A(MyFrame1):
     def on_check_welcome_model(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        do.dirty(ModelRef)
+        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -211,30 +211,30 @@ class MyFrame1A(MyFrame1):
 
     def on_check_upper_entire_top_right_output(self, event):
         # don't change the model - only the UI display
-        add_or_remove_component(
-            world, condition=frame.m_checkBox2.IsChecked(), component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right]
-        )
+        add_or_remove_component(world, 
+                                condition=frame.m_checkBox2.IsChecked(), 
+                                component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right])
         do.dirty("just top right")
         world.process()
 
     def on_enter_welcome(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
         # do.dirty(ComponentModelWelcome)
-        do.dirty(ModelRef, lambda component : component.key == "welcome_msg")
+        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_firstname(self, event):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
         # do.dirty(ComponentModelFirstname)
-        do.dirty(ModelRef, lambda component : component.key == "name")
+        do.dirty(ModelRef, lambda component : component.key == "name", filter_nice_name="name")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_surname(self, event):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
         # do.dirty(ComponentModelSurname)
-        do.dirty(ModelRef, lambda component : component.key == "surname")
+        do.dirty(ModelRef, lambda component : component.key == "surname", filter_nice_name="surname")
         do.dirty(MultiModelRef)
         world.process()
 
