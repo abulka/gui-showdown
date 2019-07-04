@@ -30,18 +30,6 @@ class MultiModelRef:  # Refers to multiple model fields, since can only have one
     refs: List[ModelRef]
 
 
-# class ComponentModelWelcome(ModelRef):
-#     pass
-
-
-# class ComponentModelFirstname(ModelRef):
-#     pass
-
-
-# class ComponentModelSurname(ModelRef):
-#     pass
-
-
 @dataclass
 class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
     ref: object
@@ -91,10 +79,10 @@ class ModelExtractProcessor(esper.Processor):
 
     def process(self):
         print("--Model Extract System---")
-        # for Component in (ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname):
         for ent, (component, _) in self.world.get_components(ModelRef, Dirty):
             component.finalstr = component.model[component.key]
             logsimple(component, ent)
+
         for ent, (component, _) in self.world.get_components(MultiModelRef, Dirty):
             for model_ref in component.refs:
                 model_ref.finalstr = model_ref.model[model_ref.key]
@@ -104,18 +92,11 @@ class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
 
-        # for Component in (ComponentModelWelcome,):
-        #     for ent, (component, _, _) in self.world.get_components(Component, ComponentUppercaseWelcome, Dirty):
-        #         component.finalstr = component.finalstr.upper()
-        #         logsimple(component, ent)
-        # for Component in (ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname):
-        #     for ent, (component, _, _) in self.world.get_components(Component, ComponentUppercaseAll, Dirty):
-        #         component.finalstr = component.finalstr.upper()
-        #         logsimple(component, ent)
         for ent, (component, _, _) in self.world.get_components(ModelRef, ComponentUppercaseWelcome, Dirty):
             if component.key == "welcome_msg":
                 component.finalstr = component.finalstr.upper()
                 logsimple(component, ent)
+
         for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseWelcome, Dirty):
             for model_ref in component.refs:
                 if model_ref.key == "welcome_msg":
@@ -137,47 +118,16 @@ class RenderProcessor(esper.Processor):
                 print("render static text for", component, ent)
                 gui.ref.SetLabel(component.finalstr)
 
-        # msg = {}  # can't target how model ref components get found, so build up what we need here
-        # for ent, (component, guist, _) in self.world.get_components(ModelRef, ComponentGuiStaticText, Dirty):
-        #     print("top right", ent, component, "building", msg)
-        #     msg[component.key] = component.finalstr
-        # guist.ref.SetLabel(f"{msg['welcome_msg']} {msg['name']} {msg['surname']}")
-
-        msg = {}
+        msg = {}  # can't target how model ref components get found, so build up what we need here
         for ent, (component, guist, _) in self.world.get_components(MultiModelRef, ComponentGuiStaticText, Dirty):
             for model_ref in component.refs:
-                # print("top right", ent, component, model_ref, "building", msg)
                 msg[model_ref.key] = model_ref.finalstr
                 print("top right", "building", msg)
             guist.ref.SetLabel(f"{msg['welcome_msg']} {msg['name']} {msg['surname']}")
 
-
         for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiTextControl, Dirty):
             print("render textctrl for", component, ent)
             gui.ref.SetValue(component.finalstr)
-
-        # Old
-
-        # def render_text_control(Component):
-        #     for ent, (component, gui, _) in self.world.get_components(Component, ComponentGuiTextControl, Dirty):
-        #         print("render textctrl for", component, ent)
-        #         gui.ref.SetValue(component.finalstr)
-
-        # def render_static_text(Component):
-        #     for ent, (component, gui, _) in self.world.get_components(Component, ComponentGuiStaticText, Dirty):
-        #         print("render static text for", component, ent)
-        #         gui.ref.SetLabel(component.finalstr)
-
-        # render_static_text(ComponentModelWelcome)
-
-        # for ent, (mw, mf, ms, guist, _) in self.world.get_components(
-        #     ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname, ComponentGuiStaticText, Dirty
-        # ):
-        #     print("top right", ent)
-        #     guist.ref.SetLabel(f"{mw.finalstr} {mf.finalstr} {ms.finalstr}")
-
-        # for Component in (ComponentModelWelcome, ComponentModelFirstname, ComponentModelSurname):
-        #     render_text_control(Component)
 
         do.dirty_all(False, entities=mediators)
 
@@ -230,7 +180,6 @@ def model_welcome_toggle():
 class MyFrame1A(MyFrame1):
     def on_button_reset_welcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        # do.dirty(ComponentModelWelcome)
         do.dirty(ModelRef)
         do.dirty(MultiModelRef)
         world.process()
@@ -238,8 +187,6 @@ class MyFrame1A(MyFrame1):
     def on_button_reset_user(self, event):
         model["user"]["name"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        # do.dirty(ComponentModelFirstname)
-        # do.dirty(ComponentModelSurname)
         do.dirty(ModelRef)
         do.dirty(MultiModelRef)
         world.process()
@@ -247,7 +194,6 @@ class MyFrame1A(MyFrame1):
     def on_check_welcome_model(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        # do.dirty(ComponentModelWelcome)
         do.dirty(ModelRef)
         do.dirty(MultiModelRef)
         world.process()
@@ -317,21 +263,8 @@ world.add_processor(HousekeepingProcessor())
 world.add_processor(FunProcessor())
 
 entity_welcome_left = world.create_entity(
-    # ComponentModelWelcome(model=model, key="welcome_msg"), ComponentGuiStaticText(ref=frame.m_staticText1)
     ModelRef(model=model, key="welcome_msg"), ComponentGuiStaticText(ref=frame.m_staticText1)
 )
-# entity_welcome_user_right = world.create_entity(
-#     # Ah - fatal flaw - can only have ONE component of each type.  Yikes!!!!!
-#     # ModelRef(model=model, key="welcome_msg"),
-#     # ModelRef(model=model["user"], key="name"),
-#     # ModelRef(model=model["user"], key="surname"),
-
-#     ComponentModelWelcome(model=model, key="welcome_msg"),
-#     ComponentModelFirstname(model=model["user"], key="name"),
-#     ComponentModelSurname(model=model["user"], key="surname"),
-#     ComponentGuiStaticText(ref=frame.m_staticText2),
-# )
-# assert world.has_component(entity_welcome_user_right, ModelRef)
 
 entity_welcome_user_right = world.create_entity(
     MultiModelRef(refs=[
@@ -339,22 +272,16 @@ entity_welcome_user_right = world.create_entity(
         ModelRef(model=model["user"], key="name"),
         ModelRef(model=model["user"], key="surname"),
         ]),
-    # ComponentModelWelcome(model=model, key="welcome_msg"),
-    # ComponentModelFirstname(model=model["user"], key="name"),
-    # ComponentModelSurname(model=model["user"], key="surname"),
     ComponentGuiStaticText(ref=frame.m_staticText2),
 )
 
 entity_edit_welcome_msg = world.create_entity(
-    # ComponentModelWelcome(model=model, key="welcome_msg"), ComponentGuiTextControl(ref=frame.m_textCtrl1)
     ModelRef(model=model, key="welcome_msg"), ComponentGuiTextControl(ref=frame.m_textCtrl1)
 )
 entity_edit_user_name_msg = world.create_entity(
-    # ComponentModelFirstname(model=model["user"], key="name"), ComponentGuiTextControl(ref=frame.m_textCtrl2)
     ModelRef(model=model["user"], key="name"), ComponentGuiTextControl(ref=frame.m_textCtrl2)
 )
 entity_edit_user_surname_msg = world.create_entity(
-    # ComponentModelSurname(model=model["user"], key="surname"), ComponentGuiTextControl(ref=frame.m_textCtrl3)
     ModelRef(model=model["user"], key="surname"), ComponentGuiTextControl(ref=frame.m_textCtrl3)
 )
 appgui = world.create_entity()  # slightly different style, create entiry then add components

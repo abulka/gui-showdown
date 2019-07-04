@@ -373,3 +373,47 @@ assert world.has_component(entity_welcome_user_right, ModelRef)
 ```
 
 Solution is to create a MultiModelRef component which is a list of refs to models.  Awkward perhaps, but better than what we had before.
+
+```python
+@dataclass
+class ModelRef:  # Mediator (entity + this component) needs to know about model. Model specific
+    model: dict
+    key: str
+    finalstr: str = ""
+
+@dataclass
+class MultiModelRef:  # Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
+    refs: List[ModelRef]
+```
+
+which works.  Making the MultiModelRef more specific to the way its used
+
+```python
+@dataclass
+class MultiModelRef2:
+    model_welcome: dict
+    model_user: dict
+    welcome_key = "welcome_msg"
+    firstname_key = "name"
+    surname_key = "surname"
+```
+
+would work but smells a little complex - let's instead celebrate the generic use of model dicts and keys and not customise too much.
+
+## Implications of dirty observer
+
+Now the dirty operations are more scattergun, since we are often targeting all ModelRef components, not just specific components.  E.g.
+
+```python
+# do.dirty(ComponentModelWelcome)
+do.dirty(ModelRef)
+do.dirty(MultiModelRef)
+```
+
+This makes dirty observer optimisations less useful - almost useless.  Might be much less complex to abandon the dirty observer?
+
+Alternatively, what if we could target dirty to the same component type, but sub-specify a particular feature of that component e.g. target by key.  Perhaps via a lambda?
+
+```python
+do.dirty(ModelRef, lambda c : c.key == "welcome_msg")
+```
