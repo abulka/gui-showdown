@@ -187,7 +187,6 @@ world.process()                 # downside, but can be deferred, which is a bene
 
 to achive the same thing.
 
-
 ## View Model in the future?
 
 ```python
@@ -352,3 +351,25 @@ for (let component of ['c_welcome', 'c_firstname', 'c_surname']) {
 
 because the ATTEMPT AT JAVASCRIPT TRANSLATION DOESN'T WORK BECAUSE componentXXXXXXXXX NEEDS TO BE A VARIABLE NOT A STRING
 
+# Simplified approach
+
+Rather than having one component for each model field - which is tedious to maintain, and which kind of makes the model refs and keys a ittle redundant, since if we know the kind of component, we could target explicit field names directly.
+
+So we go for a more generalised component which refers to any model.  This leverages the model/key stuff we do.
+However there is a fatal flaw - can only have ONE component of each type.  Yikes!!!!!
+
+```python
+entity_welcome_user_right = world.create_entity(
+    # ModelRef(model=model, key="welcome_msg"),     
+    # ModelRef(model=model["user"], key="name"),    # <--- cannot do this, would replace previous ModelRef component
+    # ModelRef(model=model["user"], key="surname"), # <--- cannot do this, would replace previous ModelRef component
+
+    ComponentModelWelcome(model=model, key="welcome_msg"),
+    ComponentModelFirstname(model=model["user"], key="name"),
+    ComponentModelSurname(model=model["user"], key="surname"),
+    ComponentGuiStaticText(ref=frame.m_staticText2),
+)
+assert world.has_component(entity_welcome_user_right, ModelRef)
+```
+
+Solution is to create a MultiModelRef component which is a list of refs to models.  Awkward perhaps, but better than what we had before.
