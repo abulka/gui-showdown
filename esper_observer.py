@@ -78,7 +78,7 @@ class DirtyObserver:
     to achive the same thing.
     """
 
-    affected_entities = {}
+    affected_entities = {}  # component or str -> [entities]
     world: esper.World
 
     def add_dependency(self, signal, entities: List):
@@ -88,7 +88,28 @@ class DirtyObserver:
     def dirty_all(self, condition=True, entities=None):
         add_or_remove_component(self.world, condition, component_Class=Dirty, entities=entities)
 
-    def dirty(self, signal):
-        for mediator in self.affected_entities[signal]:
-            print(f"dirty: {mediator} because of {signal}")
-            self.world.add_component(mediator, Dirty())
+    def dirty(self, Component, component_filter_f=None):
+        # get to all entities with a Component and check that component through the filter, then if match
+        # add a Dirty to that entity
+        # affected_entities is a custom mapping of 'observer' relationships between: component or str -> [entities]
+        # self.world.get_components() iterates over the entities having certain components 
+        for mediator in self.affected_entities[Component]:
+
+            if type(Component) == str:
+                print(f"skipping optimised lookup for '{Component}'' since it is a str key not a real component.")
+                component_filter_f = None  # stop the filter from running on a nonexistant component
+            else:
+                try:
+                    component = self.world.component_for_entity(mediator, Component)  # actual component
+                except KeyError:
+                    print(f"dirty: {mediator} NO ACTUAL instance of {Component} found ??  There must be an error in affected_entities dict, entity {mediator} should not be listed as depending on {Component}.")
+                    raise
+
+            if component_filter_f:
+                found = component_filter_f(component)
+                print("dirty filter result", found, component)
+            else:
+                found = True
+            if found:
+                print(f"dirty: {mediator} because of {Component}")
+                self.world.add_component(mediator, Dirty())

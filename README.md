@@ -415,5 +415,5 @@ This makes dirty observer optimisations less useful - almost useless.  Might be 
 Alternatively, what if we could target dirty to the same component type, but sub-specify a particular feature of that component e.g. target by key.  Perhaps via a lambda?
 
 ```python
-do.dirty(ModelRef, lambda c : c.key == "welcome_msg")
+do.dirty(ModelRef, lambda component : component.key == "welcome_msg")
 ```

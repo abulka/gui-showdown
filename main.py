@@ -220,21 +220,21 @@ class MyFrame1A(MyFrame1):
     def on_enter_welcome(self, event):
         model["welcome_msg"] = frame.m_textCtrl1.GetValue()
         # do.dirty(ComponentModelWelcome)
-        do.dirty(ModelRef)
+        do.dirty(ModelRef, lambda component : component.key == "welcome_msg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_firstname(self, event):
         model["user"]["name"] = frame.m_textCtrl2.GetValue()
         # do.dirty(ComponentModelFirstname)
-        do.dirty(ModelRef)
+        do.dirty(ModelRef, lambda component : component.key == "name")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_surname(self, event):
         model["user"]["surname"] = frame.m_textCtrl3.GetValue()
         # do.dirty(ComponentModelSurname)
-        do.dirty(ModelRef)
+        do.dirty(ModelRef, lambda component : component.key == "surname")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -309,13 +309,8 @@ mediators: List[int] = list(nice_entity_name.keys())
 # Observer Wiring
 do = DirtyObserver(world)
 
-# do.add_dependency(ComponentModelWelcome, [entity_welcome_left, entity_welcome_user_right, entity_edit_welcome_msg])
-# do.add_dependency(ComponentModelFirstname, [entity_welcome_user_right, entity_edit_user_name_msg])
-# do.add_dependency(ComponentModelSurname, [entity_welcome_user_right, entity_edit_user_surname_msg])
-do.add_dependency(ModelRef, [entity_welcome_left, entity_welcome_user_right, 
-                             entity_edit_welcome_msg, entity_edit_user_name_msg, entity_edit_user_surname_msg])
+do.add_dependency(ModelRef, [entity_welcome_left, entity_edit_welcome_msg, entity_edit_user_name_msg, entity_edit_user_surname_msg])
 do.add_dependency(MultiModelRef, [entity_welcome_user_right])
-
 do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
 do.add_dependency("just top right", [entity_welcome_user_right])
 
