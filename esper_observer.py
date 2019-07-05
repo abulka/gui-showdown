@@ -185,17 +185,15 @@ class DirtyObserver:
         print(f"dirty called on dependent entities of Component={Component} which are {self.affected_entities[Component]} with", filter_msg)
 
         for entity in self.affected_entities[Component]:
-
-            if type(Component) != str:
+            add_dirty = True
+            
+            if component_filter_f and type(Component) != str:
                 try:
                     component = self.world.component_for_entity(entity, Component)  # retrieve an actual Component instance for a specific Entity
                 except KeyError:
                     raise RuntimeError(f"Error in the affected_entities dict: entity {entity} should not be listed as depending on {Component}.")
+                add_dirty = component_filter_f(component)  # call the filter, passing the component instance, to see if this entity should be skipped
 
-            if component_filter_f:
-                found = component_filter_f(component)  # call the filter, passing the component instance, to see if this entity should be skipped
-            else:
-                found = True
-            if found:
+            if add_dirty:
                 print(f"\tcomponent Dirty added to entity {entity}")
                 self.world.add_component(entity, Dirty())
