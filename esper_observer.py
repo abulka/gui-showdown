@@ -89,31 +89,113 @@ class DirtyObserver:
         add_or_remove_component(self.world, condition, component_Class=Dirty, entities=entities)
 
     def dirty(self, Component, component_filter_f=None, filter_nice_name=""):
-        # get to all entities with a Component and check that component through the filter, then if match
-        # add a Dirty to that entity
-        # affected_entities is a custom mapping of 'observer' relationships between: component or str -> [entities]
-        # self.world.get_components() iterates over the entities having certain components 
+        """
+        Add the 'Dirty' component to all entities which have registered to be dependent on param 'Component'. 
+        
+            world:
+                entity1 : [Component1-instance, Component2-instance, Dirty]
+                                                                     ^^^^^
+
+        Dependencies are managed via 'affected_entities' which is a custom mapping of 'observer' relationships between: 
+
+            component or str -> [entities]
+
+        The idea is that if you modify the data in a particular component 'Component', then the entity is marked Dirty.
+
+        Similarly, if you modify the data in a model that various components of type 'Component' refer to, 
+        then all entities containing that Component are marked Dirty.
+
+        ## Example
+
+        Given the world
+
+            world:
+                entity1 : [Component1-instance, Component2-instance]
+                entity2 : [Component1-instance]
+                entity3 : [Component2-instance]
+
+        then calling
+
+            dirty(Component1)
+
+        would result in all entitites containing Component1 *instances* being marked Dirty:
+
+            world:
+                entity1 : [Component1-instance, Component2-instance, Dirty]         <--- Dirty added 👍
+                entity2 : [Component1-instance, Dirty]                              <--- Dirty added 👍
+                entity3 : [Component2-instance]                                     <--- not Dirty
+
+        ## Filtering 
+
+        If supplied, a filtering lambda is called on each instance of Component found, which reduces the number of
+        entities affected, because only Component instances that match the filter are counted.  Ideally the filter looks
+        at a particular Component instance attribute. 
+        
+        Thus if there are 10 entities each with a ModelRef component, each of which has a unique 'key' value, the custom
+        'affected_entities' entry would look like
+        
+            ModelRef -> [entity1 ... entity10],
+        
+        but ideally and abstractly should look like this, to be efficient
+        
+            ModelRef, with key=a -> [entity1],
+            ModelRef, with key=b -> [entity2],
+            ModelRef, with key=c -> [entity3, entity4],
+
+        and ideally, to mark things as dirty we call something like 
+        
+            dirty("ModelRef, with key=b")
+            
+        But this is not a good implementation because one would have to have 10 entries in the 'affected_entities' dict,
+        one for each unique key.
+        
+        By using the filtering implementation, we keep the original idea of having a single entry in the
+        'affected_entities' dict (which is nicer than having 10 separate entries, albiet that single entry does have a
+        lot of entities listed in the entitity dependencies list)
+        
+            ModelRef -> [entity1 ... entity10],
+
+        and instead we call
+
+            dirty(ModelRef, 
+                  lambda component : component.key == "surname",     <--- this is the magic lambda
+                  filter_nice_name="surname")
+
+        Note: 'filter_nice_name' is a nice printable name for the lambda e.g. what key it is using, for logging purposes.
+
+        ## Using a string instrad of Component type as a dirty signal (param to dirty)
+
+        Component can be a string instead of a Component class type.  This allows for custom more nuanced 'affected_entities'
+        mappings.  Filters are not applicable to dirty() calls involving such strings, because caller 
+
+            do.add_dependency("just top", [entity_welcome_left, entity_welcome_user_right])
+
+            do.dirty("just top", 
+                     lambda component : component.key == "surname"  <---- doesn't make sense cos can't find component based on str signal
+                     )
+
+        What would such a lambda mean?  It can't receive a component instance because a string signal just gives us a list of
+        entities to dirty - no components involved.  We just intend to add Dirty to each entity. viz. let's walk through the logic:
+        dirty() would look at the first entity 'entity_welcome_left' and since it is not a Component type, it is impossible to 
+        try to retrieve a Component instance for that specific Entity.
+        """
+
+        # Logging
         filter_msg = f"filter '{filter_nice_name}'" if component_filter_f else "no filter"
         print(f"dirty called on dependent entities of Component={Component} which are {self.affected_entities[Component]} with", filter_msg)
-        for mediator in self.affected_entities[Component]:
 
-            if type(Component) == str:
-                print(f"\tSkipping optimised lookup for '{Component}' since it is a str key not a real component.")
-                component_filter_f = None  # stop the filter from running on a nonexistant component
-            else:
+        for entity in self.affected_entities[Component]:
+
+            if type(Component) != str:
                 try:
-                    component = self.world.component_for_entity(mediator, Component)  # actual component
+                    component = self.world.component_for_entity(entity, Component)  # retrieve an actual Component instance for a specific Entity
                 except KeyError:
-                    raise RuntimeError(f"Error in the affected_entities dict: entity {mediator} should not be listed as depending on {Component}.")
+                    raise RuntimeError(f"Error in the affected_entities dict: entity {entity} should not be listed as depending on {Component}.")
 
             if component_filter_f:
-                found = component_filter_f(component)
-                # if found:
-                #     print(f"\tfor entity/mediator {mediator} filter result=", found, end=", ")
-                # else:
-                #     print(f"\t", end="")
+                found = component_filter_f(component)  # call the filter, passing the component instance, to see if this entity should be skipped
             else:
                 found = True
             if found:
-                print(f"\tcomponent Dirty added to entity.mediator {mediator}")
-                self.world.add_component(mediator, Dirty())
+                print(f"\tcomponent Dirty added to entity {entity}")
+                self.world.add_component(entity, Dirty())
