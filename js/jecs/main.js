@@ -14,9 +14,6 @@ class MultiModelRef {  // Refers to multiple model fields, since can only have o
     this.refs = refs;  // list of ModelRef
   }
 }
-// class ComponentModelWelcome extends ModelRef {}
-// class ComponentModelFirstname extends ModelRef {}
-// class ComponentModelSurname extends ModelRef {}
 
 class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
   constructor(ref) {
@@ -35,14 +32,6 @@ entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, 'welcome_msg
 entity_welcome_left.setComponent('c_gui_div', new ComponentGuiDiv('welcome'))  // id of div to hold welcome message, top left
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
-
-// let mmr = new MultiModelRef(
-//   [
-//     new ModelRef(model, 'welcome_msg'),
-//     new ModelRef(model["user"], 'name'),
-//     new ModelRef(model["user"], 'surname'),
-//   ])
-// entity_welcome_user_right.setComponent('c_multi_model_ref', mmr);
 entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
   [
     new ModelRef(model, 'welcome_msg'),
@@ -77,20 +66,6 @@ world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {
   }
 });
 
-// OLD
-// world.system('extract-welcome-system', ['c_welcome'], (entity, {c_welcome}) => {
-//   c_welcome.finalstr = c_welcome.model[c_welcome.key]
-//   console.log("c_welcome.finalstr", c_welcome.finalstr)
-// });
-// world.system('extract-firstname-system', ['c_firstname'], (entity, {c_firstname}) => {
-//   c_firstname.finalstr = c_firstname.model[c_firstname.key]
-//   console.log("c_firstname.finalstr", c_firstname.finalstr)
-// });
-// world.system('extract-surname-system', ['c_surname'], (entity, {c_surname}) => {
-//   c_surname.finalstr = c_surname.model[c_surname.key]
-//   console.log("c_surname.finalstr", c_surname.finalstr)
-// });
-
 // Case transform
 
 world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_uppercase_welcome'], (entity, {c_model_ref, c_uppercase_welcome}) => {
@@ -106,21 +81,6 @@ world.system('case-transform-uppercase_all', ['c_multi_model_ref', 'c_uppercase_
   for (const c_model_ref of c_multi_model_ref.refs)
     c_model_ref.finalstr = c_model_ref.finalstr.toUpperCase()
 });
-
-// OLD
-// world.system('case-transform-uppercase-welcome', ['c_welcome', 'c_uppercase_welcome'], (entity, {c_welcome, c_uppercase_welcome}) => {
-//   c_welcome.finalstr = c_welcome.finalstr.toUpperCase()
-// });
-// world.system('case-transform-uppercase_all-welcome', ['c_welcome', 'c_uppercase_all'], (entity, {c_welcome, c_uppercase_all}) => {
-//   c_welcome.finalstr = c_welcome.finalstr.toUpperCase()
-// });
-// world.system('case-transform-uppercase_all-firstname', ['c_firstname', 'c_uppercase_all'], (entity, {c_firstname, c_uppercase_all}) => {
-//   c_firstname.finalstr = c_firstname.finalstr.toUpperCase()
-// });
-// world.system('case-transform-uppercase_all-surname', ['c_surname', 'c_uppercase_all'], (entity, {c_surname, c_uppercase_all}) => {
-//   c_surname.finalstr = c_surname.finalstr.toUpperCase()
-// });
-
 
 // Render Systems
 
@@ -139,26 +99,6 @@ world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_div'], (ent
 world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entity, {c_model_ref, c_gui_input}) => {
   $(`input[name=${c_gui_input.ref}]`).val(c_model_ref.finalstr)
 });
-
-// OLD
-// world.system('render-system-top-left', ['c_welcome', 'c_gui_div'], (entity, {c_welcome, c_gui_div}) => {
-//   $('#' + c_gui_div.ref).html(c_welcome.finalstr)
-// });
-
-// world.system('render-system-top-right', ['c_welcome', 'c_firstname', 'c_surname', 'c_gui_div'], (entity, {c_welcome, c_firstname, c_surname, c_gui_div}) => {
-//   $('#' + c_gui_div.ref).html(`${c_welcome.finalstr} ${c_firstname.finalstr} ${c_surname.finalstr}`)
-// });
-
-// world.system('render-system-welcome-text-input', ['c_welcome', 'c_gui_input'], (entity, {c_welcome, c_gui_input}) => {
-//   $(`input[name=${c_gui_input.ref}]`).val(c_welcome.finalstr)
-// });
-// world.system('render-system-firstname-text-input', ['c_firstname', 'c_gui_input'], (entity, {c_firstname, c_gui_input}) => {
-//   $(`input[name=${c_gui_input.ref}]`).val(c_firstname.finalstr)
-// });
-// world.system('render-system-surname-text-input', ['c_surname', 'c_gui_input'], (entity, {c_surname, c_gui_input}) => {
-//   $(`input[name=${c_gui_input.ref}]`).val(c_surname.finalstr)
-// });
-
 
 // Util
 
