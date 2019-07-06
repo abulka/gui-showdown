@@ -68,8 +68,8 @@ class MediatorWelcomeLeft {
   }
   
   notify(target, data) {
-      console.log(`notification from: ${target.constructor.name} data: ${data}`)
-      assert(target == this.welcome)
+      console.log(`notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
+      // assert(target == this.welcome || target == null)  // can get target of null when check 2 is triggered
       let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
       $('#' + this.gui_div).html(msg)
   }
@@ -86,15 +86,15 @@ class MediatorWelcomeUserRight {
   
   notify(target, data) {
     let msg
-    console.log(`notification from: ${target.constructor.name} data: ${data}`)
-    assert(target == this.welcome || target == this.user)
+    console.log(`notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
+    assert(target == this.welcome || target == this.user || target == null)
 
     if (this.uppercase_all) {
       msg = `$${this.welcome.message} $${this.user.firstname} ${this.user.surname}`
-      msg = msg.upper()
+      msg = msg.toUpperCase()
     }
     else if (this.uppercase_welcome)
-      msg = `${this.welcome.message.upper()} ${this.user.firstname} ${this.user.surname}`
+      msg = `${this.welcome.message.toUpperCase()} ${this.user.firstname} ${this.user.surname}`
     else
       msg = `${this.welcome.message} ${this.user.firstname} ${this.user.surname}`
 
@@ -249,9 +249,9 @@ class MediatorEditUserSurName {
 //     model_welcome_toggle()
 // }
 
-// function model_welcome_toggle() {
-//   model["welcome_msg"] = $('input[name=check1]').prop('checked') ? model["welcome_msg"].toUpperCase() : model["welcome_msg"].toLowerCase()
-// }
+function model_welcome_toggle() {
+  model.welcome.message = $('input[name=check1]').prop('checked') ? model.welcome.message.toUpperCase() : model.welcome.message.toLowerCase()
+}
 
 $('#reset-welcome').on('click', function(e) {
   model.welcome.message = "Hello"
@@ -265,17 +265,14 @@ $('#reset-user').on('click', function(e) {
 $("input[name=check1]").change(function(e) {  // on_check_welcome_model
   // toggle the case of the model's welcome message
   model_welcome_toggle()
-  world.tick()
 })
 
 $("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs_only
   // toggle the case of the welcome output messages only - do not affect model
-  add_or_remove_component(world, 
-                          $('input[name=check2]').prop('checked'), 
-                          'c_uppercase_welcome', 
-                          ComponentUppercaseWelcome, 
-                          [entity_welcome_left, entity_welcome_user_right])
-  world.tick()
+  mediator_welcome_left.uppercase_welcome = $('input[name=check2]').prop('checked')
+  mediator_welcome_user_right.uppercase_welcome = $('input[name=check2]').prop('checked')
+  mediator_welcome_left.notify(null, "checked event")  // bit weird having target=null
+  mediator_welcome_user_right.notify(null, "checked event")
 })
 
 $("input[name=check3]").change(function(e){
