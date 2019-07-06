@@ -69,8 +69,35 @@ class MediatorWelcomeLeft {
   
   notify(target, data) {
       console.log(`notification from: ${target.constructor.name} data: ${data}`)
-      let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
       assert(target == this.welcome)
+      let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
+      $('#' + this.gui_div).html(msg)
+  }
+}
+
+class MediatorWelcomeUserRight {
+  constructor(welcome_model, user_model, id) {
+    this.welcome = welcome_model
+    this.user = user_model
+    this.gui_div = id
+    this.uppercase_welcome = false
+    this.uppercase_all = false
+  }
+  
+  notify(target, data) {
+    let msg
+    console.log(`notification from: ${target.constructor.name} data: ${data}`)
+    assert(target == this.welcome || target == this.user)
+
+    if (this.uppercase_all) {
+      msg = `$${this.welcome.message} $${this.user.firstname} ${this.user.surname}`
+      msg = msg.upper()
+    }
+    else if (this.uppercase_welcome)
+      msg = `${this.welcome.message.upper()} ${this.user.firstname} ${this.user.surname}`
+    else
+      msg = `${this.welcome.message} ${this.user.firstname} ${this.user.surname}`
+
       $('#' + this.gui_div).html(msg)
   }
 }
@@ -254,7 +281,11 @@ $('#render-now').on('click', function(e) {
 
 model = new Model(new Welcome(), new User())
 mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
+mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
+
+// Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
+model.welcome.add_observer(mediator_welcome_user_right)
 
 // world.tick()
 model.dirty_all()  // initialise the gui with initial model values
