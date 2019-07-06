@@ -46,13 +46,13 @@ class User extends Subject {
 
 class Model {
   constructor(welcome_model, user_model) {
-      this.welcome_model = welcome_model
-      this.user_model = user_model
+      this.welcome = welcome_model
+      this.user = user_model
     }
   
     dirty_all() {
-      this.welcome_model.notifyall("init dirty")
-      this.user_model.notifyall("init dirty")
+      this.welcome.notifyall("init dirty")
+      this.user.notifyall("init dirty")
     }
 }
 
@@ -253,8 +253,8 @@ $('#render-now').on('click', function(e) {
 //
 
 model = new Model(new Welcome(), new User())
-mediator_welcome_left = new MediatorWelcomeLeft(model.welcome_model, "welcome")
-model.welcome_model.subscribe(mediator_welcome_left)  // todo rename addobserver
+mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
+model.welcome.add_observer(mediator_welcome_left)
 
 // world.tick()
 model.dirty_all()  // initialise the gui with initial model values

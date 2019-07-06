@@ -8,6 +8,9 @@ class Subject {
     subscribe(observer) {
         this.observers.push(observer)
     }
+    add_observer(observer) {  // psudonym for subscribe
+        this.subscribe(observer)
+    }
 
     unsubscribe(observer) {
         let index = this.observers.indexOf(observer)
