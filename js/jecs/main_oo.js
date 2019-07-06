@@ -102,6 +102,19 @@ class MediatorWelcomeUserRight {
   }
 }
 
+class MediatorEditWelcome {
+  constructor(welcome_model, id) {
+    this.welcome = welcome_model
+    this.gui_input = id  // name (not id) of input to hold welcome message
+  }
+  
+  notify(target, data) {
+    console.log(`notification from: ${target.constructor.name} data: ${data}`)
+    assert(target == this.welcome)
+    $(`input[name=${this.gui_input}]`).val(this.welcome.message)
+  }
+}
+
 
 // const world = new Ecs();
 
@@ -282,10 +295,12 @@ $('#render-now').on('click', function(e) {
 model = new Model(new Welcome(), new User())
 mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
 mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
+mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
 model.welcome.add_observer(mediator_welcome_user_right)
+model.welcome.add_observer(mediator_edit_welcome_msg)
 
 // world.tick()
 model.dirty_all()  // initialise the gui with initial model values
