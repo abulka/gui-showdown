@@ -227,7 +227,7 @@ class MyFrame1A(MyFrame1):
         model.user.surname = frame.m_textCtrl3.GetValue()
 
     def onClickRenderNow(self, event):
-        pass
+        model.dirty_all()
 
 
 #

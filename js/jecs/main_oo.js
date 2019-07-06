@@ -286,22 +286,19 @@ $("input[name=check3]").change(function(e){
 // });
 
 $("input[name=welcome]").change(function(e) {  // on_enter_welcome
-    model["welcome_msg"] = $(e.target).val()
-    world.tick()
+  model.welcome.message = $(e.target).val()
 })
 
 $("input[name=firstname]").change(function(e) {  // on_enter_user_firstname
-  model["user"]["name"] = $(e.target).val()
-    world.tick()
+  model.user.firstname = $(e.target).val()
 })
 
 $("input[name=surname]").change(function(e) {  // on_enter_user_surname
-  model["user"]["surname"] = $(e.target).val()
-    world.tick()
+  model.user.surname = $(e.target).val()
 })
 
 $('#render-now').on('click', function(e) {
-  world.tick()
+  model.dirty_all()
 })
 
 
