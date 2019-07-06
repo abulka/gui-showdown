@@ -1,0 +1,90 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Gui wired via Vue">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <style lang="text/css">
+      .row {
+        display: flex;
+      }
+
+      .column {
+        flex: 33.33%;
+        padding: 5px;
+      }    
+      .yell {
+        background-color: rgb(244, 241, 173);
+      }
+      .bl {
+        background-color: rgb(166, 186, 242);
+        margin: 4px;
+      }
+    </style>
+
+
+  </head>
+
+  <body>
+    <div id="title">
+      <h1>Gui wired via Vue</h1>
+    </div>
+
+    <form id="app">
+      <div class="row yell">
+        <div id="welcome" class="column">{{welcome_msg}}</div>
+        <div id="welcome-user" class="column bl">{{welcome_user_msg}}</div>
+      </div>
+      <br>
+      Welcome Message (model): <input v-model="welcome_msg" type="text" name="welcome"><br>
+      <br>
+      User (model): <input v-model="user.name" type="text" name="firstname"> <input v-model="user.surname" type="text" name="surname">
+      <br>
+      <br>
+
+      <label><input type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)</label><br>
+      <br>
+      <label><input type="checkbox" name="check2" value="check2"> Change case of welcome message (display only, not via model)</label><br>
+      <br>
+      <label><input type="checkbox" name="check3" value="check3"> Change case of top right message</label><br>
+      <br>
+
+      <button type="button" id="reset-welcome">Reset Welcome</button>
+      <br>
+      <br>
+      <button type="button" id="reset-user">Reset User</button>
+      <br>
+      <br>
+      <button type="button" id="render-now">Render Now</button>
+
+    </form>
+
+    <br>
+    <br>
+    <hr>
+    <div id="game">
+      
+
+      <div id="log-cont">
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+
+    <script src="main_vue.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+
+      });
+    </script>
+  </body>
+</html>
+
