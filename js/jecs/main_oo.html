@@ -1,0 +1,92 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Gui wired via OO">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <script src="observer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <style lang="text/css">
+      .row {
+        display: flex;
+      }
+
+      .column {
+        flex: 33.33%;
+        padding: 5px;
+      }    
+      .yell {
+        background-color: rgb(244, 241, 173);
+      }
+      .bl {
+        background-color: rgb(166, 186, 242);
+        margin: 4px;
+      }
+    </style>
+
+
+  </head>
+
+  <body>
+    <div id="title">
+      <h1>Gui wired via ESC</h1>
+    </div>
+
+    <form>
+      <div class="row yell">
+        <div id="welcome" class="column"></div>
+        <div id="welcome-user" class="column bl"></div>
+      </div>
+      <br>
+      Welcome Message (model): <input type="text" name="welcome"><br>
+      <br>
+      User (model): <input type="text" name="firstname"> <input type="text" name="surname">
+      <br>
+      <br>
+
+      <label><input type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)</label><br>
+      <br>
+      <label><input type="checkbox" name="check2" value="check2"> Change case of welcome message (display only, not via model)</label><br>
+      <br>
+      <label><input type="checkbox" name="check3" value="check3"> Change case of top right message</label><br>
+      <br>
+
+      <button type="button" id="reset-welcome">Reset Welcome</button>
+      <br>
+      <br>
+      <button type="button" id="reset-user">Reset User</button>
+      <br>
+      <br>
+      <button type="button" id="render-now">Render Now</button>
+
+    </form>
+
+    <br>
+    <br>
+    <hr>
+    <div id="game">
+      
+
+      <div id="log-cont">
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+    <p><a href="https://www.npmjs.com/package/jecs">hey here is the doco</a></p>
+
+
+    <script src="main_oo.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+
+      });
+    </script>
+  </body>
+</html>
+
