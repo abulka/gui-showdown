@@ -62,3 +62,4 @@ docs/_build
 
 .vscode/
 .pytest_cache/
+node_modules/
