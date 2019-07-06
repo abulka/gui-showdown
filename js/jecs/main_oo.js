@@ -90,7 +90,7 @@ class MediatorWelcomeUserRight {
     assert(target == this.welcome || target == this.user || target == null)
 
     if (this.uppercase_all) {
-      msg = `$${this.welcome.message} $${this.user.firstname} ${this.user.surname}`
+      msg = `${this.welcome.message} ${this.user.firstname} ${this.user.surname}`
       msg = msg.toUpperCase()
     }
     else if (this.uppercase_welcome)
@@ -277,12 +277,8 @@ $("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs
 
 $("input[name=check3]").change(function(e){
   // don't change the model - only the UI display
-  add_or_remove_component(world, 
-    $('input[name=check3]').prop('checked'), 
-    'c_uppercase_all', 
-    ComponentUppercaseAll, 
-    [entity_welcome_user_right])
-  world.tick()
+  mediator_welcome_user_right.uppercase_all = $('input[name=check3]').prop('checked')
+  mediator_welcome_user_right.notify(null, "checked event")
 });
 
 // $("input").change(function(){
