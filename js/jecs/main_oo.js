@@ -115,6 +115,32 @@ class MediatorEditWelcome {
   }
 }
 
+class MediatorEditUserFirstName {
+  constructor(user_model, id) {
+    this.user = user_model
+    this.gui_input = id
+  }
+  
+  notify(target, data) {
+    console.log(`notification from: ${target.constructor.name} data: ${data}`)
+    assert(target == this.user)
+    $(`input[name=${this.gui_input}]`).val(this.user.firstname)
+  }
+}
+
+class MediatorEditUserSurName {
+  constructor(user_model, id) {
+    this.user = user_model
+    this.gui_input = id
+  }
+  
+  notify(target, data) {
+    console.log(`notification from: ${target.constructor.name} data: ${data}`)
+    assert(target == this.user)
+    $(`input[name=${this.gui_input}]`).val(this.user.surname)
+  }
+}
+
 
 // const world = new Ecs();
 
@@ -228,14 +254,12 @@ class MediatorEditWelcome {
 // }
 
 $('#reset-welcome').on('click', function(e) {
-  model_setter_welcome("Hello")  // so that welcome uppercase toggle is respected
-  world.tick()
+  model.welcome.message = "Hello"
 })
 
 $('#reset-user').on('click', function(e) {
-  model["user"]["name"] = "Fred"
-  model["user"]["surname"] = "Flinstone"
-  world.tick()
+  model.user.firstname = "Fred"
+  model.user.surname = "Flinstone"
 })
 
 $("input[name=check1]").change(function(e) {  // on_check_welcome_model
@@ -296,11 +320,16 @@ model = new Model(new Welcome(), new User())
 mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
 mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
 mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
+mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
+mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
 model.welcome.add_observer(mediator_welcome_user_right)
 model.welcome.add_observer(mediator_edit_welcome_msg)
+model.user.add_observer(mediator_welcome_user_right)
+model.user.add_observer(mediator_edit_user_name_msg)
+model.user.add_observer(mediator_edit_user_surname_msg)
 
 // world.tick()
 model.dirty_all()  // initialise the gui with initial model values
