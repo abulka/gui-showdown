@@ -2,7 +2,7 @@
 // Model - The Welcome model and User model are Observable.
 //
 
-model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
+model = {"welcome_msg": "Welcome", "user": {"firstname": "Sam", "surname": "Smith"}}
 
 // Vue magic - a mediating observer + more
 
@@ -18,16 +18,7 @@ var vm = new Vue({
     toggle_welcome_model: function (data) {
       this.model.welcome_msg = this.welcome_model_uppercased ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg.toLowerCase()
     },
-    // dump: function() { 
-    //   $('#log').html(syntaxHighlight(JSON.stringify(this._data, null, 2)))  // debug, display entire vue data incl. sub ref to shared model
-    // }
   },
-  // updated() {
-  //   this.dump()
-  // },  
-  // mounted() {
-  //   this.dump()
-  // },  
   computed: {
     welcome_msg: function() { 
       let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
@@ -35,7 +26,7 @@ var vm = new Vue({
     },
     welcome_user_msg: function() { 
       let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
-      let firstname = this.model.user.name
+      let firstname = this.model.user.firstname
       let surname = this.model.user.surname
       if (this.uppercase_all) {
         firstname = firstname.toUpperCase()
@@ -58,6 +49,6 @@ $('#reset-welcome').on('click', function(e) {
 })
 
 $('#reset-user').on('click', function(e) {
-  model.user.name = "Fred"
+  model.user.firstname = "Fred"
   model.user.surname = "Flinstone"
 })
