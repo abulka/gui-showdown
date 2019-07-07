@@ -17,7 +17,7 @@ import wx.xrc
 class MyFrame1 ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 486,360 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 486,479 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -81,20 +81,56 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer1.Add( bSizer3, 1, wx.EXPAND, 5 )
 
-		self.m_checkBox1 = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer1.Add( self.m_checkBox1, 0, wx.ALL, 5 )
+		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, u"Model Manipulations", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText5.Wrap( -1 )
 
-		self.m_checkBox1A = wx.CheckBox( self, wx.ID_ANY, u"Change case of welcome message (display only, not via model)", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer1.Add( self.m_checkBox1A, 0, wx.ALL, 5 )
+		self.m_staticText5.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Lucida Grande" ) )
 
-		self.m_checkBox2 = wx.CheckBox( self, wx.ID_ANY, u"Change case of top right message", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer1.Add( self.m_checkBox2, 0, wx.ALL, 5 )
+		bSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 
-		self.m_button1 = wx.Button( self, wx.ID_ANY, u"Reset Welcome Message", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer1.Add( self.m_button1, 0, wx.ALL, 5 )
+		bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_button31 = wx.Button( self, wx.ID_ANY, u"Change Case of Welcome Model", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer7.Add( self.m_button31, 0, wx.ALL, 5 )
+
+		self.m_button1 = wx.Button( self, wx.ID_ANY, u"Reset Welcome", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer7.Add( self.m_button1, 0, wx.ALL, 5 )
+
+
+		bSizer1.Add( bSizer7, 1, wx.EXPAND, 5 )
+
+		bSizer6 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_button32 = wx.Button( self, wx.ID_ANY, u"Change Case of User Model", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer6.Add( self.m_button32, 0, wx.ALL, 5 )
 
 		self.m_button3 = wx.Button( self, wx.ID_ANY, u"Reset User", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer1.Add( self.m_button3, 0, wx.ALL, 5 )
+		bSizer6.Add( self.m_button3, 0, wx.ALL, 5 )
+
+
+		bSizer1.Add( bSizer6, 1, wx.EXPAND, 5 )
+
+		self.m_staticText51 = wx.StaticText( self, wx.ID_ANY, u"Display Options", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText51.Wrap( -1 )
+
+		self.m_staticText51.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Lucida Grande" ) )
+
+		bSizer1.Add( self.m_staticText51, 0, wx.ALL, 5 )
+
+		self.m_checkBox1A = wx.CheckBox( self, wx.ID_ANY, u"Uppercase welcome message", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_checkBox1A, 0, wx.ALL, 5 )
+
+		self.m_checkBox1A1 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase user message", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_checkBox1A1, 0, wx.ALL, 5 )
+
+
+		bSizer1.Add( ( 0, 8), 0, wx.EXPAND, 5 )
+
+		self.m_checkBox2 = wx.CheckBox( self, wx.ID_ANY, u"Uppercase 'welcome user' message (top right)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer1.Add( self.m_checkBox2, 0, wx.ALL, 5 )
+
+
+		bSizer1.Add( ( 0, 10), 0, wx.EXPAND, 5 )
 
 		self.m_button_rendernow = wx.Button( self, wx.ID_ANY, u"Render Now", wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE )
 		bSizer1.Add( self.m_button_rendernow, 0, wx.ALL, 5 )
@@ -109,11 +145,13 @@ class MyFrame1 ( wx.Frame ):
 		self.m_textCtrl1.Bind( wx.EVT_TEXT_ENTER, self.on_enter_welcome )
 		self.m_textCtrl2.Bind( wx.EVT_TEXT_ENTER, self.on_enter_user_firstname )
 		self.m_textCtrl3.Bind( wx.EVT_TEXT_ENTER, self.on_enter_user_surname )
-		self.m_checkBox1.Bind( wx.EVT_CHECKBOX, self.on_check_welcome_model )
-		self.m_checkBox1A.Bind( wx.EVT_CHECKBOX, self.on_check_toggle_welcome_outputs_only )
-		self.m_checkBox2.Bind( wx.EVT_CHECKBOX, self.on_check_upper_entire_top_right_output )
+		self.m_button31.Bind( wx.EVT_BUTTON, self.on_button_change_welcome_model_case )
 		self.m_button1.Bind( wx.EVT_BUTTON, self.on_button_reset_welcome )
+		self.m_button32.Bind( wx.EVT_BUTTON, self.on_button_change_user_model_case )
 		self.m_button3.Bind( wx.EVT_BUTTON, self.on_button_reset_user )
+		self.m_checkBox1A.Bind( wx.EVT_CHECKBOX, self.on_check_toggle_welcome_outputs_only )
+		self.m_checkBox1A1.Bind( wx.EVT_CHECKBOX, self.on_check_toggle_user_outputs_only )
+		self.m_checkBox2.Bind( wx.EVT_CHECKBOX, self.on_check_upper_entire_top_right_output )
 		self.m_button_rendernow.Bind( wx.EVT_BUTTON, self.onClickRenderNow )
 
 	def __del__( self ):
@@ -130,19 +168,25 @@ class MyFrame1 ( wx.Frame ):
 	def on_enter_user_surname( self, event ):
 		event.Skip()
 
-	def on_check_welcome_model( self, event ):
-		event.Skip()
-
-	def on_check_toggle_welcome_outputs_only( self, event ):
-		event.Skip()
-
-	def on_check_upper_entire_top_right_output( self, event ):
+	def on_button_change_welcome_model_case( self, event ):
 		event.Skip()
 
 	def on_button_reset_welcome( self, event ):
 		event.Skip()
 
+	def on_button_change_user_model_case( self, event ):
+		event.Skip()
+
 	def on_button_reset_user( self, event ):
+		event.Skip()
+
+	def on_check_toggle_welcome_outputs_only( self, event ):
+		event.Skip()
+
+	def on_check_toggle_user_outputs_only( self, event ):
+		event.Skip()
+
+	def on_check_upper_entire_top_right_output( self, event ):
 		event.Skip()
 
 	def onClickRenderNow( self, event ):

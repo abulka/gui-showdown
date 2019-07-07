@@ -53,7 +53,10 @@ class ComponentUppercaseAll(Flag):
 
 
 class ComponentUppercaseWelcome(Flag):
-    pass  # flag to make upper left AND upper right (welcome portion ONLY) message uppercase or not
+    pass  # flag to make upper left AND upper right (welcome portion ONLY) uppercase or not
+
+class ComponentUppercaseUser(Flag):
+    pass  # flag to make upper right (user portion ONLY) uppercase or not
 
 
 @dataclass
@@ -132,14 +135,14 @@ class RenderProcessor(esper.Processor):
         do.dirty_all(False, entities=mediators)
 
 
-class HousekeepingProcessor(esper.Processor):
-    def process(self):
-        print("--Housekeeping System--")
+# class HousekeepingProcessor(esper.Processor):
+#     def process(self):
+#         print("--Housekeeping System--")
 
-        if frame.m_checkBox1.IsChecked():
-            frame.m_checkBox1A.Disable()
-        else:
-            frame.m_checkBox1A.Enable()
+#         if frame.m_checkBox1.IsChecked():
+#             frame.m_checkBox1A.Disable()
+#         else:
+#             frame.m_checkBox1A.Enable()
 
 
 class FunProcessor(esper.Processor):
@@ -163,23 +166,13 @@ def logsimple(component, entity):  # simple logging
     print(f"have set {component} for {nice_entity_name[entity]}")
 
 
-def model_setter_welcome(msg):
-    model["welcomemsg"] = msg
-    model_welcome_toggle()
-
-
-def model_welcome_toggle():
-    model["welcomemsg"] = model["welcomemsg"].upper() if frame.m_checkBox1.IsChecked() else model["welcomemsg"].lower()
-
-
 #
 # Frame with GUI events
 #
 
-
 class MyFrame1A(MyFrame1):
     def on_button_reset_welcome(self, event):
-        model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
+        model["welcomemsg"] = "Hello"
         do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
@@ -187,14 +180,22 @@ class MyFrame1A(MyFrame1):
     def on_button_reset_user(self, event):
         model["user"]["firstname"] = "Fred"
         model["user"]["surname"] = "Flinstone"
-        do.dirty(ModelRef)
+        do.dirty(ModelRef)  # could optimise with filters but don't bother, only one will be redundant
         do.dirty(MultiModelRef)
         world.process()
 
-    def on_check_welcome_model(self, event):
+    def on_button_change_welcome_model_case(self, event):
         # toggle the case of the model's welcome message
-        model_welcome_toggle()
+        model["welcomemsg"] = model["welcomemsg"].upper() if model["welcomemsg"][1].islower() else model["welcomemsg"].lower()
         do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
+        do.dirty(MultiModelRef)
+        world.process()
+
+    def on_button_change_user_model_case(self, event):
+        # toggle the case of the model's user message
+        model["user"]["firstname"] = model["user"]["firstname"].upper() if model["user"]["firstname"][1].islower() else model["user"]["firstname"].lower()
+        model["user"]["surname"] = model["user"]["surname"].upper() if model["user"]["surname"][1].islower() else model["user"]["surname"].lower()
+        do.dirty(ModelRef, lambda component : component.key == "firstname" or component.key == "surname", filter_nice_name="firstname or surname")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -207,6 +208,17 @@ class MyFrame1A(MyFrame1):
             entities=[entity_welcome_left, entity_welcome_user_right],
         )
         do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
+        world.process()
+
+    def on_check_toggle_user_outputs_only(self, event):
+        # toggle the case of the user output messages only - do not affect model
+        add_or_remove_component(
+            world,
+            condition=frame.m_checkBox1A1.IsChecked(),  # TODO PLEASE CHECK EVENT FOR TARGET!!!!
+            component_Class=ComponentUppercaseUser,
+            entities=[entity_welcome_user_right],
+        )
+        do.dirty("user display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def on_check_upper_entire_top_right_output(self, event):
@@ -256,8 +268,8 @@ world = esper.World()
 world.add_processor(ModelExtractProcessor())
 world.add_processor(CaseTransformProcessor())
 world.add_processor(RenderProcessor())
-world.add_processor(HousekeepingProcessor())
-world.add_processor(FunProcessor())
+# world.add_processor(HousekeepingProcessor())
+# world.add_processor(FunProcessor())
 
 entity_welcome_left = world.create_entity(
     ModelRef(model=model, key="welcomemsg"), ComponentGuiStaticText(ref=frame.m_staticText1)
@@ -309,6 +321,7 @@ do = DirtyObserver(world)
 do.add_dependency(ModelRef, [entity_welcome_left, entity_edit_welcome_msg, entity_edit_user_name_msg, entity_edit_user_surname_msg])
 do.add_dependency(MultiModelRef, [entity_welcome_user_right])
 do.add_dependency("welcome display only, not via model", [entity_welcome_left, entity_welcome_user_right])
+do.add_dependency("user display only, not via model", [entity_welcome_user_right])
 do.add_dependency("just top right", [entity_welcome_user_right])
 
 do.dirty_all(entities=mediators)  # initialise the gui with initial model values
