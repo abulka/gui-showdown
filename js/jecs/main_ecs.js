@@ -66,7 +66,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["use
 entity_edit_user_surname_msg.setComponent('c_gui_input', new GuiControlRef('surname'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {});  // possibly fill this in
+entity_dump_models.setComponent('c_debug_dump_options', {verbose: false});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
