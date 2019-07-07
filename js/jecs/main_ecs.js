@@ -9,7 +9,7 @@ model = {
     surname: "Smith"
   }
 }
-display_options = {
+display_options = {  // this object not actually needed because the flags are represented as components of entities
   uppercase_welcome: false,
   uppercase_user: false,
   uppercase_welcome_user: false,
@@ -39,9 +39,6 @@ class ComponentGuiDiv extends GuiControlRef {}
 class ComponentGuiInput extends GuiControlRef {}
 
 class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
-class ComponentUppercaseWelcome extends Flag {}
-class ComponentUppercaseUser extends Flag {}
-class ComponentUppercaseWelcomeUser extends Flag {}
 
 //
 // Wire up and build everything
@@ -210,7 +207,7 @@ $("input[name=uppercase_welcome]").change(function(e) {
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome', 
-    ComponentUppercaseWelcome, 
+    Flag, 
     [entity_welcome_left, entity_welcome_user_right])
   world.tick()
 })
@@ -222,7 +219,7 @@ $("input[name=uppercase_user]").change(function(e) {
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_user', 
-    ComponentUppercaseUser, 
+    Flag, 
     [entity_welcome_user_right])  
   world.tick()
 })
@@ -233,7 +230,7 @@ $("input[name=uppercase_welcome_user]").change(function(e) {
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome_user', 
-    ComponentUppercaseWelcomeUser, 
+    Flag, 
     [entity_welcome_user_right])
   world.tick()
 });
