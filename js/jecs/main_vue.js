@@ -2,7 +2,7 @@
 // Model - The Welcome model and User model are Observable.
 //
 
-model = {"welcome_msg": "Welcome", "user": {"firstname": "Sam", "surname": "Smith"}}
+model = {"welcomemsg": "Welcome", "user": {"firstname": "Sam", "surname": "Smith"}}
 
 // Vue magic - a mediating observer + more
 
@@ -10,45 +10,42 @@ var vm = new Vue({
   el:"#app",
   data: {
     model: model,  // shared state - could be a vuex one day
-    welcome_model_uppercased: false,
     uppercase_welcome: false,
-    uppercase_all: false,
+    uppercase_user: false,
+    uppercase_welcome_user: false,  // just the top right combined message
   },
   methods:  {
-    toggle_welcome_model: function (data) {
-      this.model.welcome_msg = this.welcome_model_uppercased ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg.toLowerCase()
+    _isUpperCaseAt(str, n) {  // util
+      return str[n]=== str[n].toUpperCase();
+    },
+    change_welcome_model: function (data) {
+      this.model.welcomemsg = this._isUpperCaseAt(this.model.welcomemsg, 1) ? this.model.welcomemsg.toLowerCase() : this.model.welcomemsg.toUpperCase()
+    },
+    change_user_model: function (data) {
+      this.model.user.firstname = this._isUpperCaseAt(this.model.user.firstname, 1) ? this.model.user.firstname.toLowerCase() : this.model.user.firstname.toUpperCase()
+      this.model.user.surname = this._isUpperCaseAt(this.model.user.surname, 1) ? this.model.user.surname.toLowerCase() : this.model.user.surname.toUpperCase()
+    },
+    reset_welcome_model: function (data) {
+      this.model.welcomemsg = "Hello"
+    },
+    reset_user_model: function (data) {
+      this.model.user.firstname = "Fred"
+      this.model.user.surname = "Flinstone"
     },
   },
   computed: {
     welcome_msg: function() { 
-      let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
+      let welcome = this.uppercase_welcome ? this.model.welcomemsg.toUpperCase() : this.model.welcomemsg
       return welcome
     },
     welcome_user_msg: function() { 
-      let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
-      let firstname = this.model.user.firstname
-      let surname = this.model.user.surname
-      if (this.uppercase_all) {
-        firstname = firstname.toUpperCase()
-        surname = surname.toUpperCase()
-      }
+      let welcome = (this.uppercase_welcome || this.uppercase_welcome_user) ? this.model.welcomemsg.toUpperCase() : this.model.welcomemsg
+      let firstname = (this.uppercase_user || this.uppercase_welcome_user) ? this.model.user.firstname.toUpperCase() : this.model.user.firstname
+      let surname = (this.uppercase_user || this.uppercase_welcome_user) ? this.model.user.surname.toUpperCase() : this.model.user.surname
       return welcome + ' ' + firstname + ' ' + surname 
     },
     dump_vue_data: function () {
       return syntaxHighlight(JSON.stringify(this._data, null, 2))
     }
   }
-})
-
-//
-// GUI events
-//
-
-$('#reset-welcome').on('click', function(e) {
-  model.welcome_msg = "Hello"
-})
-
-$('#reset-user').on('click', function(e) {
-  model.user.firstname = "Fred"
-  model.user.surname = "Flinstone"
 })

@@ -49,23 +49,24 @@
         <div id="welcome-user" class="column bl">{{welcome_user_msg}}</div>
       </div>
       <br>
-      Welcome Message (model): <input v-model="model.welcome_msg" type="text" name="welcome"><br>
+      Welcome Message (model): <input v-model="model.welcomemsg" type="text" name="welcome"><br>
       <br>
       User (model): <input v-model="model.user.firstname" type="text" name="firstname"> <input v-model="model.user.surname" type="text" name="surname">
       <br>
       <br>
 
       <h3>Model Manipulations</h3>
-      <label><input v-model="welcome_model_uppercased" @change="toggle_welcome_model($event)" type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)</label><br>
+      <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
+      <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
       <br>
-      <button type="button" id="reset-welcome">Reset Welcome</button>
+      <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
+      <button v-on:click="reset_user_model" type="button">Reset User</button>
       <br>
-      <br>
-      <button type="button" id="reset-user">Reset User</button>
       <h3>Display Options</h3>
-      <label><input v-model="uppercase_welcome" type="checkbox" name="check2" value="check2"> Change case of welcome message (display only, not via model)</label><br>
+      <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
+      <label><input v-model="uppercase_user" type="checkbox">Uppercase user message</label><br>
       <br>
-      <label><input v-model="uppercase_all" type="checkbox" name="check3" value="check3"> Change case of top right message</label><br>
+      <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
       <br>
 
       <h4>Debug</h4>
