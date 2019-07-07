@@ -9,7 +9,7 @@ Contains two wx python programs
 
 Contains three js programs
 
-- JQUERY plain (?? lines)  **TODO**
+- JQUERY plain (148 lines)
 - OO (300 lines)
 - ECS (212 lines)
 - VUE (57 lines)
