@@ -74,7 +74,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["use
 entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_models_to_dump', {});  // possibly fille this in
+entity_dump_models.setComponent('c_models_to_dump', {});  // possibly fill this in
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
@@ -144,8 +144,11 @@ world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_mode
   for (ent of Object.entries(world.entities)) {
     let entity_name = ent[0]
     let entity = ent[1]
-    // info.entities[entity_name] = Object.entries(entity.components)
-    info.entities[entity_name] = Object.keys(entity.components)
+
+    if (c_models_to_dump.verbose)
+      info.entities[entity_name] = Object.entries(entity.components)
+    else
+      info.entities[entity_name] = Object.keys(entity.components)
   }
   let part2 = syntaxHighlight(JSON.stringify(info, function(key, value) {
     // skip observers or circular references that will break the json dump
@@ -226,7 +229,7 @@ $("input[name=uppercase_user]").change(function(e) {
   world.tick()
 })
 
-$("input[name=uppercase_welcome_user]").change(function(e){
+$("input[name=uppercase_welcome_user]").change(function(e) {
   display_options.uppercase_welcome_user = $(e.target).prop('checked')
   // above is redundant because component has this info
   add_or_remove_component(world, 
@@ -234,6 +237,12 @@ $("input[name=uppercase_welcome_user]").change(function(e){
     'c_uppercase_welcome_user', 
     ComponentUppercaseWelcomeUser, 
     [entity_welcome_user_right])
+  world.tick()
+});
+
+$("input[name=verbose_debug]").change(function(e) {
+  let component = {verbose: $(e.target).prop('checked')}
+  entity_dump_models.setComponent('c_models_to_dump', component)  // replaces any existing component
   world.tick()
 });
 
