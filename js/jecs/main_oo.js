@@ -253,15 +253,15 @@ $("input[name=uppercase_welcome_user]").change(function(e){
   display_options.uppercase_welcome_user = $(e.target).prop('checked')
 });
 
-$("input[name=welcome]").change(function(e) {
+$( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
   model.welcome.message = $(e.target).val()
-})
+});
 
-$("input[name=firstname]").change(function(e) {
+$("input[name=firstname]").keypress(function(e) {
   model.user.firstname = $(e.target).val()
 })
 
-$("input[name=surname]").change(function(e) {
+$("input[name=surname]").keypress(function(e) {
   model.user.surname = $(e.target).val()
 })
 
