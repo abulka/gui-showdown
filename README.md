@@ -290,8 +290,37 @@ view_model = {
 }
 ```
 
-But no point adding more and more complexity till the flaws are worked out, or this approach
-abandoned.
+```javascript
+display_options = {  // this object not actually needed because the flags are represented as components of entities
+  uppercase_welcome: false,
+  uppercase_user: false,
+  uppercase_welcome_user: false,
+}
+```
+
+thus for ECS instead of 
+
+```javascript
+$("input[name=uppercase_welcome]").change(function(e) {
+  display_options.uppercase_welcome = $(e.target).prop('checked')
+  world.tick()
+})
+```
+
+we instead add a component to the entity list
+
+```javascript
+$("input[name=uppercase_welcome]").change(function(e) {
+  add_or_remove_component(world, 
+    $(e.target).prop('checked'), 
+    'c_uppercase_welcome', 
+    Flag, 
+    [entity_welcome_left, entity_welcome_user_right])
+  world.tick()
+})
+```
+
+the first approach is redundant because the presence of a component 'is' this info.
 
 # Evaluation So Far - Flaws
 

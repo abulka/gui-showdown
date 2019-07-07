@@ -9,13 +9,12 @@ model = {
     surname: "Smith"
   }
 }
-// display_options = {  // this object not actually needed because the flags are represented as components of entities
-//   uppercase_welcome: false,
-//   uppercase_user: false,
-//   uppercase_welcome_user: false,
-// }
 
 const world = new Ecs();
+
+//
+// Components
+//
 
 class ModelRef {  // Mediator (entity + this component) needs to know about model. Model specific
   constructor(model, key) {
@@ -29,13 +28,11 @@ class MultiModelRef {  // Refers to multiple model fields, since can only have o
     this.refs = refs;  // list of ModelRef
   }
 }
-
 class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
   constructor(ref) {
     this.ref = ref
   }
 }
-
 class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
 
 //
@@ -163,11 +160,6 @@ world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_
 
 // Util
 
-function model_setter_welcome(msg) {
-    model["welcome_msg"] = msg
-    model_welcome_toggle()
-}
-
 function isUpperCaseAt(str, n) {
   return str[n]=== str[n].toUpperCase();
 }
@@ -199,7 +191,6 @@ $('#reset_user_model').on('click', function(e) {
 })
 
 $("input[name=uppercase_welcome]").change(function(e) {
-  // display_options.uppercase_welcome = $(e.target).prop('checked')  // redundant because component has this info
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome', 
@@ -209,7 +200,6 @@ $("input[name=uppercase_welcome]").change(function(e) {
 })
 
 $("input[name=uppercase_user]").change(function(e) {
-  // display_options.uppercase_user = $(e.target).prop('checked')  // redundant because component has this info
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_user', 
@@ -219,7 +209,6 @@ $("input[name=uppercase_user]").change(function(e) {
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e) {
-  // display_options.uppercase_welcome_user = $(e.target).prop('checked')  // redundant because component has this info
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome_user', 
