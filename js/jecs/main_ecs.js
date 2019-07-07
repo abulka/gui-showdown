@@ -73,12 +73,10 @@ entity_dump_models.setComponent('c_debug_dump_options', {});  // possibly fill t
 world.system('extract-model-ref-system', ['c_model_ref'], (entity, {c_model_ref}) => {
   // Tip - the variables receiving the component must be named exactly the same as the component name
   c_model_ref.finalstr = c_model_ref.model[c_model_ref.key]
-  console.log("c_model_ref.finalstr", c_model_ref.finalstr)
 });
 world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {c_multi_model_ref}) => {
   for (const c_model_ref of c_multi_model_ref.refs) {
     c_model_ref.finalstr = c_model_ref.model[c_model_ref.key]
-    console.log("c_model_ref.finalstr", c_model_ref.finalstr)
   }
 });
 
