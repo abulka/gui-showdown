@@ -23,7 +23,8 @@ function isUpperCaseAt(str, n) {
 }  
 
 function update_welcome_top_left() {
-  $('#welcome').html(model.welcomemsg)
+  let msg = display_options.uppercase_welcome ? model.welcomemsg.toUpperCase() : model.welcomemsg
+  $('#welcome').html(msg)
 }
 
 function update_welcome_user_top_right() {
@@ -70,14 +71,18 @@ $('#reset_user_model').on('click', function(e) {
 
 $("input[name=uppercase_welcome]").change(function(e) {
   display_options.uppercase_welcome = $(e.target).prop('checked')
+  update_welcome_top_left()
+  update_welcome_user_top_right()
 })
 
 $("input[name=uppercase_user]").change(function(e) {
   display_options.uppercase_user = $(e.target).prop('checked')
+  update_welcome_user_top_right()
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e){
   display_options.uppercase_welcome_user = $(e.target).prop('checked')
+  update_welcome_user_top_right()
 });
 
 $( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
