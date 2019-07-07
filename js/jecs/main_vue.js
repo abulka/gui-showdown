@@ -18,16 +18,16 @@ var vm = new Vue({
     toggle_welcome_model: function (data) {
       this.model.welcome_msg = this.welcome_model_uppercased ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg.toLowerCase()
     },
-    dump: function() { 
-      $('#log').html(syntaxHighlight(JSON.stringify(this._data, null, 2)))  // debug, display entire vue data incl. sub ref to shared model
-    }
+    // dump: function() { 
+    //   $('#log').html(syntaxHighlight(JSON.stringify(this._data, null, 2)))  // debug, display entire vue data incl. sub ref to shared model
+    // }
   },
-  updated() {
-    this.dump()
-  },  
-  mounted() {
-    this.dump()
-  },  
+  // updated() {
+  //   this.dump()
+  // },  
+  // mounted() {
+  //   this.dump()
+  // },  
   computed: {
     welcome_msg: function() { 
       let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
@@ -42,6 +42,9 @@ var vm = new Vue({
         surname = surname.toUpperCase()
       }
       return welcome + ' ' + firstname + ' ' + surname 
+    },
+    dump_vue_data: function () {
+      return syntaxHighlight(JSON.stringify(this._data, null, 2))
     }
   }
 })
