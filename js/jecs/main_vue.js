@@ -7,8 +7,7 @@ model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
 // Vue magic - a mediating observer + more
 
 var vm = new Vue({
-  el:"#app",  //id 
-
+  el:"#app",
   data: {
     model: model,  // shared state - could be a vuex one day
     welcome_model_uppercased: false,
@@ -19,7 +18,16 @@ var vm = new Vue({
     toggle_welcome_model: function (data) {
       this.model.welcome_msg = this.welcome_model_uppercased ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg.toLowerCase()
     },
+    dump: function() { 
+      $('#log').html(syntaxHighlight(JSON.stringify(this._data, null, 2)))  // debug, display entire vue data incl. sub ref to shared model
+    }
   },
+  updated() {
+    this.dump()
+  },  
+  mounted() {
+    this.dump()
+  },  
   computed: {
     welcome_msg: function() { 
       let welcome = (this.uppercase_welcome || this.uppercase_all) ? this.model.welcome_msg.toUpperCase() : this.model.welcome_msg
@@ -49,8 +57,4 @@ $('#reset-welcome').on('click', function(e) {
 $('#reset-user').on('click', function(e) {
   model.user.name = "Fred"
   model.user.surname = "Flinstone"
-})
-
-$('#render-now').on('click', function(e) {
-  // not sure how to force a render
 })
