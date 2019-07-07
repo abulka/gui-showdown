@@ -1,0 +1,26 @@
+.row {
+    display: flex;
+  }
+
+  .column {
+    flex: 33.33%;
+    padding: 5px;
+  }    
+  .yell {
+    background-color: rgb(244, 241, 173);
+  }
+  .bl {
+    background-color: rgb(166, 186, 242);
+    margin: 4px;
+  }
+
+  /* syntax highlighting */
+
+  pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+  .string { color: green; }
+  .number { color: darkorange; }
+  .boolean { color: blue; }
+  .null { color: magenta; }
+  .key { color: red; }
+
+  
