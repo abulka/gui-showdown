@@ -35,8 +35,6 @@ class GuiControlRef {  // Mediator (entity + this component) needs to know about
     this.ref = ref
   }
 }
-class ComponentGuiDiv extends GuiControlRef {}
-class ComponentGuiInput extends GuiControlRef {}
 
 class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
 
@@ -46,7 +44,7 @@ class Flag {}  // Mediator (entity + this component) might have a flag to indica
 
 const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, 'welcomemsg'))
-entity_welcome_left.setComponent('c_gui_div', new ComponentGuiDiv('welcome'))  // id of div to hold welcome message, top left
+entity_welcome_left.setComponent('c_gui_div', new GuiControlRef('welcome'))  // id of div to hold welcome message, top left
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
 entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
@@ -56,19 +54,19 @@ entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
     new ModelRef(model["user"], 'surname'),
   ]
 ));
-entity_welcome_user_right.setComponent('c_gui_div', new ComponentGuiDiv('welcome-user'));  // id of div to hold welcome + user message, top right
+entity_welcome_user_right.setComponent('c_gui_div', new GuiControlRef('welcome-user'));  // id of div to hold welcome + user message, top right
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
 entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, 'welcomemsg'));
-entity_edit_welcome_msg.setComponent('c_gui_input', new ComponentGuiInput('welcome'));  // name (not id) of input to hold welcome message
+entity_edit_welcome_msg.setComponent('c_gui_input', new GuiControlRef('welcome'));  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
 entity_edit_user_name_msg.setComponent('c_model_ref', new ModelRef(model["user"], 'firstname'));
-entity_edit_user_name_msg.setComponent('c_gui_input', new ComponentGuiInput('firstname'));  // name (not id) of input to hold first name
+entity_edit_user_name_msg.setComponent('c_gui_input', new GuiControlRef('firstname'));  // name (not id) of input to hold first name
 
 const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
 entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["user"], 'surname'));
-entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
+entity_edit_user_surname_msg.setComponent('c_gui_input', new GuiControlRef('surname'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
 entity_dump_models.setComponent('c_debug_dump_options', {});  // possibly fill this in
