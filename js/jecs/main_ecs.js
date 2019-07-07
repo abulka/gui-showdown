@@ -139,49 +139,29 @@ world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_mode
   let part1 = syntaxHighlight(JSON.stringify(info, null, 2))
 
   
-  // don't display whole entity cos will be circular
-  info = {}
-  let entities = {}
+  info = {entities: {}}
+  // info.entities = Object.entries(world.entities) // this becomes circular, so loop through ourselves instead
   for (ent of Object.entries(world.entities)) {
-    console.log("HA", ent)
     let entity_name = ent[0]
     let entity = ent[1]
-
-    // entities[entity_name] = []  // push on more succinct component info one at a time
-    // let list_of_components = Object.entries(entity.components)
-    // for (comp of list_of_components) {
-    //   console.log("  YA", comp)
-    //   let component_name = comp[0]
-    //   let component_data = comp[1]
-    //   // entities[entity_name].push(component_name) // could add more about the component here... + toString(component_data)
-    //   entities[entity_name].push(component_data) // could add more about the component here... + toString(component_data)
-    //   }
-    // entity.components is an object (not a list ! so there won't be any duplicates of the same component), 
-    // with each attribute being a component object (which may be a custom class or just regular object/dict)
-    // a bit mind bending.  to report the type of each object would be tricky, cos relying on stringify to recurse for us and 
-    // we have no control on what's reported - or do we - perhaps we could modify the filter?
-    entities[entity_name] = Object.entries(entity.components)
+    info.entities[entity_name] = Object.entries(entity.components)
   }
-  // info.entities = Object.entries(world.entities)
-  info.entities = entities
-
   let part2 = syntaxHighlight(JSON.stringify(info, function(key, value) {
-    console.log("traversing", key, value)
-    // skip observers or circular references will break the json
+    // skip observers or circular references that will break the json dump
+
     if (key == 'model') { 
-      //console.log(value.id)  //value.id is undefined, so presumably this stops the json dump from proceeding deeper
       return '<see above>'
     } 
     else if (key == 'entity_dump_models') {
-      return 'this entity used to debug dump the world'
+      return undefined  // this entity used to debug dump the world, don't list it in debug info
     } 
     else {
       return value;
     }
 
   }, 2))
-  $('#debug_info').html(part1 + '<br>' + part2)
 
+  $('#debug_info').html(part1 + '<br>' + part2)
 });
 
 // Util
