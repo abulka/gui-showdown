@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
 
-    <script src="observer.js"></script>
+    <script src="observer_oo.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <link rel="stylesheet" href="main.css">
 
@@ -44,30 +44,14 @@
       <br>
 
       <h4>Debug</h4>
-      <pre v-html=dump_vue_data></pre>
+      <pre id=debug_info></pre>
 
     </form>
 
-    <br>
-    <br>
-    <hr>
-    <div id="game">
-      
-
-      <div id="log-cont">
-        <div id="log"></div>
-      </div>
-    </div>
-
-    <br>
-    <br>
-
-
+    <script src="syntax_highlighting.js"></script>
     <script src="main_oo.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
-
-
       });
     </script>
   </body>

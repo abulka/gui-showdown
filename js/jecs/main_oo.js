@@ -189,6 +189,36 @@ class DisplayOptions extends Subject {
   }  
 }
 
+class MediatorDumpModels {
+  constructor(id) {
+      this.gui_pre_id = id
+  }
+  
+  notify(target, data) {
+    console.log(`notification from: ${target.constructor.name} data: ${data}`)
+    let info = {
+      model: model,
+      display_options: display_options,
+      mediator_welcome_left: mediator_welcome_left,
+      mediator_welcome_user_right : mediator_welcome_user_right,
+      mediator_edit_welcome_msg : mediator_edit_welcome_msg,
+      mediator_edit_user_name_msg : mediator_edit_user_name_msg,
+      mediator_edit_user_surname_msg : mediator_edit_user_surname_msg,
+    }
+    $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, function(key, value) {
+
+        // skip observers or circular references will break the json
+        if (key == 'observers') { 
+          return value.id;
+        } else {
+          return value;
+        }
+
+    }, 2)))
+
+  }
+}
+
 //
 // GUI events
 //
@@ -214,6 +244,7 @@ $('#reset_user_model').on('click', function(e) {
 $("input[name=uppercase_welcome]").change(function(e) {
   display_options.uppercase_welcome = $(e.target).prop('checked')
 })
+
 $("input[name=uppercase_user]").change(function(e) {
   display_options.uppercase_user = $(e.target).prop('checked')
 })
@@ -249,6 +280,7 @@ mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
 mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
 display_options = new DisplayOptions()
+mediator_dump_models = new MediatorDumpModels("debug_info")
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
@@ -259,5 +291,9 @@ model.user.add_observer(mediator_edit_user_name_msg)
 model.user.add_observer(mediator_edit_user_surname_msg)
 display_options.add_observer(mediator_welcome_left)
 display_options.add_observer(mediator_welcome_user_right)
+// debug mediator 
+model.welcome.add_observer(mediator_dump_models)
+model.user.add_observer(mediator_dump_models)
+display_options.add_observer(mediator_dump_models)
 
 model.dirty_all()  // initialise the gui with initial model values
