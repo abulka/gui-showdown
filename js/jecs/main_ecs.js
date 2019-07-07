@@ -74,7 +74,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["use
 entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_models_to_dump', {});  // possibly fill this in
+entity_dump_models.setComponent('c_debug_dump_options', {});  // possibly fill this in
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
@@ -129,15 +129,13 @@ world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entit
   $(`input[name=${c_gui_input.ref}]`).val(c_model_ref.finalstr)
 });
 
-world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_models_to_dump}) => {
-  // could pass in some info in c_models_to_dump but let's not, just grab what we need from globals etc.
+world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
 
   let info = {
     model: model,
     display_options: display_options,
   }
   let part1 = syntaxHighlight(JSON.stringify(info, null, 2))
-
   
   info = {entities: {}}
   // info.entities = Object.entries(world.entities) // this becomes circular, so loop through ourselves instead
@@ -145,7 +143,7 @@ world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_mode
     let entity_name = ent[0]
     let entity = ent[1]
 
-    if (c_models_to_dump.verbose)
+    if (c_debug_dump_options.verbose)
       info.entities[entity_name] = Object.entries(entity.components)
     else
       info.entities[entity_name] = Object.keys(entity.components)
@@ -242,7 +240,7 @@ $("input[name=uppercase_welcome_user]").change(function(e) {
 
 $("input[name=verbose_debug]").change(function(e) {
   let component = {verbose: $(e.target).prop('checked')}
-  entity_dump_models.setComponent('c_models_to_dump', component)  // replaces any existing component
+  entity_dump_models.setComponent('c_debug_dump_options', component)  // replaces any existing component
   world.tick()
 });
 
