@@ -144,7 +144,8 @@ world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_mode
   for (ent of Object.entries(world.entities)) {
     let entity_name = ent[0]
     let entity = ent[1]
-    info.entities[entity_name] = Object.entries(entity.components)
+    // info.entities[entity_name] = Object.entries(entity.components)
+    info.entities[entity_name] = Object.keys(entity.components)
   }
   let part2 = syntaxHighlight(JSON.stringify(info, function(key, value) {
     // skip observers or circular references that will break the json dump
