@@ -34,9 +34,24 @@ function update_welcome_user_top_right() {
   $('#welcome-user').html(welcome + ' ' + firstname + ' ' + surname )
 }
 
+function update_edit_welcome_input() {
+  $('input[name=welcome]').val(model.welcomemsg)
+}
+
+function update_edit_firstname_input() {
+  $('input[name=firstname]').val(model.user.firstname)
+}
+
+function update_edit_surname_input() {
+  $('input[name=surname]').val(model.user.surname)
+}
+
 function update_all() {
   update_welcome_top_left()
   update_welcome_user_top_right()
+  update_edit_welcome_input()
+  update_edit_firstname_input()
+  update_edit_surname_input()
 }
 
 
@@ -49,24 +64,30 @@ $('#change_welcome_model').on('click', function(e) {
   model.welcomemsg = isUpperCaseAt(model.welcomemsg, 1) ? model.welcomemsg.toLowerCase() : model.welcomemsg.toUpperCase()
   update_welcome_top_left()
   update_welcome_user_top_right()
+  update_edit_welcome_input()
 })
 
 $('#change_user_model').on('click', function(e) {
   model.user.firstname = isUpperCaseAt(model.user.firstname, 1) ? model.user.firstname.toLowerCase() : model.user.firstname.toUpperCase()
   model.user.surname = isUpperCaseAt(model.user.surname, 1) ? model.user.surname.toLowerCase() : model.user.surname.toUpperCase()
   update_welcome_user_top_right()
+  update_edit_firstname_input()
+  update_edit_surname_input()
 })
 
 $('#reset_welcome_model').on('click', function(e) {
   model.welcomemsg = "Hello"
   update_welcome_top_left()
   update_welcome_user_top_right()
+  update_edit_welcome_input()
 })
 
 $('#reset_user_model').on('click', function(e) {
   model.user.firstname = "Fred"
   model.user.surname = "Flinstone"
   update_welcome_user_top_right()
+  update_edit_firstname_input()
+  update_edit_surname_input()
 })
 
 $("input[name=uppercase_welcome]").change(function(e) {
@@ -86,48 +107,23 @@ $("input[name=uppercase_welcome_user]").change(function(e){
 });
 
 $( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
-  model.welcome.message = $(e.target).val()
+  model.welcomemsg = $(e.target).val()
+  update_welcome_top_left()
+  update_welcome_user_top_right()
 });
 
 $("input[name=firstname]").keypress(function(e) {
   model.user.firstname = $(e.target).val()
+  update_welcome_user_top_right()
 })
 
 $("input[name=surname]").keypress(function(e) {
   model.user.surname = $(e.target).val()
+  update_welcome_user_top_right()
 })
 
 $('#render-now').on('click', function(e) {
-  model.dirty_all()
+  update_all()
 })
-
-// //
-// // Wire up and build everything
-// //
-
-// model = new Model(new Welcome(), new User())
-// mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
-// mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
-// mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
-// mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
-// mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
-// display_options = new DisplayOptions()
-// mediator_dump_models = new MediatorDumpModels("debug_info")
-
-// // Observer Wiring
-// model.welcome.add_observer(mediator_welcome_left)
-// model.welcome.add_observer(mediator_welcome_user_right)
-// model.welcome.add_observer(mediator_edit_welcome_msg)
-// model.user.add_observer(mediator_welcome_user_right)
-// model.user.add_observer(mediator_edit_user_name_msg)
-// model.user.add_observer(mediator_edit_user_surname_msg)
-// display_options.add_observer(mediator_welcome_left)
-// display_options.add_observer(mediator_welcome_user_right)
-// // debug mediator 
-// model.welcome.add_observer(mediator_dump_models)
-// model.user.add_observer(mediator_dump_models)
-// display_options.add_observer(mediator_dump_models)
-
-// model.dirty_all()  // initialise the gui with initial model values
 
 update_all()
