@@ -73,6 +73,9 @@ const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg'
 entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["user"], 'surname'));
 entity_edit_user_surname_msg.setComponent('c_gui_input', new ComponentGuiInput('surname'));  // name (not id) of input to hold first name
 
+const entity_dump_models = world.entity('entity_dump_models')
+entity_dump_models.setComponent('c_models_to_dump', {});  // possibly fille this in
+
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
 world.system('extract-model-ref-system', ['c_model_ref'], (entity, {c_model_ref}) => {
@@ -126,14 +129,40 @@ world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entit
   $(`input[name=${c_gui_input.ref}]`).val(c_model_ref.finalstr)
 });
 
-let info = {
-  model: model,
-  display_options: display_options,
+world.system('render-system-dump-models', ['c_models_to_dump'], (entity, {c_models_to_dump}) => {
+  // could pass in some info in c_models_to_dump but let's not, just grab what we need from globals etc.
 
-}
-world.system('render-system-dump-models', ['c_model_ref'], (entity, {c_model_ref}) => {
-  info.msg = "how do we display debug view of all components etc?, and only once"
-  $('#debug_info').html(syntaxHighlight(JSON.stringify(info, null, 2)))
+  let info = {
+    model: model,
+    display_options: display_options,
+  }
+  let part1 = syntaxHighlight(JSON.stringify(info, null, 2))
+
+  
+  // don't display whole entity cos will be circular
+  info = {}
+  let entities = {}
+  for (ent of Object.entries(world.entities)) {
+    console.log("HA", ent)
+    let entity_name = ent[0]
+    let entity = ent[1]
+    entities[entity_name] = Object.entries(entity.components)
+  }
+  // info.entities = Object.entries(world.entities)
+  info.entities = entities
+
+  let part2 = syntaxHighlight(JSON.stringify(info, function(key, value) {
+
+    // skip observers or circular references will break the json
+    if (key == 'model') { 
+      return value.id;
+    } else {
+      return value;
+    }
+
+  }, 2))
+  $('#debug_info').html(part1 + '<br>' + part2)
+
 });
 
 // Util
