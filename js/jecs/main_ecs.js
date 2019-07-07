@@ -221,7 +221,7 @@ $("input[name=uppercase_user]").change(function(e) {
     $(e.target).prop('checked'), 
     'c_uppercase_user', 
     ComponentUppercaseUser, 
-    [entity_welcome_left, entity_welcome_user_right])  
+    [entity_welcome_user_right])  
   world.tick()
 })
 
