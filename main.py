@@ -12,7 +12,7 @@ from esper_observer import DirtyObserver, Dirty
 # Model - The model is pure data.
 #
 
-model = {"welcome_msg": "Welcome", "user": {"name": "Sam", "surname": "Smith"}}
+model = {"welcomemsg": "Welcome", "user": {"firstname": "Sam", "surname": "Smith"}}
 
 #
 # Mediators - are implemented as Entities with a list of data-only Components
@@ -93,13 +93,13 @@ class CaseTransformProcessor(esper.Processor):
         print("--Case transform System---")
 
         for ent, (component, _, _) in self.world.get_components(ModelRef, ComponentUppercaseWelcome, Dirty):
-            if component.key == "welcome_msg":
+            if component.key == "welcomemsg":
                 component.finalstr = component.finalstr.upper()
                 logsimple(component, ent)
 
         for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseWelcome, Dirty):
             for model_ref in component.refs:
-                if model_ref.key == "welcome_msg":
+                if model_ref.key == "welcomemsg":
                     model_ref.finalstr = model_ref.finalstr.upper()
                     logsimple(component, ent)
 
@@ -114,7 +114,7 @@ class RenderProcessor(esper.Processor):
         print("--Render System--")
 
         for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiStaticText, Dirty):
-            if component.key == "welcome_msg":
+            if component.key == "welcomemsg":
                 print("render static text for", ent)
                 gui.ref.SetLabel(component.finalstr)
 
@@ -122,7 +122,7 @@ class RenderProcessor(esper.Processor):
         for ent, (component, guist, _) in self.world.get_components(MultiModelRef, ComponentGuiStaticText, Dirty):
             for model_ref in component.refs:
                 msg[model_ref.key] = model_ref.finalstr
-            guist.ref.SetLabel(f"{msg['welcome_msg']} {msg['name']} {msg['surname']}")
+            guist.ref.SetLabel(f"{msg['welcomemsg']} {msg['firstname']} {msg['surname']}")
             print("render staticText for", ent)
 
         for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiTextControl, Dirty):
@@ -164,12 +164,12 @@ def logsimple(component, entity):  # simple logging
 
 
 def model_setter_welcome(msg):
-    model["welcome_msg"] = msg
+    model["welcomemsg"] = msg
     model_welcome_toggle()
 
 
 def model_welcome_toggle():
-    model["welcome_msg"] = model["welcome_msg"].upper() if frame.m_checkBox1.IsChecked() else model["welcome_msg"].lower()
+    model["welcomemsg"] = model["welcomemsg"].upper() if frame.m_checkBox1.IsChecked() else model["welcomemsg"].lower()
 
 
 #
@@ -180,12 +180,12 @@ def model_welcome_toggle():
 class MyFrame1A(MyFrame1):
     def on_button_reset_welcome(self, event):
         model_setter_welcome("Hello")  # so that welcome uppercase toggle is respected
-        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
+        do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_button_reset_user(self, event):
-        model["user"]["name"] = "Fred"
+        model["user"]["firstname"] = "Fred"
         model["user"]["surname"] = "Flinstone"
         do.dirty(ModelRef)
         do.dirty(MultiModelRef)
@@ -194,7 +194,7 @@ class MyFrame1A(MyFrame1):
     def on_check_welcome_model(self, event):
         # toggle the case of the model's welcome message
         model_welcome_toggle()
-        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
+        do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -218,14 +218,14 @@ class MyFrame1A(MyFrame1):
         world.process()
 
     def on_enter_welcome(self, event):
-        model["welcome_msg"] = frame.m_textCtrl1.GetValue()
-        do.dirty(ModelRef, lambda component : component.key == "welcome_msg", filter_nice_name="welcome_msg")
+        model["welcomemsg"] = frame.m_textCtrl1.GetValue()
+        do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_firstname(self, event):
-        model["user"]["name"] = frame.m_textCtrl2.GetValue()
-        do.dirty(ModelRef, lambda component : component.key == "name", filter_nice_name="name")
+        model["user"]["firstname"] = frame.m_textCtrl2.GetValue()
+        do.dirty(ModelRef, lambda component : component.key == "firstname", filter_nice_name="firstname")
         do.dirty(MultiModelRef)
         world.process()
 
@@ -260,23 +260,23 @@ world.add_processor(HousekeepingProcessor())
 world.add_processor(FunProcessor())
 
 entity_welcome_left = world.create_entity(
-    ModelRef(model=model, key="welcome_msg"), ComponentGuiStaticText(ref=frame.m_staticText1)
+    ModelRef(model=model, key="welcomemsg"), ComponentGuiStaticText(ref=frame.m_staticText1)
 )
 
 entity_welcome_user_right = world.create_entity(
     MultiModelRef(refs=[
-        ModelRef(model=model, key="welcome_msg"),
-        ModelRef(model=model["user"], key="name"),
+        ModelRef(model=model, key="welcomemsg"),
+        ModelRef(model=model["user"], key="firstname"),
         ModelRef(model=model["user"], key="surname"),
         ]),
     ComponentGuiStaticText(ref=frame.m_staticText2),
 )
 
 entity_edit_welcome_msg = world.create_entity(
-    ModelRef(model=model, key="welcome_msg"), ComponentGuiTextControl(ref=frame.m_textCtrl1)
+    ModelRef(model=model, key="welcomemsg"), ComponentGuiTextControl(ref=frame.m_textCtrl1)
 )
 entity_edit_user_name_msg = world.create_entity(
-    ModelRef(model=model["user"], key="name"), ComponentGuiTextControl(ref=frame.m_textCtrl2)
+    ModelRef(model=model["user"], key="firstname"), ComponentGuiTextControl(ref=frame.m_textCtrl2)
 )
 entity_edit_user_surname_msg = world.create_entity(
     ModelRef(model=model["user"], key="surname"), ComponentGuiTextControl(ref=frame.m_textCtrl3)
