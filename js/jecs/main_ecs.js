@@ -126,6 +126,16 @@ world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entit
   $(`input[name=${c_gui_input.ref}]`).val(c_model_ref.finalstr)
 });
 
+let info = {
+  model: model,
+  display_options: display_options,
+
+}
+world.system('render-system-dump-models', ['c_model_ref'], (entity, {c_model_ref}) => {
+  info.msg = "how do we display debug view of all components etc?, and only once"
+  $('#debug_info').html(syntaxHighlight(JSON.stringify(info, null, 2)))
+});
+
 // Util
 
 function model_setter_welcome(msg) {
