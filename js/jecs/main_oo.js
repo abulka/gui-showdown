@@ -57,7 +57,7 @@ class Model {  // aggregates all the sub models into one housing
 }
 
 //
-// Mediators - are implemented as Observer classes, contain the behaviour
+// Mediators - are implemented as Observer classes, contain the display update behaviour plus refs to model and gui
 //
 
 class MediatorWelcomeLeft {
@@ -68,8 +68,13 @@ class MediatorWelcomeLeft {
   }
   
   notify(target, data) {
-      console.log(`notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
-      // assert(target == this.welcome || target == null)  // can get target of null when check 2 is triggered
+      console.log(`MediatorWelcomeLeft got notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
+
+      if (data == "display option change") {
+        const display_options = target
+        this.uppercase_welcome = display_options.uppercase_welcome
+      }
+
       let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
       $('#' + this.gui_div).html(msg)
   }
@@ -81,24 +86,25 @@ class MediatorWelcomeUserRight {
     this.user = user_model
     this.gui_div = id
     this.uppercase_welcome = false
-    this.uppercase_all = false
+    this.uppercase_user = false
+    this.uppercase_welcome_user = false
   }
   
   notify(target, data) {
     let msg
-    console.log(`notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
-    assert(target == this.welcome || target == this.user || target == null)
+    console.log(`MediatorWelcomeUserRight got notification from: ${target ? target.constructor.name : 'null'} data: ${data}`)
 
-    if (this.uppercase_all) {
-      msg = `${this.welcome.message} ${this.user.firstname} ${this.user.surname}`
-      msg = msg.toUpperCase()
+    if (data == "display option change") {
+      const display_options = target
+      this.uppercase_welcome = display_options.uppercase_welcome
+      this.uppercase_user = display_options.uppercase_user
+      this.uppercase_welcome_user = display_options.uppercase_welcome_user
     }
-    else if (this.uppercase_welcome)
-      msg = `${this.welcome.message.toUpperCase()} ${this.user.firstname} ${this.user.surname}`
-    else
-      msg = `${this.welcome.message} ${this.user.firstname} ${this.user.surname}`
 
-      $('#' + this.gui_div).html(msg)
+    let welcome = (this.uppercase_welcome || this.uppercase_welcome_user) ? this.welcome.message.toUpperCase() : this.welcome.message
+    let firstname = (this.uppercase_user || this.uppercase_welcome_user) ? this.user.firstname.toUpperCase() : this.user.firstname
+    let surname = (this.uppercase_user || this.uppercase_welcome_user) ? this.user.surname.toUpperCase() : this.user.surname
+    $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
   }
 }
 
@@ -141,56 +147,90 @@ class MediatorEditUserSurName {
   }
 }
 
+class DisplayOptions extends Subject {
+  constructor() {
+      super();
+      this._uppercase_welcome = false
+      this._uppercase_user = false
+      this._uppercase_welcome_user = false
+  }
 
-//
-// Util
-//
+  get uppercase_welcome() {
+    return this._uppercase_welcome
+  }
 
-function model_welcome_toggle() {
-  model.welcome.message = $('input[name=check1]').prop('checked') ? model.welcome.message.toUpperCase() : model.welcome.message.toLowerCase()
+  set uppercase_welcome(v) {
+    this._uppercase_welcome = v;
+    this.notifyall("display option change")
+  }
+
+  get uppercase_user() {
+    return this._uppercase_user
+  }
+
+  set uppercase_user(v) {
+    this._uppercase_user = v;
+    this.notifyall("display option change")
+  }
+
+  get uppercase_welcome_user() {
+    return this._uppercase_welcome_user
+  }
+
+  set uppercase_welcome_user(v) {
+    this._uppercase_welcome_user = v;
+    this.notifyall("display option change")
+  }
+
+  // util
+
+  isUpperCaseAt(str, n) {
+    return str[n]=== str[n].toUpperCase();
+  }  
 }
 
 //
 // GUI events
 //
 
-$('#reset-welcome').on('click', function(e) {
+$('#change_welcome_model').on('click', function(e) {
+  model.welcome.message = display_options.isUpperCaseAt(model.welcome.message, 1) ? model.welcome.message.toLowerCase() : model.welcome.message.toUpperCase()
+})
+
+$('#change_user_model').on('click', function(e) {
+  model.user.firstname = display_options.isUpperCaseAt(model.user.firstname, 1) ? model.user.firstname.toLowerCase() : model.user.firstname.toUpperCase()
+  model.user.surname = display_options.isUpperCaseAt(model.user.surname, 1) ? model.user.surname.toLowerCase() : model.user.surname.toUpperCase()
+})
+
+$('#reset_welcome_model').on('click', function(e) {
   model.welcome.message = "Hello"
 })
 
-$('#reset-user').on('click', function(e) {
+$('#reset_user_model').on('click', function(e) {
   model.user.firstname = "Fred"
   model.user.surname = "Flinstone"
 })
 
-$("input[name=check1]").change(function(e) {  // on_check_welcome_model
-  // toggle the case of the model's welcome message
-  model_welcome_toggle()
+$("input[name=uppercase_welcome]").change(function(e) {
+  display_options.uppercase_welcome = $(e.target).prop('checked')
+})
+$("input[name=uppercase_user]").change(function(e) {
+  display_options.uppercase_user = $(e.target).prop('checked')
 })
 
-$("input[name=check2]").change(function(e) {  // on_check_toggle_welcome_outputs_only
-  // toggle the case of the welcome output messages only - do not affect model
-  mediator_welcome_left.uppercase_welcome = $('input[name=check2]').prop('checked')
-  mediator_welcome_user_right.uppercase_welcome = $('input[name=check2]').prop('checked')
-  mediator_welcome_left.notify(null, "checked event")  // bit weird having target=null
-  mediator_welcome_user_right.notify(null, "checked event")
-})
-
-$("input[name=check3]").change(function(e){
-  // don't change the model - only the UI display
-  mediator_welcome_user_right.uppercase_all = $('input[name=check3]').prop('checked')
-  mediator_welcome_user_right.notify(null, "checked event")
+$("input[name=uppercase_welcome_user]").change(function(e){
+  display_options.uppercase_welcome_user = $(e.target).prop('checked')
 });
 
-$("input[name=welcome]").change(function(e) {  // on_enter_welcome
+$("input[name=welcome]").change(function(e) {
   model.welcome.message = $(e.target).val()
 })
 
-$("input[name=firstname]").change(function(e) {  // on_enter_user_firstname
+$("input[name=firstname]").change(function(e) {
   model.user.firstname = $(e.target).val()
 })
 
-$("input[name=surname]").change(function(e) {  // on_enter_user_surname
+$("input[name=surname]").change(function(e) {
   model.user.surname = $(e.target).val()
 })
 
@@ -208,6 +248,7 @@ mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.
 mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
 mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
+display_options = new DisplayOptions()
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
@@ -216,5 +257,7 @@ model.welcome.add_observer(mediator_edit_welcome_msg)
 model.user.add_observer(mediator_welcome_user_right)
 model.user.add_observer(mediator_edit_user_name_msg)
 model.user.add_observer(mediator_edit_user_surname_msg)
+display_options.add_observer(mediator_welcome_left)
+display_options.add_observer(mediator_welcome_user_right)
 
 model.dirty_all()  // initialise the gui with initial model values

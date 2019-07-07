@@ -29,6 +29,24 @@
       <br>
       <br>
 
+      <h3>Model Manipulations</h3>
+      <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
+      <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
+      <br>
+      <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
+      <button v-on:click="reset_user_model" type="button">Reset User</button>
+      <br>
+      <h3>Display Options</h3>
+      <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
+      <label><input v-model="uppercase_user" type="checkbox">Uppercase user message</label><br>
+      <br>
+      <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+      <br>
+
+      <h4>Debug</h4>
+      <pre v-html=dump_vue_data></pre>
+
+      <!-- <h3>Model Manipulations</h3>
       <label><input type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)</label><br>
       <br>
       <label><input type="checkbox" name="check2" value="check2"> Change case of welcome message (display only, not via model)</label><br>
@@ -36,13 +54,14 @@
       <label><input type="checkbox" name="check3" value="check3"> Change case of top right message</label><br>
       <br>
 
+      <h3>Display Options</h3>
       <button type="button" id="reset-welcome">Reset Welcome</button>
       <br>
       <br>
       <button type="button" id="reset-user">Reset User</button>
       <br>
       <br>
-      <button type="button" id="render-now">Render Now</button>
+      <button type="button" id="render-now">Render Now</button> -->
 
     </form>
 
