@@ -1,5 +1,5 @@
 //
-// Model
+// Models
 //
 
 model = {
@@ -16,11 +16,13 @@ display_options = {
   uppercase_welcome_user: false,
 }
 
-// util
+// Util
 
 function isUpperCaseAt(str, n) {
     return str[n]=== str[n].toUpperCase();
 }  
+
+// Update 
 
 function update_welcome_top_left() {
   let msg = display_options.uppercase_welcome ? model.welcomemsg.toUpperCase() : model.welcomemsg
@@ -54,13 +56,11 @@ function update_all() {
   update_edit_surname_input()
 }
 
-
 //
 // GUI events
 //
 
 $('#change_welcome_model').on('click', function(e) {
-  // even this modelling might be too much for this pure approach !!  but we do need a pure model...!!!!
   model.welcomemsg = isUpperCaseAt(model.welcomemsg, 1) ? model.welcomemsg.toLowerCase() : model.welcomemsg.toUpperCase()
   update_welcome_top_left()
   update_welcome_user_top_right()
