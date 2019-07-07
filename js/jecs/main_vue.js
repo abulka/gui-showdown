@@ -2,7 +2,13 @@
 // Model - The Welcome model and User model are Observable.
 //
 
-model = {"welcomemsg": "Welcome", "user": {"firstname": "Sam", "surname": "Smith"}}
+model = {
+  welcomemsg: "Welcome", 
+  user: {
+    firstname: "Sam", 
+    surname: "Smith"
+  }
+}
 
 // Vue magic - a mediating observer + more
 

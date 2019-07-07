@@ -30,21 +30,21 @@
       <br>
 
       <h3>Model Manipulations</h3>
-      <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
-      <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
+      <button id="change_welcome_model" type="button">Change Case of Welcome Model</button>
+      <button id="reset_welcome_model" type="button">Reset Welcome</button>
       <br>
-      <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
-      <button v-on:click="reset_user_model" type="button">Reset User</button>
+      <button id="change_user_model" type="button">Change Case of User Model</button>
+      <button id="reset_user_model" type="button">Reset User</button>
       <br>
       <h3>Display Options</h3>
-      <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
-      <label><input v-model="uppercase_user" type="checkbox">Uppercase user message</label><br>
+      <label><input name="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
+      <label><input name="uppercase_user" type="checkbox">Uppercase user message</label><br>
       <br>
-      <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+      <label><input name="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
       <br>
 
       <h4>Debug</h4>
-      <pre v-html=dump_vue_data></pre>
+      <pre id=debug_info></pre>
 
       <!-- <h3>Model Manipulations</h3>
       <label><input type="checkbox" name="check1" value="check1"> Change case of welcome message (via model)</label><br>
