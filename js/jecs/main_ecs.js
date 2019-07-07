@@ -122,39 +122,8 @@ world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entit
 });
 
 world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
-
-  let info = {
-    model: model,
-    // display_options: display_options,
-  }
-  let part1 = syntaxHighlight(JSON.stringify(info, null, 2))
-  
-  info = {entities: {}}
-  // info.entities = Object.entries(world.entities) // this becomes circular, so loop through ourselves instead
-  for (ent of Object.entries(world.entities)) {
-    let entity_name = ent[0]
-    let entity = ent[1]
-
-    if (c_debug_dump_options.verbose)
-      info.entities[entity_name] = Object.entries(entity.components)
-    else
-      info.entities[entity_name] = Object.keys(entity.components)
-  }
-  let part2 = syntaxHighlight(JSON.stringify(info, function(key, value) {
-    // skip observers or circular references that will break the json dump
-
-    if (key == 'model') { 
-      return '<see above>'
-    } 
-    else if (key == 'entity_dump_models') {
-      return undefined  // this entity used to debug dump the world, don't list it in debug info
-    } 
-    else {
-      return value;
-    }
-
-  }, 2))
-
+  let part1 = syntaxHighlight(JSON.stringify({model: model}, null, 2))
+  let part2 = dump_world(world, c_debug_dump_options.verbose)
   $('#debug_info').html(part1 + '<br>' + part2)
 });
 

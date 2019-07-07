@@ -10,3 +10,30 @@ function add_or_remove_component(world, condition, component_c_ref, component_Cl
         }
     }
 }
+
+function dump_world(world, verbose) {
+
+    info = {entities: {}}
+    
+    // info.entities = Object.entries(world.entities) // this becomes circular, so loop through ourselves instead
+    for (ent of Object.entries(world.entities)) {
+      let entity_name = ent[0]
+      let entity = ent[1]
+      info.entities[entity_name] = verbose ? Object.entries(entity.components) : Object.keys(entity.components)
+    }
+
+    // syntax hightlight, but use filter to skip observers or circular references that will break the json dump
+    return syntaxHighlight(JSON.stringify(info, function(key, value) {
+  
+      if (key == 'model') { 
+        return '<see above>'
+      } 
+      else if (key == 'entity_dump_models') {
+        return undefined  // this entity used to debug dump the world, don't list it in debug info
+      } 
+      else {
+        return value;
+      }
+  
+    }, 2))
+}
