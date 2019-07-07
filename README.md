@@ -1,6 +1,22 @@
 # wx_esper
 
-An attempt to use esper ECS for traditional GUI programming.
+## Need to rename this project
+
+Contains two wx python programs
+
+- OO
+- ECS
+
+Contains three js programs
+
+- JQUERY plain (?? lines)  **TODO**
+- OO (300 lines)
+- ECS (212 lines)
+- VUE (57 lines)
+
+and an index.html launch page to get to them all.
+
+## An attempt to use esper ECS for traditional GUI programming.
 
 A modern GUI framework with a model to render might traverse the model and shove
 information into the gui controls.  Click and other events might make changes to
