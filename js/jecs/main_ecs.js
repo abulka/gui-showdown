@@ -76,7 +76,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["u
 entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=surname]'), 'input'));
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {verbose: false});  // dict as component is ok
+entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: false});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
@@ -122,14 +122,14 @@ world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (ent
   let $el = c_gui_ref.el
   for (const c_model_ref of c_multi_model_ref.refs)
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
-  assert(c_gui_ref.eltype == 'div', `kind is supposed to be div but is ${c_gui_ref.eltype}`)
   $el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
 world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
+  let $el = c_debug_dump_options.el
   let part1_html = syntaxHighlight(JSON.stringify({model: model}, null, 2))
   let part2_html = dump_world(world, c_debug_dump_options.verbose)
-  $('#debug_info').html(part1_html + '<br>' + part2_html)
+  $el.html(part1_html + '<br>' + part2_html)
 });
 
 // Util
@@ -181,7 +181,7 @@ $("input[name=uppercase_welcome_user]").change(function(e) {
 });
 
 $("input[name=verbose_debug]").change(function(e) {
-  let component = {verbose: $(e.target).prop('checked')}
+  let component = {el: $('#debug_info'), verbose: $(e.target).prop('checked')}
   entity_dump_models.setComponent('c_debug_dump_options', component)  // replaces any existing component
   world.tick()
 });
