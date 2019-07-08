@@ -23,4 +23,8 @@
   .null { color: magenta; }
   .key { color: red; }
 
-  
+  .pre-scroller {
+    width: 400px;
+    height: 300px;
+    overflow-y:scroll;
+  }
