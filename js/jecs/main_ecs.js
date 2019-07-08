@@ -77,7 +77,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["u
 entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=surname]'), 'input'));
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: false});  // dict as component is ok
+entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: true});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 

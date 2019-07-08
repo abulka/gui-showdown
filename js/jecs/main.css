@@ -24,7 +24,21 @@
   .key { color: red; }
 
   .pre-scroller {
-    width: 400px;
-    height: 300px;
+    width: 90%;
+    height: 600px;
     overflow-y:scroll;
+  }
+
+  /* two column */
+
+  .column {
+    float: left;
+    width: 50%;
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
   }
