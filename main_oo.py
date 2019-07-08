@@ -259,13 +259,13 @@ class MyFrame1A(MyFrame1):
         display_options.uppercase_welcome_user = event.GetEventObject().IsChecked()
 
     def on_enter_welcome(self, event):
-        model.welcome.message = frame.m_textCtrl1.GetValue()
+        model.welcome.message = event.GetEventObject().GetValue()
 
     def on_enter_user_firstname(self, event):
-        model.user.firstname = frame.m_textCtrl2.GetValue()
+        model.user.firstname = event.GetEventObject().GetValue()
 
     def on_enter_user_surname(self, event):
-        model.user.surname = frame.m_textCtrl3.GetValue()
+        model.user.surname = event.GetEventObject().GetValue()
 
     def onClickRenderNow(self, event):
         model.dirty_all()

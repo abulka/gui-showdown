@@ -236,19 +236,19 @@ class MyFrame1A(MyFrame1):
         world.process()
 
     def on_enter_welcome(self, event):
-        model["welcomemsg"] = frame.m_textCtrl1.GetValue()
+        model["welcomemsg"] = event.GetEventObject().GetValue()
         do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_firstname(self, event):
-        model["user"]["firstname"] = frame.m_textCtrl2.GetValue()
+        model["user"]["firstname"] = event.GetEventObject().GetValue()
         do.dirty(ModelRef, lambda component : component.key == "firstname", filter_nice_name="firstname")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_surname(self, event):
-        model["user"]["surname"] = frame.m_textCtrl3.GetValue()
+        model["user"]["surname"] = event.GetEventObject().GetValue()
         do.dirty(ModelRef, lambda component : component.key == "surname", filter_nice_name="surname")
         do.dirty(MultiModelRef)
         world.process()
