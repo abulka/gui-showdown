@@ -110,20 +110,20 @@ world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_re
 // Render Systems
 
 world.system('render-system-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
-  let $c_gui_ref = c_gui_ref
+  let $el = c_gui_ref.el
   if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.eltype == 'div')
-    $c_gui_ref.el.html(c_model_ref.finalstr)
+    $el.html(c_model_ref.finalstr)
   else if (c_gui_ref.eltype == 'input')
-    $c_gui_ref.el.val(c_model_ref.finalstr)
+    $el.val(c_model_ref.finalstr)
 });
 
 let msg = {}  // can't target how model ref components get found, so build up what we need here
 world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
-  let $c_gui_ref = c_gui_ref
+  let $el = c_gui_ref.el
   for (const c_model_ref of c_multi_model_ref.refs)
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
   assert(c_gui_ref.eltype == 'div', `kind is supposed to be div but is ${c_gui_ref.eltype}`)
-  $c_gui_ref.el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
+  $el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
 world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
