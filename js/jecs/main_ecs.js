@@ -40,7 +40,6 @@ class DisplayOptions {
   constructor() {
     this.uppercase_welcome = false
     this.uppercase_user = false
-    this.uppercase_welcome_user = false
   }
 }
 
@@ -181,7 +180,8 @@ $("input[name=uppercase_user]").change(function(e) {
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e) {
-  entity_welcome_user_right.components.c_display_options.uppercase_welcome_user = $(e.target).prop('checked')
+  entity_welcome_user_right.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+  entity_welcome_user_right.components.c_display_options.uppercase_user = $(e.target).prop('checked')
   world.tick()
 });
 
