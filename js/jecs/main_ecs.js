@@ -76,7 +76,7 @@ entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["u
 entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=surname]'), 'input'));
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: true});  // dict as component is ok
+entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: false});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
@@ -109,7 +109,7 @@ world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_re
 
 // Render Systems
 
-world.system('render-system-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
+world.system('render-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
   let $el = c_gui_ref.el
   if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.eltype == 'div')
     $el.html(c_model_ref.finalstr)
@@ -118,19 +118,19 @@ world.system('render-system-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (ent
 });
 
 let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
-world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
+world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
   let $el = c_gui_ref.el
   for (const c_model_ref of c_multi_model_ref.refs)
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
   $el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
-world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
+world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
   let $el = c_debug_dump_options.el
   let part1_html = syntaxHighlight(JSON.stringify({
     model: model, 
-    entity_welcome_left_display_options: entity_welcome_left.components.c_display_options,
-    entity_welcome_user_right_display_options: entity_welcome_user_right.components.c_display_options,
+    "entity_welcome_left[c_display_options]": entity_welcome_left.components.c_display_options,
+    "entity_welcome_user_right[c_display_options]": entity_welcome_user_right.components.c_display_options,
   }, null, 2))
   let part2_html = dump_world(world, c_debug_dump_options.verbose)
   $el.html(part1_html + '<br>' + part2_html)
