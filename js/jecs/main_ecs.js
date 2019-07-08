@@ -23,6 +23,12 @@ class ModelRef extends NestedDictAccess {  // Reference to a shared model object
   }
 }
 
+class PlainData{  // plain string
+  constructor(s) {
+    this.s = s
+  }
+}
+
 class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
   constructor(refs) {
     this.refs = refs;  // list of ModelRefs
@@ -75,6 +81,10 @@ const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg'
 entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "surname"]));
 entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=surname]'), 'input'));
 
+const entity_page_title = world.entity('entity_page_title')
+entity_page_title.setComponent('c_plain_data', new PlainData("Gui wired via ECS (Entity Component System)"));
+entity_page_title.setComponent('c_gui_ref', new GuiControlRef($('#title > h1'), 'div'));
+
 const entity_dump_models = world.entity('entity_dump_models')
 entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: false});  // dict as component is ok
 
@@ -115,6 +125,14 @@ world.system('render-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c
     $el.html(c_model_ref.finalstr)
   else if (c_gui_ref.eltype == 'input')
     $el.val(c_model_ref.finalstr)
+});
+
+world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_data, c_gui_ref}) => {
+  let $el = c_gui_ref.el
+  if (c_gui_ref.eltype == 'div')
+    $el.html(c_plain_data.s)
+  else if (c_gui_ref.eltype == 'input')
+    $el.val(c_plain_data.s)
 });
 
 let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
