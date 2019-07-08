@@ -28,6 +28,9 @@ function dump_world(world, verbose) {
       if (key == 'model') { 
         return '<see above>'
       } 
+      else if (key == 'el') { 
+        return value.selector
+      } 
       else if (key == 'entity_dump_models') {
         return undefined  // this entity used to debug dump the world, don't list it in debug info
       } 
