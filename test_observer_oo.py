@@ -1,5 +1,5 @@
 import unittest
-from observer import Observable, Observer
+from observer_oo import Observable, Observer
 
 # pytest test_observer.py or just pytest
 

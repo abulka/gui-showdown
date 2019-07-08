@@ -4,7 +4,7 @@ import time
 import random
 from dataclasses import dataclass, astuple
 from typing import List, Any
-from observer import Observable, Observer
+from observer_oo import Observable, Observer
 
 #
 # Model - The Welcome model and User model are Observable.
