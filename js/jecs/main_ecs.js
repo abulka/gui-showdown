@@ -1,8 +1,8 @@
 //
-// Model - The Welcome model and User model are Observable.
+// Model
 //
 
-model = {
+var model = {
   welcomemsg: "Welcome", 
   user: {
     firstname: "Sam", 
@@ -16,13 +16,39 @@ const world = new Ecs();
 // Components
 //
 
-class ModelRef {  // Mediator (entity + this component) needs to know about model. Model specific
-  constructor(model, key) {
-    this.model = model;
-    this.key = key;
+class ModelRef {  // Reference to a shared model object
+  constructor(model, keys) {
+    this.model = model;  // any object/dict
+    this.keys = keys;  // ['a', 'b'] would refer to model.a.b
     this.finalstr = "";
   }
+
+  // dynamically access or set nested dictionary keys
+
+  get val() {
+    let data = this.model
+    for (let k of this.keys)
+      data = data[k]
+    return data
+  }
+
+  set val(val) {
+    let data = this.model
+    let numkeys = this.keys.length
+    let lastkey = this.keys.slice(-1)
+    for (let k of this.keys.slice(0, numkeys - 1))  // for assignment drill down to *second* last key
+      data = data[k]
+    data[lastkey] = val
+  }
 }
+
+// Quick test of ModelRef
+m = new ModelRef(model, ["user", "firstname"])
+assert(m.val == "Sam")
+m.val = "Mary"
+assert(m.val == "Mary")
+
+
 class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
   constructor(refs) {
     this.refs = refs;  // list of ModelRef
@@ -40,29 +66,29 @@ class Flag {}  // Mediator (entity + this component) might have a flag to indica
 //
 
 const entity_welcome_left = world.entity('entity_welcome_left')
-entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, 'welcomemsg'))
+entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
 entity_welcome_left.setComponent('c_gui_div', new GuiControlRef('welcome'))  // id of div to hold welcome message, top left
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
 entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
   [
-    new ModelRef(model, 'welcomemsg'),
-    new ModelRef(model["user"], 'firstname'),
-    new ModelRef(model["user"], 'surname'),
+    new ModelRef(model, ['welcomemsg']),
+    new ModelRef(model, ["user", "firstname"]),
+    new ModelRef(model, ["user", "surname"]),
   ]
 ));
 entity_welcome_user_right.setComponent('c_gui_div', new GuiControlRef('welcome-user'));  // id of div to hold welcome + user message, top right
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
-entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, 'welcomemsg'));
+entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']));
 entity_edit_welcome_msg.setComponent('c_gui_input', new GuiControlRef('welcome'));  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
-entity_edit_user_name_msg.setComponent('c_model_ref', new ModelRef(model["user"], 'firstname'));
+entity_edit_user_name_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "firstname"]));
 entity_edit_user_name_msg.setComponent('c_gui_input', new GuiControlRef('firstname'));  // name (not id) of input to hold first name
 
 const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
-entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model["user"], 'surname'));
+entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "surname"]));
 entity_edit_user_surname_msg.setComponent('c_gui_input', new GuiControlRef('surname'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
@@ -73,11 +99,11 @@ entity_dump_models.setComponent('c_debug_dump_options', {verbose: false});  // d
 world.system('extract-model-ref-system', ['c_model_ref'], (entity, {c_model_ref}) => {
   // Tip - the variables receiving the component must be named exactly the same as the component name
   let c = c_model_ref
-  c.finalstr = c.model[c.key]
+  c.finalstr = c.val
 });
 world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {c_multi_model_ref}) => {
   for (const c of c_multi_model_ref.refs) {  // each 'c' is a ModelRef component 
-    c.finalstr = c.model[c.key]
+    c.finalstr = c.val
   }
 });
 
@@ -85,17 +111,17 @@ world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {
 
 world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_uppercase_welcome'], (entity, {c_model_ref, c_uppercase_welcome}) => {
   let c = c_model_ref
-  if (c.key == "welcomemsg")
+  if (c.keys.includes("welcomemsg"))
     c.finalstr = c.finalstr.toUpperCase()
 });
 world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_ref', 'c_uppercase_welcome'], (entity, {c_multi_model_ref, c_uppercase_welcome}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c.key == "welcomemsg")
+    if (c.keys.includes("welcomemsg"))
       c.finalstr = c.finalstr.toUpperCase()
 });
 world.system('case-transform-uppercase_welcome_user_user', ['c_multi_model_ref', 'c_uppercase_user'], (entity, {c_multi_model_ref, c_uppercase_user}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c.key == "firstname" || c.key == "surname")
+    if (c.keys.includes("firstname") || c.keys.includes("surname"))
       c.finalstr = c.finalstr.toUpperCase()
 });
 world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_uppercase_welcome_user'], (entity, {c_multi_model_ref, c_uppercase_welcome_user}) => {
@@ -106,14 +132,14 @@ world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_u
 // Render Systems
 
 world.system('render-system-top-left', ['c_model_ref', 'c_gui_div'], (entity, {c_model_ref, c_gui_div}) => {
-  if (c_model_ref.key == "welcomemsg")
+  if (c_model_ref.keys.includes("welcomemsg"))
     $('#' + c_gui_div.ref).html(c_model_ref.finalstr)
 });
 
 let msg = {}  // can't target how model ref components get found, so build up what we need here
 world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_div'], (entity, {c_multi_model_ref, c_gui_div}) => {
   for (const c_model_ref of c_multi_model_ref.refs)
-    msg[c_model_ref.key] = c_model_ref.finalstr
+    msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
   $('#' + c_gui_div.ref).html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
