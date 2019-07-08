@@ -25,9 +25,10 @@ class ModelRef extends NestedDictAccess {  // Reference to a shared model object
 
 class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
   constructor(refs) {
-    this.refs = refs;  // list of ModelRef
+    this.refs = refs;  // list of ModelRefs
   }
 }
+
 class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
   constructor(el, eltype) {
     this.el = el          // JQuery reference to element
@@ -117,7 +118,7 @@ world.system('render-system-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (ent
     $el.val(c_model_ref.finalstr)
 });
 
-let msg = {}  // can't target how model ref components get found, so build up what we need here
+let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
 world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
   let $el = c_gui_ref.el
   for (const c_model_ref of c_multi_model_ref.refs)
