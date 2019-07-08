@@ -45,7 +45,7 @@
             <property name="minimum_size"></property>
             <property name="name">MyFrame1</property>
             <property name="pos"></property>
-            <property name="size">486,466</property>
+            <property name="size">486,504</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass">; ; forward_declare</property>
             <property name="title">My ECS demo</property>
