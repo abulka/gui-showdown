@@ -128,7 +128,11 @@ world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (ent
 
 world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
   let $el = c_debug_dump_options.el
-  let part1_html = syntaxHighlight(JSON.stringify({model: model}, null, 2))
+  let part1_html = syntaxHighlight(JSON.stringify({
+    model: model, 
+    entity_welcome_left_display_options: entity_welcome_left.components.c_display_options,
+    entity_welcome_user_right_display_options: entity_welcome_user_right.components.c_display_options,
+  }, null, 2))
   let part2_html = dump_world(world, c_debug_dump_options.verbose)
   $el.html(part1_html + '<br>' + part2_html)
 });
