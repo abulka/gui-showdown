@@ -34,8 +34,6 @@ class GuiControlRef {  // Mediator (entity + this component) needs to know about
   }
 }
 
-class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
-
 class DisplayOptions {
   constructor() {
     this.uppercase_welcome = false
@@ -94,24 +92,25 @@ world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {
 
 // Case transform systems
 
-world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_uppercase_welcome'], (entity, {c_model_ref, c_uppercase_welcome}) => {
+world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_display_options'], (entity, {c_model_ref, c_display_options}) => {
   let c = c_model_ref
-  if (c.keys.includes("welcomemsg"))
+  if (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg"))
     c.finalstr = c.finalstr.toUpperCase()
 });
-world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_ref', 'c_uppercase_welcome'], (entity, {c_multi_model_ref, c_uppercase_welcome}) => {
+world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c.keys.includes("welcomemsg"))
+    if (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg"))
       c.finalstr = c.finalstr.toUpperCase()
 });
-world.system('case-transform-uppercase_welcome_user_user', ['c_multi_model_ref', 'c_uppercase_user'], (entity, {c_multi_model_ref, c_uppercase_user}) => {
+world.system('case-transform-uppercase_welcome_user_user', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c.keys.includes("firstname") || c.keys.includes("surname"))
+    if (c_display_options.uppercase_user && (c.keys.includes("firstname") || c.keys.includes("surname")))
       c.finalstr = c.finalstr.toUpperCase()
 });
-world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_uppercase_welcome_user'], (entity, {c_multi_model_ref, c_uppercase_welcome_user}) => {
+world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component
-    c.finalstr = c.finalstr.toUpperCase()
+    if (c_display_options.uppercase_welcome_user)
+      c.finalstr = c.finalstr.toUpperCase()
 });
 
 // Render Systems
@@ -173,34 +172,16 @@ $('#reset_user_model').on('click', function(e) {
 $("input[name=uppercase_welcome]").change(function(e) {
   entity_welcome_left.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
   entity_welcome_user_right.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  
-  add_or_remove_component(world, 
-    $(e.target).prop('checked'), 
-    'c_uppercase_welcome', 
-    Flag, 
-    [entity_welcome_left, entity_welcome_user_right])
   world.tick()
 })
 
 $("input[name=uppercase_user]").change(function(e) {
   entity_welcome_user_right.components.c_display_options.uppercase_user = $(e.target).prop('checked')
-
-  add_or_remove_component(world, 
-    $(e.target).prop('checked'), 
-    'c_uppercase_user', 
-    Flag, 
-    [entity_welcome_user_right])  
   world.tick()
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e) {
   entity_welcome_user_right.components.c_display_options.uppercase_welcome_user = $(e.target).prop('checked')
-
-  add_or_remove_component(world, 
-    $(e.target).prop('checked'), 
-    'c_uppercase_welcome_user', 
-    Flag, 
-    [entity_welcome_user_right])
   world.tick()
 });
 
