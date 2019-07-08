@@ -99,17 +99,11 @@ world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_display_opti
 });
 world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg"))
-      c.finalstr = c.finalstr.toUpperCase()
-});
-world.system('case-transform-uppercase_welcome_user_user', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
-  for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (c_display_options.uppercase_user && (c.keys.includes("firstname") || c.keys.includes("surname")))
-      c.finalstr = c.finalstr.toUpperCase()
-});
-world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
-  for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component
-    if (c_display_options.uppercase_welcome_user)
+    if (
+      (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg")) ||
+      (c_display_options.uppercase_user && (c.keys.includes("firstname") || c.keys.includes("surname"))) ||
+      (c_display_options.uppercase_welcome_user)
+    )
       c.finalstr = c.finalstr.toUpperCase()
 });
 
