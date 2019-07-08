@@ -29,8 +29,9 @@ class MultiModelRef {  // Refers to multiple model fields, since can only have o
   }
 }
 class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
-  constructor(ref) {
+  constructor(ref, crl_kind) {
     this.ref = ref
+    this.ctrl_kind = crl_kind  // e.g. 'div' or 'input', tells render system what DOM element to render/set
   }
 }
 
@@ -48,7 +49,7 @@ class DisplayOptions {
 
 const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
-entity_welcome_left.setComponent('c_gui_div', new GuiControlRef('welcome'))  // id of div to hold welcome message, top left
+entity_welcome_left.setComponent('c_gui_ref', new GuiControlRef('welcome', 'div'))  // id of div to hold welcome message, top left
 entity_welcome_left.setComponent('c_display_options', new DisplayOptions())
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
@@ -59,20 +60,20 @@ entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
     new ModelRef(model, ["user", "surname"]),
   ]
 ));
-entity_welcome_user_right.setComponent('c_gui_div', new GuiControlRef('welcome-user'));  // id of div to hold welcome + user message, top right
+entity_welcome_user_right.setComponent('c_gui_ref', new GuiControlRef('welcome-user', 'div'));  // id of div to hold welcome + user message, top right
 entity_welcome_user_right.setComponent('c_display_options', new DisplayOptions())
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
 entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']));
-entity_edit_welcome_msg.setComponent('c_gui_input', new GuiControlRef('welcome'));  // name (not id) of input to hold welcome message
+entity_edit_welcome_msg.setComponent('c_gui_ref', new GuiControlRef('welcome', 'input'));  // name (not id) of input to hold welcome message
 
 const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
 entity_edit_user_name_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "firstname"]));
-entity_edit_user_name_msg.setComponent('c_gui_input', new GuiControlRef('firstname'));  // name (not id) of input to hold first name
+entity_edit_user_name_msg.setComponent('c_gui_ref', new GuiControlRef('firstname', 'input'));  // name (not id) of input to hold first name
 
 const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
 entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "surname"]));
-entity_edit_user_surname_msg.setComponent('c_gui_input', new GuiControlRef('surname'));  // name (not id) of input to hold first name
+entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef('surname', 'input'));  // name (not id) of input to hold first name
 
 const entity_dump_models = world.entity('entity_dump_models')
 entity_dump_models.setComponent('c_debug_dump_options', {verbose: false});  // dict as component is ok
@@ -85,9 +86,8 @@ world.system('extract-model-ref-system', ['c_model_ref'], (entity, {c_model_ref}
   c.finalstr = c.val
 });
 world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {c_multi_model_ref}) => {
-  for (const c of c_multi_model_ref.refs) {  // each 'c' is a ModelRef component 
+  for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
     c.finalstr = c.val
-  }
 });
 
 // Case transform systems
@@ -109,20 +109,19 @@ world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_re
 
 // Render Systems
 
-world.system('render-system-top-left', ['c_model_ref', 'c_gui_div'], (entity, {c_model_ref, c_gui_div}) => {
-  if (c_model_ref.keys.includes("welcomemsg"))
-    $('#' + c_gui_div.ref).html(c_model_ref.finalstr)
+world.system('render-system-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
+  if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.ctrl_kind == 'div')
+    $('#' + c_gui_ref.ref).html(c_model_ref.finalstr)
+  else if (c_gui_ref.ctrl_kind == 'input')
+    $(`input[name=${c_gui_ref.ref}]`).val(c_model_ref.finalstr)
 });
 
 let msg = {}  // can't target how model ref components get found, so build up what we need here
-world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_div'], (entity, {c_multi_model_ref, c_gui_div}) => {
+world.system('render-system-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
   for (const c_model_ref of c_multi_model_ref.refs)
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
-  $('#' + c_gui_div.ref).html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
-});
-
-world.system('render-system-text-inputs', ['c_model_ref', 'c_gui_input'], (entity, {c_model_ref, c_gui_input}) => {
-  $(`input[name=${c_gui_input.ref}]`).val(c_model_ref.finalstr)
+  assert(c_gui_ref.ctrl_kind == 'div', `kind is supposed to be div but is ${c_gui_ref.ctrl_kind}`)
+  $('#' + c_gui_ref.ref).html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
 world.system('render-system-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
