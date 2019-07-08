@@ -23,14 +23,6 @@ class ModelRef extends NestedDictAccess {  // Reference to a shared model object
   }
 }
 
-// // Quick test of ModelRef
-// m = new ModelRef(model, ["user", "firstname"])
-// assert(m.val == "Sam")
-// m.val = "Mary"
-// assert(m.val == "Mary")
-// assert(m.finalstr == "")
-// console.log("ModelRef works OK")
-
 class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
   constructor(refs) {
     this.refs = refs;  // list of ModelRef
@@ -41,7 +33,16 @@ class GuiControlRef {  // Mediator (entity + this component) needs to know about
     this.ref = ref
   }
 }
+
 class Flag {}  // Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
+
+class DisplayOptions {
+  constructor() {
+    this.uppercase_welcome = false
+    this.uppercase_user = false
+    this.uppercase_welcome_user = false
+  }
+}
 
 //
 // Wire up and build everything
@@ -50,6 +51,7 @@ class Flag {}  // Mediator (entity + this component) might have a flag to indica
 const entity_welcome_left = world.entity('entity_welcome_left')
 entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
 entity_welcome_left.setComponent('c_gui_div', new GuiControlRef('welcome'))  // id of div to hold welcome message, top left
+entity_welcome_left.setComponent('c_display_options', new DisplayOptions())
 
 const entity_welcome_user_right = world.entity('entity_welcome_user_right')
 entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
@@ -60,6 +62,7 @@ entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
   ]
 ));
 entity_welcome_user_right.setComponent('c_gui_div', new GuiControlRef('welcome-user'));  // id of div to hold welcome + user message, top right
+entity_welcome_user_right.setComponent('c_display_options', new DisplayOptions())
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
 entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']));
@@ -168,6 +171,9 @@ $('#reset_user_model').on('click', function(e) {
 })
 
 $("input[name=uppercase_welcome]").change(function(e) {
+  entity_welcome_left.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+  entity_welcome_user_right.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+  
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome', 
@@ -177,6 +183,8 @@ $("input[name=uppercase_welcome]").change(function(e) {
 })
 
 $("input[name=uppercase_user]").change(function(e) {
+  entity_welcome_user_right.components.c_display_options.uppercase_user = $(e.target).prop('checked')
+
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_user', 
@@ -186,6 +194,8 @@ $("input[name=uppercase_user]").change(function(e) {
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e) {
+  entity_welcome_user_right.components.c_display_options.uppercase_welcome_user = $(e.target).prop('checked')
+
   add_or_remove_component(world, 
     $(e.target).prop('checked'), 
     'c_uppercase_welcome_user', 
