@@ -250,13 +250,13 @@ class MyFrame1A(MyFrame1):
         model.user.surname = s.upper() if s[1].islower() else s.lower()
 
     def on_check_toggle_welcome_outputs_only(self, event):
-        display_options.uppercase_welcome = frame.m_checkBox1A.IsChecked()  # TODO use event.target
+        display_options.uppercase_welcome = event.GetEventObject().IsChecked()
 
     def on_check_toggle_user_outputs_only(self, event):
-        display_options.uppercase_user = frame.m_checkBox1A1.IsChecked()  # TODO use event.target
+        display_options.uppercase_user = event.GetEventObject().IsChecked()
 
     def on_check_upper_entire_top_right_output(self, event):
-        display_options.uppercase_welcome_user = frame.m_checkBox2.IsChecked()  # TODO use event.target
+        display_options.uppercase_welcome_user = event.GetEventObject().IsChecked()
 
     def on_enter_welcome(self, event):
         model.welcome.message = frame.m_textCtrl1.GetValue()
@@ -277,6 +277,7 @@ class MyFrame1A(MyFrame1):
 
 app = wx.App()
 frame = MyFrame1A(None)
+frame.SetTitle("Gui wired via OO Observer")
 frame.Show()
 frame.SetSize((500, 450))
 
@@ -292,7 +293,7 @@ mediator_edit_user_name_msg = MediatorEditUserFirstName(user=model.user, gui_ref
 mediator_edit_user_surname_msg = MediatorEditUserSurName(user=model.user, gui_ref=frame.m_textCtrl3)
 display_options = DisplayOptions()
 appgui = MediatorFrameAdornments(
-    frame_title="Gui wired via MVC",
+    frame_title="Gui wired via OO Observer",
     frame_ref=frame,
     panel_colour=wx.Colour(255, 255, 135),
     panel_ref=frame.m_panel1,

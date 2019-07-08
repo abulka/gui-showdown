@@ -209,7 +209,7 @@ class MyFrame1A(MyFrame1):
         # toggle the case of the welcome output messages only - do not affect model
         add_or_remove_component(
             world,
-            condition=frame.m_checkBox1A.IsChecked(),
+            condition=event.GetEventObject().IsChecked(),
             component_Class=ComponentUppercaseWelcome,
             entities=[entity_welcome_left, entity_welcome_user_right],
         )
@@ -220,7 +220,7 @@ class MyFrame1A(MyFrame1):
         # toggle the case of the user output messages only - do not affect model
         add_or_remove_component(
             world,
-            condition=frame.m_checkBox1A1.IsChecked(),  # TODO PLEASE CHECK EVENT FOR TARGET!!!!
+            condition=event.GetEventObject().IsChecked(),
             component_Class=ComponentUppercaseUser,
             entities=[entity_welcome_user_right],
         )
@@ -230,8 +230,8 @@ class MyFrame1A(MyFrame1):
     def on_check_upper_entire_top_right_output(self, event):
         # don't change the model - only the UI display
         add_or_remove_component(world, 
-                                condition=frame.m_checkBox2.IsChecked(), 
-                                component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right])
+            condition=event.GetEventObject().IsChecked(), 
+            component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right])
         do.dirty("just top right")
         world.process()
 
@@ -263,6 +263,7 @@ class MyFrame1A(MyFrame1):
 
 app = wx.App()
 frame = MyFrame1A(None)
+frame.SetTitle("Gui wired via ECS")
 frame.Show()
 frame.SetSize((500, 450))
 
