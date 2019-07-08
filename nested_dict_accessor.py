@@ -2,33 +2,33 @@ from dataclasses import dataclass
 from typing import List, Any
 
 @dataclass
-class ModelRef:
-    model: dict
+class NestedDictAccess:
+    data: dict
     keys: List
-    finalstr: str = ""
 
     # dynamically access or set nested dictionary keys in model
 
     @property
     def val(self) -> str:
-        data = self.model
+        data = self.data
         for k in self.keys:
             data = data[k]
         return data
 
     @val.setter
     def val(self, v: str) -> None:
-        data = self.model
+        data = self.data
         lastkey = self.keys[-1]
         for k in self.keys[:-1]:  # when assigning drill down to *second* last key
             data = data[k]
         data[lastkey] = v
 
 
-@dataclass
 class DynamicAccessNestedDict:
-    """Dynamically access or set nested dictionary keys in model"""
-    data: dict
+    """Dynamically get/set nested dictionary keys of 'data' dict"""
+
+    def __init__(self, data: dict):
+        self.data = data
 
     def getval(self, keys: List):
         data = self.data
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         }
     }
 
-    m = ModelRef(model, ["user", "firstname"])
+    m = NestedDictAccess(model, ["user", "firstname"])
     assert m.val == "Sam"
     m.val = "Mary"
     assert m.val == "Mary"
