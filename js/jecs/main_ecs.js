@@ -16,38 +16,20 @@ const world = new Ecs();
 // Components
 //
 
-class ModelRef {  // Reference to a shared model object
+class ModelRef extends NestedDictAccess {  // Reference to a shared model object
   constructor(model, keys) {
-    this.model = model;  // any object/dict
-    this.keys = keys;  // ['a', 'b'] would refer to model.a.b
+    super(model, keys)
     this.finalstr = "";
-  }
-
-  // dynamically access or set nested dictionary keys
-
-  get val() {
-    let data = this.model
-    for (let k of this.keys)
-      data = data[k]
-    return data
-  }
-
-  set val(val) {
-    let data = this.model
-    let numkeys = this.keys.length
-    let lastkey = this.keys.slice(-1)
-    for (let k of this.keys.slice(0, numkeys - 1))  // for assignment drill down to *second* last key
-      data = data[k]
-    data[lastkey] = val
   }
 }
 
-// Quick test of ModelRef
-m = new ModelRef(model, ["user", "firstname"])
-assert(m.val == "Sam")
-m.val = "Mary"
-assert(m.val == "Mary")
-
+// // Quick test of ModelRef
+// m = new ModelRef(model, ["user", "firstname"])
+// assert(m.val == "Sam")
+// m.val = "Mary"
+// assert(m.val == "Mary")
+// assert(m.finalstr == "")
+// console.log("ModelRef works OK")
 
 class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
   constructor(refs) {
