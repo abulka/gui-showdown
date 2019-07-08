@@ -106,6 +106,12 @@ class CaseTransformProcessor(esper.Processor):
                     model_ref.finalstr = model_ref.finalstr.upper()
                     logsimple(component, ent)
 
+        for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseUser, Dirty):
+            for model_ref in component.refs:
+                if model_ref.key == "firstname" or model_ref.key == "surname":
+                    model_ref.finalstr = model_ref.finalstr.upper()
+                    logsimple(component, ent)
+
         for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseAll, Dirty):
             for model_ref in component.refs:
                 model_ref.finalstr = model_ref.finalstr.upper()
@@ -258,7 +264,7 @@ class MyFrame1A(MyFrame1):
 app = wx.App()
 frame = MyFrame1A(None)
 frame.Show()
-frame.SetSize((500, 400))
+frame.SetSize((500, 450))
 
 #
 # Wire up and build everything

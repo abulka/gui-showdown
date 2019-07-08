@@ -17,7 +17,7 @@ import wx.xrc
 class MyFrame1 ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 486,479 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"My ECS demo", pos = wx.DefaultPosition, size = wx.Size( 486,504 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -81,12 +81,14 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer1.Add( bSizer3, 1, wx.EXPAND, 5 )
 
+		bSizer8 = wx.BoxSizer( wx.VERTICAL )
+
 		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, u"Model Manipulations", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText5.Wrap( -1 )
 
 		self.m_staticText5.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Lucida Grande" ) )
 
-		bSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
+		bSizer8.Add( self.m_staticText5, 0, wx.ALL, 5 )
 
 		bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -97,7 +99,7 @@ class MyFrame1 ( wx.Frame ):
 		bSizer7.Add( self.m_button1, 0, wx.ALL, 5 )
 
 
-		bSizer1.Add( bSizer7, 1, wx.EXPAND, 5 )
+		bSizer8.Add( bSizer7, 1, wx.EXPAND, 5 )
 
 		bSizer6 = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -108,7 +110,13 @@ class MyFrame1 ( wx.Frame ):
 		bSizer6.Add( self.m_button3, 0, wx.ALL, 5 )
 
 
-		bSizer1.Add( bSizer6, 1, wx.EXPAND, 5 )
+		bSizer8.Add( bSizer6, 1, wx.EXPAND, 5 )
+
+
+		bSizer1.Add( bSizer8, 1, wx.EXPAND, 5 )
+
+
+		bSizer1.Add( ( 0, 10), 0, wx.EXPAND, 5 )
 
 		self.m_staticText51 = wx.StaticText( self, wx.ID_ANY, u"Display Options", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText51.Wrap( -1 )
@@ -132,7 +140,7 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer1.Add( ( 0, 10), 0, wx.EXPAND, 5 )
 
-		self.m_button_rendernow = wx.Button( self, wx.ID_ANY, u"Render Now", wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE )
+		self.m_button_rendernow = wx.Button( self, wx.ID_ANY, u"Render Now!", wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE )
 		bSizer1.Add( self.m_button_rendernow, 0, wx.ALL, 5 )
 
 
