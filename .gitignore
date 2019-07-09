@@ -63,3 +63,4 @@ docs/_build
 .vscode/
 .pytest_cache/
 node_modules/
+gui_showdown_deploy.zip
