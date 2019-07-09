@@ -38,6 +38,11 @@ class ModelRef(NestedDictAccess):
 
 
 @dataclass
+class PlainData:  
+    finalstr: str = ""
+
+
+@dataclass
 class MultiModelRef:  # Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
     refs: List[ModelRef]
 
@@ -45,6 +50,8 @@ class MultiModelRef:  # Refers to multiple model fields, since can only have one
 class GuiElType(Enum):  # Tells render system what kind of wxPython control 'set' value method to use to when rendering
     label = 1
     textctrl = 2
+    frametitle = 3
+
 
 @dataclass
 class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
@@ -119,6 +126,15 @@ class RenderProcessor(esper.Processor):
             elif gui.el_type == GuiElType.textctrl:
                 print("render textctrl for", ent)
                 gui.el.SetValue(component.finalstr)
+
+        for ent, (component, gui, _) in self.world.get_components(PlainData, GuiControlRef, Dirty):
+            print("Plain data being rendered", gui)
+            if gui.el_type == GuiElType.label:
+                gui.el.SetLabel(component.finalstr)
+            elif gui.el_type == GuiElType.textctrl:
+                gui.el.SetValue(component.finalstr)
+            elif gui.el_type == GuiElType.frametitle:
+                gui.el.SetTitle(component.finalstr)
 
         msg = {}  # can't target how model ref components get found, so build up what we need here
         for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
@@ -286,6 +302,10 @@ entity_edit_user_surname_msg = world.create_entity(
     ModelRef(data=model, keys=["user", "surname"]), 
     GuiControlRef(el=frame.m_textCtrl3, el_type=GuiElType.textctrl)
 )
+entity_page_title = world.create_entity(
+    PlainData("Gui wired via ECS (Entity Component System)"), 
+    GuiControlRef(el=frame, el_type=GuiElType.frametitle)
+)
 appgui = world.create_entity()  # slightly different style, create entiry then add components
 world.add_component(
     appgui,
@@ -304,6 +324,7 @@ nice_entity_name = {
     entity_edit_welcome_msg: "mediator for edit_welcome_msg",
     entity_edit_user_name_msg: "mediator for edit_user_name_msg",
     entity_edit_user_surname_msg: "mediator for edit_user_surname_msg",
+    entity_page_title: "mediator for entity_page_title",
     appgui: "mediator for app frame etc",
 }
 mediators: List[int] = list(nice_entity_name.keys())
