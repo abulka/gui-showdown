@@ -53,6 +53,7 @@ class Model {  // aggregates all the sub models into one housing
     dirty_all() {
       this.welcome.notifyall("init dirty")
       this.user.notifyall("init dirty")
+      mediator_page_title.notify(null, "init dirty")  // notify directly since this only happens once and mediator_page_title doesn't subscribe to anyone
     }
 }
 
@@ -144,6 +145,17 @@ class MediatorEditUserSurName {
     console.log(`notification from: ${target.constructor.name} data: ${data}`)
     assert(target == this.user)
     $(`input[name=${this.gui_input}]`).val(this.user.surname)
+  }
+}
+
+class MediatorPageTitle {
+  constructor(s, $id) {
+    this.s = s
+    this.$id = $id
+  }
+  
+  notify(target, data) {
+    this.$id.html(this.s)
   }
 }
 
@@ -281,6 +293,7 @@ mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstna
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
 display_options = new DisplayOptions()
 mediator_dump_models = new MediatorDumpModels("debug_info")
+mediator_page_title = new MediatorPageTitle("Gui wired via OO + Observer", $('#title > h1'))
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
