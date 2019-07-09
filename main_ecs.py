@@ -44,30 +44,23 @@ class MultiModelRef:  # Refers to multiple model fields, since can only have one
 @dataclass
 class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
     ref: object
+    # TODO - guiref - enhance GuiControlRef
+    # this.$el = $el          // JQuery reference to element, but could be just 'id' or 'name' string
+    # this.el_type = el_type  // e.g. 'div' or 'input', tells render system what kind of DOM element to render/set
 
 
-class ComponentGuiStaticText(GuiControlRef):
+class ComponentGuiStaticText(GuiControlRef):  # FIXME - guiref - remove this class
     pass  # Static Text Gui ref
 
 
-class ComponentGuiTextControl(GuiControlRef):
+class ComponentGuiTextControl(GuiControlRef):  # FIXME - guiref - remove this class
     pass  # Text Control Gui ref
 
 
 @dataclass
-class Flag:  # Mediator (entity + this component) might have a flag to indicate some behaviour is wanted
-    pass
-
-
-class ComponentUppercaseAll(Flag):
-    pass  # flag to make upper right message uppercase or not
-
-
-class ComponentUppercaseWelcome(Flag):
-    pass  # flag to make upper left AND upper right (welcome portion ONLY) uppercase or not
-
-class ComponentUppercaseUser(Flag):
-    pass  # flag to make upper right (user portion ONLY) uppercase or not
+class DisplayOptions:
+    uppercase_welcome: bool = False
+    uppercase_user: bool = False
 
 
 @dataclass
@@ -106,27 +99,18 @@ class CaseTransformProcessor(esper.Processor):
     def process(self):
         print("--Case transform System---")
 
-        for ent, (component, _, _) in self.world.get_components(ModelRef, ComponentUppercaseWelcome, Dirty):
-            if "welcomemsg" in component.keys:
+        for ent, (component, display_options, _) in self.world.get_components(ModelRef, DisplayOptions, Dirty):
+            if display_options.uppercase_welcome and "welcomemsg" in component.keys:
                 component.finalstr = component.finalstr.upper()
                 logsimple(component, ent)
 
-        for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseWelcome, Dirty):
+        for ent, (component, display_options, _) in self.world.get_components(MultiModelRef, DisplayOptions, Dirty):
             for model_ref in component.refs:
-                if "welcomemsg" in model_ref.keys:
-                    model_ref.finalstr = model_ref.finalstr.upper()
+                c = model_ref
+                if (display_options.uppercase_welcome and "welcomemsg" in c.keys) or \
+                   (display_options.uppercase_user and ("firstname" in c.keys or "surname" in c.keys)):
+                    c.finalstr = c.finalstr.upper()
                     logsimple(component, ent)
-
-        for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseUser, Dirty):
-            for model_ref in component.refs:
-                if "firstname" in model_ref.keys or "surname" in model_ref.keys:
-                    model_ref.finalstr = model_ref.finalstr.upper()
-                    logsimple(component, ent)
-
-        for ent, (component, _, _) in self.world.get_components(MultiModelRef, ComponentUppercaseAll, Dirty):
-            for model_ref in component.refs:
-                model_ref.finalstr = model_ref.finalstr.upper()
-            logsimple(component, ent)
 
 
 class RenderProcessor(esper.Processor):
@@ -218,31 +202,21 @@ class MyFrame1A(MyFrame1):
 
     def on_check_toggle_welcome_outputs_only(self, event):
         # toggle the case of the welcome output messages only - do not affect model
-        add_or_remove_component(
-            world,
-            condition=event.GetEventObject().IsChecked(),
-            component_Class=ComponentUppercaseWelcome,
-            entities=[entity_welcome_left, entity_welcome_user_right],
-        )
+        world.component_for_entity(entity_welcome_left, DisplayOptions).uppercase_welcome = event.GetEventObject().IsChecked()
+        world.component_for_entity(entity_welcome_user_right, DisplayOptions).uppercase_welcome = event.GetEventObject().IsChecked()
         do.dirty("welcome display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def on_check_toggle_user_outputs_only(self, event):
         # toggle the case of the user output messages only - do not affect model
-        add_or_remove_component(
-            world,
-            condition=event.GetEventObject().IsChecked(),
-            component_Class=ComponentUppercaseUser,
-            entities=[entity_welcome_user_right],
-        )
+        world.component_for_entity(entity_welcome_user_right, DisplayOptions).uppercase_user = event.GetEventObject().IsChecked()
         do.dirty("user display only, not via model")  # doesn't affect welcome text edit field
         world.process()
 
     def on_check_upper_entire_top_right_output(self, event):
-        # don't change the model - only the UI display
-        add_or_remove_component(world, 
-            condition=event.GetEventObject().IsChecked(), 
-            component_Class=ComponentUppercaseAll, entities=[entity_welcome_user_right])
+        # toggle the case of both the welcome and user output messages only on rhs (top right) display - do not affect model
+        world.component_for_entity(entity_welcome_user_right, DisplayOptions).uppercase_welcome = event.GetEventObject().IsChecked()
+        world.component_for_entity(entity_welcome_user_right, DisplayOptions).uppercase_user = event.GetEventObject().IsChecked()
         do.dirty("just top right")
         world.process()
 
@@ -290,7 +264,9 @@ world.add_processor(RenderProcessor())
 # world.add_processor(FunProcessor())
 
 entity_welcome_left = world.create_entity(
-    ModelRef(data=model, keys=["welcomemsg"]), ComponentGuiStaticText(ref=frame.m_staticText1)
+    ModelRef(data=model, keys=["welcomemsg"]), 
+    ComponentGuiStaticText(ref=frame.m_staticText1),  # TODO - guiref - change to generic GuiRef
+    DisplayOptions()
 )
 
 entity_welcome_user_right = world.create_entity(
@@ -299,17 +275,21 @@ entity_welcome_user_right = world.create_entity(
         ModelRef(data=model, keys=["user", "firstname"]),
         ModelRef(data=model, keys=["user", "surname"]),
         ]),
-    ComponentGuiStaticText(ref=frame.m_staticText2),
+    ComponentGuiStaticText(ref=frame.m_staticText2), # TODO - guiref - change to generic GuiRef
+    DisplayOptions()
 )
 
 entity_edit_welcome_msg = world.create_entity(
-    ModelRef(data=model, keys=["welcomemsg"]), ComponentGuiTextControl(ref=frame.m_textCtrl1)
+    ModelRef(data=model, keys=["welcomemsg"]), 
+    ComponentGuiTextControl(ref=frame.m_textCtrl1)
 )
 entity_edit_user_name_msg = world.create_entity(
-    ModelRef(data=model, keys=["user", "firstname"]), ComponentGuiTextControl(ref=frame.m_textCtrl2)
+    ModelRef(data=model, keys=["user", "firstname"]), 
+    ComponentGuiTextControl(ref=frame.m_textCtrl2)
 )
 entity_edit_user_surname_msg = world.create_entity(
-    ModelRef(data=model, keys=["user", "surname"]), ComponentGuiTextControl(ref=frame.m_textCtrl3)
+    ModelRef(data=model, keys=["user", "surname"]), 
+    ComponentGuiTextControl(ref=frame.m_textCtrl3)
 )
 appgui = world.create_entity()  # slightly different style, create entiry then add components
 world.add_component(
