@@ -4,8 +4,12 @@
 
 Contains two wx python programs
 
-- OO
-- ECS
+| Technique  | Lines | Comment |
+| -----------| ----- | ------- |
+| ECS        | 344  | Gui wired via ECS (Entity Component System)
+| OO         | 290  | Gui wired via OO (Object Oriented Models with Observer) 
+
+P.S. Why is the python ESC version bigger than OO, yet the js ESC version is **smaller** than js OO!??
 
 Contains three js programs
 
