@@ -21,11 +21,19 @@ class Subject {
     notifyall(data) {
         const self = this
         for (let o of this.observers) {
-            console.log("subject notifying", o)
+            console.log(`Subject ${this.constructor.name} notifying: ${o.constructor.name}`)
             o.notify(self, data)
         }
     }
 }
+
+class Observer {
+    notify(target, data) {
+        if (target != undefined)
+          console.log(`  Observer ${this.constructor.name} got notification from: ${target.constructor.name} data: ${data}`)
+    }    
+}
+
 
 // TEST
 
