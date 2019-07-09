@@ -36,9 +36,9 @@ class MultiModelRef {  // Refers to multiple model fields, since can only have o
 }
 
 class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
-  constructor(el, eltype) {
-    this.el = el          // JQuery reference to element
-    this.eltype = eltype  // e.g. 'div' or 'input', tells render system what kind of DOM element to render/set
+  constructor($el, el_type) {
+    this.$el = $el          // JQuery reference to element, but could be just 'id' or 'name' string
+    this.el_type = el_type  // e.g. 'div' or 'input', tells render system what kind of DOM element to render/set
   }
 }
 
@@ -86,7 +86,7 @@ entity_page_title.setComponent('c_plain_data', new PlainData("Gui wired via ECS 
 entity_page_title.setComponent('c_gui_ref', new GuiControlRef($('#title > h1'), 'div'));
 
 const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {el: $('#debug_info'), verbose: false});  // dict as component is ok
+entity_dump_models.setComponent('c_debug_dump_options', {$el: $('#debug_info'), verbose: false});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
 
@@ -120,38 +120,34 @@ world.system('case-transform-uppercase_welcome_user_welcome', ['c_multi_model_re
 // Render Systems
 
 world.system('render-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
-  let $el = c_gui_ref.el
-  if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.eltype == 'div')
-    $el.html(c_model_ref.finalstr)
-  else if (c_gui_ref.eltype == 'input')
-    $el.val(c_model_ref.finalstr)
+  if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.el_type == 'div')
+    c_gui_ref.$el.html(c_model_ref.finalstr)
+  else if (c_gui_ref.el_type == 'input')
+    c_gui_ref.$el.val(c_model_ref.finalstr)
 });
 
 world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_data, c_gui_ref}) => {
-  let $el = c_gui_ref.el
-  if (c_gui_ref.eltype == 'div')
-    $el.html(c_plain_data.s)
-  else if (c_gui_ref.eltype == 'input')
-    $el.val(c_plain_data.s)
+  if (c_gui_ref.el_type == 'div')
+    c_gui_ref.$el.html(c_plain_data.s)
+  else if (c_gui_ref.el_type == 'input')
+    c_gui_ref.$el.val(c_plain_data.s)
 });
 
 let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
 world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
-  let $el = c_gui_ref.el
   for (const c_model_ref of c_multi_model_ref.refs)
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
-  $el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
+  c_gui_ref.$el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
 world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
-  let $el = c_debug_dump_options.el
   let part1_html = syntaxHighlight(JSON.stringify({
     model: model, 
     "entity_welcome_left[c_display_options]": entity_welcome_left.components.c_display_options,
     "entity_welcome_user_right[c_display_options]": entity_welcome_user_right.components.c_display_options,
   }, null, 2))
   let part2_html = dump_world(world, c_debug_dump_options.verbose)
-  $el.html(part1_html + '<br>' + part2_html)
+  c_debug_dump_options.$el.html(part1_html + '<br>' + part2_html)
 });
 
 // Util
@@ -204,7 +200,7 @@ $("input[name=uppercase_welcome_user]").change(function(e) {
 });
 
 $("input[name=verbose_debug]").change(function(e) {
-  let component = {el: $('#debug_info'), verbose: $(e.target).prop('checked')}
+  let component = {$el: $('#debug_info'), verbose: $(e.target).prop('checked')}
   entity_dump_models.setComponent('c_debug_dump_options', component)  // replaces any existing component
   world.tick()
 });

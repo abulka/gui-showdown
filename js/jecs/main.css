@@ -29,9 +29,9 @@
     overflow-y:scroll;
   }
 
-  /* two column */
+  /* two column for debug view in vue.js example */
 
-  .column {
+  .column-half {
     float: left;
     width: 50%;
   }
