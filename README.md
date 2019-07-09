@@ -11,10 +11,10 @@ Contains three js programs
 
 | Technique  | Lines | Comment |
 | -----------| ----- | ------- |
-| OO         | 300  | Gui wired via OO (Object Oriented Models with Observer) 
-| ECS        | 212  | Gui wired via ECS (Entity Component System)
-| JQUERY     | 148  | Gui wired via plain JQuery
-| VUE        | 57  | Gui wired via Vue.js
+| OO         | 312  | Gui wired via OO (Object Oriented Models with Observer) 
+| ECS        | 228  | Gui wired via ECS (Entity Component System)
+| JQUERY     | 154  | Gui wired via plain JQuery
+| VUE        | 58  | Gui wired via Vue.js
 
 Counting the number of lines is approximate.  Implementation code that is a convenient extension to a library or framework is not counted.  E.g. Vue.js itself is not counted, obviously.  ECS uses Jecs library, which is not counted, nor are some extension functions I added.  OO technique uses an observer design pattern, whose short implementation code is not counted - its the least I could do to help the OO approach which came in at a whopping 300 lines.
 
