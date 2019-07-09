@@ -13,40 +13,48 @@
   </head>
 
   <body>
-    <div id="title">
-      <h1>Gui wired via OO</h1>
+    <div class="row">
+        <div class="column-half">
+
+          <div id="title">
+            <h1>Gui wired via OO</h1>
+          </div>
+
+          <form>
+            <div class="row yell">
+              <div id="welcome" class="column"></div>
+              <div id="welcome-user" class="column bl"></div>
+            </div>
+            <br>
+            Welcome Message (model): <input type="text" name="welcome"><br>
+            <br>
+            User (model): <input type="text" name="firstname"> <input type="text" name="surname">
+            <br>
+            <br>
+
+            <h3>Model Manipulations</h3>
+            <button id="change_welcome_model" type="button">Change Case of Welcome Model</button>
+            <button id="reset_welcome_model" type="button">Reset Welcome</button>
+            <br>
+            <button id="change_user_model" type="button">Change Case of User Model</button>
+            <button id="reset_user_model" type="button">Reset User</button>
+            <br>
+            <h3>Display Options</h3>
+            <label><input name="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
+            <label><input name="uppercase_user" type="checkbox">Uppercase user message</label><br>
+            <br>
+            <label><input name="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+            <br>
+          </form>
+        </div>
+        <div class="column-half">
+          <h4>Debug</h4>
+          <pre id=debug_info></pre>
+        </div>
     </div>
-
-    <form>
-      <div class="row yell">
-        <div id="welcome" class="column"></div>
-        <div id="welcome-user" class="column bl"></div>
-      </div>
-      <br>
-      Welcome Message (model): <input type="text" name="welcome"><br>
-      <br>
-      User (model): <input type="text" name="firstname"> <input type="text" name="surname">
-      <br>
-      <br>
-
-      <h3>Model Manipulations</h3>
-      <button id="change_welcome_model" type="button">Change Case of Welcome Model</button>
-      <button id="reset_welcome_model" type="button">Reset Welcome</button>
-      <br>
-      <button id="change_user_model" type="button">Change Case of User Model</button>
-      <button id="reset_user_model" type="button">Reset User</button>
-      <br>
-      <h3>Display Options</h3>
-      <label><input name="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
-      <label><input name="uppercase_user" type="checkbox">Uppercase user message</label><br>
-      <br>
-      <label><input name="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
-      <br>
-
-      <h4>Debug</h4>
-      <pre id=debug_info></pre>
-
-    </form>
+    
+    <br>
+    <a href="index.html">Back to index of examples</a>
 
     <script src="syntax_highlighting.js"></script>
     <script src="assert.js"></script>
