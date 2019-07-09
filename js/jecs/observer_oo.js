@@ -29,8 +29,13 @@ class Subject {
 
 class Observer {
     notify(target, data) {
-        if (target != undefined)
-          console.log(`  Observer ${this.constructor.name} got notification from: ${target.constructor.name} data: ${data}`)
+        if (this.constructor.name == 'MediatorDumpModels')  // reduce debug noise
+            return 
+
+        if (target != null)
+            console.log(`  Observer ${this.constructor.name} got notification from: ${target.constructor.name}, data: '${data}'`)
+        else
+            console.log(`Observer ${this.constructor.name} got direct call to notify(), data: '${data}'`)
     }    
 }
 

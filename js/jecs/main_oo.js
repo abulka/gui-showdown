@@ -50,10 +50,14 @@ class Model {  // aggregates all the sub models into one housing
       this.user = user_model
     }
   
+    dirty_startup() {
+      this.dirty_all()
+      mediator_page_title.notify(null, "dirty startup")  // notify 'mediator_page_title' directly since this only happens once and 'mediator_page_title' doesn't subscribe to anyone
+    }
+
     dirty_all() {
-      this.welcome.notifyall("init dirty")
-      this.user.notifyall("init dirty")
-      mediator_page_title.notify(null, "init dirty")  // notify directly since this only happens once and mediator_page_title doesn't subscribe to anyone
+      this.welcome.notifyall("dirty all")
+      this.user.notifyall("dirty all")
     }
 }
 
@@ -211,18 +215,26 @@ $('#reset_user_model').on('click', function(e) {
 $("input[name=uppercase_welcome]").change(function(e) {
   mediator_welcome_left.uppercase_welcome = $(e.target).prop('checked')
   mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
-  model.dirty_all()
+
+  // Notify affected mediators directly, rather than inefficient model.dirty_all()
+  mediator_welcome_left.notify(null, "display option change")
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 })
 
 $("input[name=uppercase_user]").change(function(e) {
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
-  model.dirty_all()
+
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e){
   mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
-  model.dirty_all()
+
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 });
 
 $( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
@@ -264,4 +276,4 @@ model.user.add_observer(mediator_edit_user_surname_msg)
 model.welcome.add_observer(mediator_dump_models)  // debug mediator is also an observer of the models
 model.user.add_observer(mediator_dump_models)
 
-model.dirty_all()  // initialise the gui with initial model values
+model.dirty_startup()  // initialise the gui with initial model values
