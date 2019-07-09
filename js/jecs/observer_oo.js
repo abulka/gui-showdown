@@ -20,11 +20,16 @@ class Subject {
 
     notifyall(data) {
         const self = this
-        for (let o of this.observers)
+        for (let o of this.observers) {
+            console.log("subject notifying", o)
             o.notify(self, data)
+        }
     }
 }
 
+// TEST
+
+/*
 class Person extends Subject {
     constructor(name) {
         super();
@@ -52,6 +57,13 @@ watcher1 = new Watcher()
 watcher2 = new Watcher()
 p1.subscribe(watcher1)
 p1.name = "Mary Anne"
+
+*/
+
+
+
+// SCRAPS
+
 
 /*
 var settings = {
