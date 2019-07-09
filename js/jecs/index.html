@@ -75,13 +75,19 @@
     <p><a href="https://www.npmjs.com/package/jecs">hey here is the doco on ECS</a></p>
     <p><a href="https://vuejs.org/v2/guide/events.html">vue doco</a></p>
     <p><a href="main_ecs_v1.html">ECS early attempt</a> (Deprecated) Flags are separate components, Gui refs not generic enough, no plain data components</p>
-    <p><a href="main_oo_v1.html">OO v1</a> (Deprecated) Stored display options both centrally and in each mediator.  312 lines of code. 
-      This implemenation had a <code>display_options</code> mediator (as a Subject for a change, usually mediators are observers of model subjects).
-      Then <code>mediator_welcome_left</code> and <code>mediator_welcome_user_right</code> observed display_options, and updated their own internal flags to match the display options flags.
-      This is rather clever, but also convoluted. The checkbox GUI handlers, instead of updating a global display options "view" model (and the resulting observer notifications happening)
-      could instead take the <b>simpler</b> approach of modifying the flags in each mediator directly - which is what I implemented later.  This then also allows the removal of the 
-      uppercase_all flag, since we no longer have a murky global view model, but instead a specific view model in each mediator 
-      (see dicussion of this topic of dropping the 3rd flag, in esper_extras.py)
+    <p><a href="main_oo_v1.html">OO v1</a> (Deprecated) Stored display options both centrally and in each mediator.  312
+    lines of code. This implemenation had a <code>display_options</code> mediator (as a Subject for a change, usually
+    mediators are observers of model subjects). Then <code>mediator_welcome_left</code> and
+    <code>mediator_welcome_user_right</code> observed display_options, and updated their own internal flags to match the
+    display options flags. This is rather clever, but also convoluted. The checkbox GUI handlers, instead of updating a
+    global display options "view" model (and the resulting observer notifications happening) could instead take the
+    <b>simpler</b> approach of modifying the flags in each mediator directly - which is what I implemented later.  This
+    then also allows the removal of the uppercase_all flag, since we no longer have a murky global view model, but
+    instead a specific view model in each mediator (see dicussion of this topic of dropping the 3rd flag, in
+    esper_extras.py). Note: The price to pay for this simplification is that in the checkbox handlers, you have to
+    trigger manually because mediator_dump_models cannot subscribe to this change, as this is a gui event, not a Subject
+    which can be subscribed to. viz. you have to <code>mediator_dump_models.notify(null, "display options
+    change")</code>. But since GUI needs to be recomputed, might as well do the simpler <code>model.dirty_all()</code>.
       </p>
 
   </body>
