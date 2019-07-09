@@ -8,6 +8,7 @@ from typing import List, Any
 from esper_extras import add_or_remove_component
 from esper_observer import DirtyObserver, Dirty
 from nested_dict_accessor import NestedDictAccess
+from enum import Enum
 
 #
 # Model - The model is pure data.
@@ -41,20 +42,14 @@ class MultiModelRef:  # Refers to multiple model fields, since can only have one
     refs: List[ModelRef]
 
 
+class GuiElType(Enum):  # Tells render system what kind of wxPython control 'set' value method to use to when rendering
+    label = 1
+    textctrl = 2
+
 @dataclass
 class GuiControlRef:  # Mediator (entity + this component) needs to know about a wxPython gui control
-    ref: object
-    # TODO - guiref - enhance GuiControlRef
-    # this.$el = $el          // JQuery reference to element, but could be just 'id' or 'name' string
-    # this.el_type = el_type  // e.g. 'div' or 'input', tells render system what kind of DOM element to render/set
-
-
-class ComponentGuiStaticText(GuiControlRef):  # FIXME - guiref - remove this class
-    pass  # Static Text Gui ref
-
-
-class ComponentGuiTextControl(GuiControlRef):  # FIXME - guiref - remove this class
-    pass  # Text Control Gui ref
+    el: object        # reference to wxPython control, but could be implemented with 'id' string or something
+    el_type: GuiElType   
 
 
 @dataclass
@@ -117,21 +112,21 @@ class RenderProcessor(esper.Processor):
     def process(self):
         print("--Render System--")
 
-        for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiStaticText, Dirty):
-            if "welcomemsg" in component.keys:
+        for ent, (component, gui, _) in self.world.get_components(ModelRef, GuiControlRef, Dirty):
+            if "welcomemsg" in component.keys and gui.el_type == GuiElType.label:
                 print("render static text for", ent)
-                gui.ref.SetLabel(component.finalstr)
+                gui.el.SetLabel(component.finalstr)
+            elif gui.el_type == GuiElType.textctrl:
+                print("render textctrl for", ent)
+                gui.el.SetValue(component.finalstr)
 
         msg = {}  # can't target how model ref components get found, so build up what we need here
-        for ent, (component, guist, _) in self.world.get_components(MultiModelRef, ComponentGuiStaticText, Dirty):
+        for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
             for model_ref in component.refs:
+                assert gui.el_type == GuiElType.label
                 msg[model_ref.keys[-1]] = model_ref.finalstr
-            guist.ref.SetLabel(f"{msg['welcomemsg']} {msg['firstname']} {msg['surname']}")
+            gui.el.SetLabel(f"{msg['welcomemsg']} {msg['firstname']} {msg['surname']}")
             print("render staticText for", ent)
-
-        for ent, (component, gui, _) in self.world.get_components(ModelRef, ComponentGuiTextControl, Dirty):
-            print("render textctrl for", ent)
-            gui.ref.SetValue(component.finalstr)
 
         do.dirty_all(False, entities=mediators)
 
@@ -265,7 +260,7 @@ world.add_processor(RenderProcessor())
 
 entity_welcome_left = world.create_entity(
     ModelRef(data=model, keys=["welcomemsg"]), 
-    ComponentGuiStaticText(ref=frame.m_staticText1),  # TODO - guiref - change to generic GuiRef
+    GuiControlRef(el=frame.m_staticText1, el_type=GuiElType.label),
     DisplayOptions()
 )
 
@@ -275,21 +270,21 @@ entity_welcome_user_right = world.create_entity(
         ModelRef(data=model, keys=["user", "firstname"]),
         ModelRef(data=model, keys=["user", "surname"]),
         ]),
-    ComponentGuiStaticText(ref=frame.m_staticText2), # TODO - guiref - change to generic GuiRef
+    GuiControlRef(el=frame.m_staticText2, el_type=GuiElType.label),
     DisplayOptions()
 )
 
 entity_edit_welcome_msg = world.create_entity(
     ModelRef(data=model, keys=["welcomemsg"]), 
-    ComponentGuiTextControl(ref=frame.m_textCtrl1)
+    GuiControlRef(el=frame.m_textCtrl1, el_type=GuiElType.textctrl)
 )
 entity_edit_user_name_msg = world.create_entity(
     ModelRef(data=model, keys=["user", "firstname"]), 
-    ComponentGuiTextControl(ref=frame.m_textCtrl2)
+    GuiControlRef(el=frame.m_textCtrl2, el_type=GuiElType.textctrl)
 )
 entity_edit_user_surname_msg = world.create_entity(
     ModelRef(data=model, keys=["user", "surname"]), 
-    ComponentGuiTextControl(ref=frame.m_textCtrl3)
+    GuiControlRef(el=frame.m_textCtrl3, el_type=GuiElType.textctrl)
 )
 appgui = world.create_entity()  # slightly different style, create entiry then add components
 world.add_component(

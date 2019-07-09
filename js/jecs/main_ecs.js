@@ -134,8 +134,10 @@ world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_da
 
 let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
 world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
-  for (const c_model_ref of c_multi_model_ref.refs)
+  for (const c_model_ref of c_multi_model_ref.refs) {
+    assert(c_gui_ref.el_type == 'div')
     msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
+  }
   c_gui_ref.$el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
 });
 
