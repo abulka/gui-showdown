@@ -13,42 +13,43 @@
   </head>
 
   <body>
-    <div id="title">
-      <h1>Gui wired via Vue</h1>
-    </div>
+    <div id="app">
 
-    <form id="app">
-      <div class="row yell">
-        <div id="welcome" class="column">{{welcome_msg}}</div>
-        <div id="welcome-user" class="column bl">{{welcome_user_msg}}</div>
+      <div id="title">
+        <h1>{{ page_title }}</h1>
       </div>
-      <br>
-      Welcome Message (model): <input v-model="model.welcomemsg" type="text" name="welcome"><br>
-      <br>
-      User (model): <input v-model="model.user.firstname" type="text" name="firstname"> <input v-model="model.user.surname" type="text" name="surname">
-      <br>
-      <br>
 
-      <h3>Model Manipulations</h3>
-      <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
-      <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
-      <br>
-      <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
-      <button v-on:click="reset_user_model" type="button">Reset User</button>
-      <br>
-      <h3>Display Options</h3>
-      <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
-      <label><input v-model="uppercase_user" type="checkbox">Uppercase user message</label><br>
-      <br>
-      <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
-      <br>
+      <form>
+        <div class="row yell">
+          <div id="welcome" class="column">{{welcome_msg}}</div>
+          <div id="welcome-user" class="column bl">{{welcome_user_msg}}</div>
+        </div>
+        <br>
+        Welcome Message (model): <input v-model="model.welcomemsg" type="text" name="welcome"><br>
+        <br>
+        User (model): <input v-model="model.user.firstname" type="text" name="firstname"> <input v-model="model.user.surname" type="text" name="surname">
+        <br>
+        <br>
 
-      <h4>Debug</h4>
-      <pre v-html=dump_vue_data></pre>
-    </form>
+        <h3>Model Manipulations</h3>
+        <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
+        <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
+        <br>
+        <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
+        <button v-on:click="reset_user_model" type="button">Reset User</button>
+        <br>
+        <h3>Display Options</h3>
+        <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome message</label><br>
+        <label><input v-model="uppercase_user" type="checkbox">Uppercase user message</label><br>
+        <br>
+        <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+        <br>
 
-    <br>
-    <!-- <pre id="log"></pre> -->
+        <h4>Debug</h4>
+        <pre v-html=dump_vue_data></pre>
+      </form>
+
+    </div>
 
     <script src="syntax_highlighting.js"></script>
     <script src="main_vue.js"></script>

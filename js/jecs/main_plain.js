@@ -48,6 +48,11 @@ function update_edit_surname_input() {
   $('input[name=surname]').val(model.user.surname)
 }
 
+function update_page_title() {
+  $('#title > h1').html("Gui wired via Plain JQuery")
+}
+
+
 function update_debug_dump_models() {
   let info = {
     model: model,
@@ -62,6 +67,7 @@ function update_all() {
   update_edit_welcome_input()
   update_edit_firstname_input()
   update_edit_surname_input()
+  update_page_title()
   update_debug_dump_models()
 }
 

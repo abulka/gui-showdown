@@ -19,6 +19,7 @@ var vm = new Vue({
     uppercase_welcome: false,
     uppercase_user: false,
     uppercase_welcome_user: false,  // just the top right combined message
+    page_title: "Gui wired via Vue.js"
   },
   methods:  {
     _isUpperCaseAt(str, n) {  // util
