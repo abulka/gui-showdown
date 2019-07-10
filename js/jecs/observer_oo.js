@@ -29,9 +29,11 @@ class Subject {
 
 class Observer {
     notify(target, data) {
-        if (this.constructor.name == 'MediatorDumpModels')  // reduce debug noise
-            return 
 
+        document.dispatchEvent(new CustomEvent("observer-notification", {  // debug functions can listen for this
+            detail: { target: target, data: data }
+          }));      
+      
         if (target != null)
             console.log(`  Observer ${this.constructor.name} got notification from: ${target.constructor.name}, data: '${data}'`)
         else

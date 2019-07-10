@@ -6,6 +6,11 @@ from dataclasses import dataclass, astuple
 from typing import List, Any
 from observer_oo import Observable, Observer
 
+# This version matches the js version 'js/jecs/main_oo_v2.js' (Deprecated) where the event handlers set properties then
+# had to manually notify() them of the change. Better approach is to have setters on the mediators, where they can auto
+# notify themselves.  This way, in the OO architecture, GUI event handler functions either set values on model object or
+# on controller objects - simple.
+
 #
 # Model - The Welcome model and User model are Observable.
 #
@@ -28,7 +33,7 @@ class Welcome(BaseModel):
     @message.setter
     def message(self, v: str) -> None:
         self._msg = v
-        self.NotifyAll(data=v)
+        self.NotifyAll(notificationEventType="")
 
 
 @dataclass
@@ -43,7 +48,7 @@ class User(BaseModel):
     @firstname.setter
     def firstname(self, v: str) -> None:
         self._firstname = v
-        self.NotifyAll(data=v)
+        self.NotifyAll(notificationEventType="")
 
     @property
     def surname(self) -> str:
@@ -52,7 +57,7 @@ class User(BaseModel):
     @surname.setter
     def surname(self, v: str) -> None:
         self._surname = v
-        self.NotifyAll(data=v)
+        self.NotifyAll(notificationEventType="")
 
 
 @dataclass
@@ -63,8 +68,8 @@ class Model:
     user: User
 
     def dirty_all(self):
-        self.welcome.NotifyAll("dirty_all")
-        self.user.NotifyAll("dirty_all")
+        self.welcome.NotifyAll("init dirty")
+        self.user.NotifyAll("init dirty")
 
 
 #
@@ -85,21 +90,13 @@ class Mediator(Observer):
 class MediatorWelcomeLeft(Mediator):
     welcome: Welcome
     gui_ref: wx.StaticText
-    _uppercase_welcome: bool = False
+    uppercase_welcome: bool = False
 
-    @property
-    def uppercase_welcome(self) -> str:
-        return self._uppercase_welcome
-
-    @uppercase_welcome.setter
-    def uppercase_welcome(self, v: str) -> None:
-        self._uppercase_welcome = v
-        self.Notify(self, 'display option change')
-
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
+        print("top left")
         msg = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
         self.gui_ref.SetLabel(msg)
+        logsimple(self.welcome, self)
 
 
 @dataclass
@@ -107,33 +104,18 @@ class MediatorWelcomeUserRight(Mediator):
     welcome: Welcome
     user: User
     gui_ref: wx.StaticText
-    _uppercase_welcome: bool = False
-    _uppercase_user: bool = False
+    uppercase_welcome: bool = False
+    uppercase_user: bool = False
 
-    @property
-    def uppercase_welcome(self) -> str:
-        return self._uppercase_welcome
-
-    @uppercase_welcome.setter
-    def uppercase_welcome(self, v: str) -> None:
-        self._uppercase_welcome = v
-        self.Notify(self, 'display option change')
-
-    @property
-    def uppercase_user(self) -> str:
-        return self._uppercase_user
-
-    @uppercase_user.setter
-    def uppercase_user(self, v: str) -> None:
-        self._uppercase_user = v
-        self.Notify(self, 'display option change')
-
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
+        print("top right")
         welcome = self.welcome.message.upper() if self.uppercase_welcome else self.welcome.message
         firstname = self.user.firstname.upper() if self.uppercase_user else self.user.firstname
         surname = self.user.surname.upper() if self.uppercase_user else self.user.surname
         self.gui_ref.SetLabel(f"{welcome} {firstname} {surname}")
+
+        logsimple(self.welcome, self)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -141,9 +123,10 @@ class MediatorEditWelcome(Mediator):
     welcome: Welcome
     gui_ref: wx.TextCtrl
 
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
+        print("edit welcome")
         self.gui_ref.SetValue(self.welcome.message)
+        logsimple(self.welcome, self)
 
 
 @dataclass
@@ -151,9 +134,10 @@ class MediatorEditUserFirstName(Mediator):
     user: User
     gui_ref: wx.TextCtrl
 
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
+        print("edit user firstname")
         self.gui_ref.SetValue(self.user.firstname)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -161,9 +145,10 @@ class MediatorEditUserSurName(Mediator):
     user: User
     gui_ref: wx.TextCtrl
 
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
+        print("edit user surname")
         self.gui_ref.SetValue(self.user.surname)
+        logsimple(self.user, self)
 
 
 @dataclass
@@ -174,17 +159,23 @@ class MediatorFrameAdornments(Mediator):
     panel_ref: wx.Panel
     panel_colour_randomise: bool
 
-    def Notify(self, target, data):
-        super().Notify(target, data)
+    def Notify(self, target, notification_event_type):
         self.frame_ref.SetTitle(self.frame_title + " " + time.asctime())
         self.panel_ref.SetBackgroundColour(
             wx.Colour(255, random.randint(120, 250), random.randint(120, 250)) if self.panel_colour_randomise else self.panel_colour
         )
         self.panel_ref.Refresh()  # f.panel_ref.Update() doesn't work, need to Refresh()
+        logsimple(self, self)
+
 
 #
 # Util
 #
+
+
+def logsimple(o, mediator):  # simple logging
+    print(f"have set {o} in {nice_mediator_name[id(mediator)]}")
+
 
 # def housekeeping():
 #     if frame.m_checkBox1.IsChecked():
@@ -220,12 +211,23 @@ class MyFrame1A(MyFrame1):
         mediator_welcome_left.uppercase_welcome = event.GetEventObject().IsChecked()
         mediator_welcome_user_right.uppercase_welcome = event.GetEventObject().IsChecked()
 
+        # Notify affected mediators directly, rather than inefficient model.dirty_all()
+        mediator_welcome_left.Notify(None, "display option change")
+        mediator_welcome_user_right.Notify(None, "display option change")
+        # mediator_dump_models.Notify(None, "display option change")
+
     def on_check_toggle_user_outputs_only(self, event):
         mediator_welcome_user_right.uppercase_user = event.GetEventObject().IsChecked()
+
+        mediator_welcome_user_right.Notify(None, "display option change")
+        # mediator_dump_models.Notify(None, "display option change")
 
     def on_check_upper_entire_top_right_output(self, event):
         mediator_welcome_user_right.uppercase_welcome = event.GetEventObject().IsChecked()
         mediator_welcome_user_right.uppercase_user = event.GetEventObject().IsChecked()
+
+        mediator_welcome_user_right.Notify(None, "display option change")
+        # mediator_dump_models.Notify(None, "display option change")
 
     def on_enter_welcome(self, event):
         model.welcome.message = event.GetEventObject().GetValue()
@@ -258,7 +260,7 @@ model = Model(Welcome(), User())
 mediator_welcome_left = MediatorWelcomeLeft(welcome=model.welcome, gui_ref=frame.m_staticText1)
 mediator_welcome_user_right = MediatorWelcomeUserRight(welcome=model.welcome, user=model.user, gui_ref=frame.m_staticText2)
 mediator_edit_welcome_msg = MediatorEditWelcome(welcome=model.welcome, gui_ref=frame.m_textCtrl1)
-mediator_edit_user_firstname_msg = MediatorEditUserFirstName(user=model.user, gui_ref=frame.m_textCtrl2)
+mediator_edit_user_name_msg = MediatorEditUserFirstName(user=model.user, gui_ref=frame.m_textCtrl2)
 mediator_edit_user_surname_msg = MediatorEditUserSurName(user=model.user, gui_ref=frame.m_textCtrl3)
 appgui = MediatorFrameAdornments(
     frame_title="Gui wired via OO Observer",
@@ -268,12 +270,22 @@ appgui = MediatorFrameAdornments(
     panel_colour_randomise=True,
 )
 
+nice_mediator_name = {
+    id(mediator_welcome_left): "mediator for welcome_left",
+    id(mediator_welcome_user_right): "mediator for welcome_user_right",
+    id(mediator_edit_welcome_msg): "mediator for edit_welcome_msg",
+    id(mediator_edit_user_name_msg): "mediator for edit_user_name_msg",
+    id(mediator_edit_user_surname_msg): "mediator for edit_user_surname_msg",
+    id(appgui): "mediator for app frame etc",
+}
+mediators: List[int] = list(nice_mediator_name.keys())
+
 # Observer Wiring
 model.welcome.AddObserver(mediator_welcome_left)
 model.welcome.AddObserver(mediator_welcome_user_right)
 model.welcome.AddObserver(mediator_edit_welcome_msg)
 model.user.AddObserver(mediator_welcome_user_right)
-model.user.AddObserver(mediator_edit_user_firstname_msg)
+model.user.AddObserver(mediator_edit_user_name_msg)
 model.user.AddObserver(mediator_edit_user_surname_msg)
 # model.welcome.AddObserver(appgui)
 # model.user.AddObserver(appgui)

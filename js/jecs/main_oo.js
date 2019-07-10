@@ -78,7 +78,7 @@ class MediatorWelcomeLeft extends Observer {
   }
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
-    this.notify(this, 'display option')
+    this.notify(this, 'display option change')
   }
 
   notify(target, data) {
@@ -103,7 +103,7 @@ class MediatorWelcomeUserRight extends Observer {
   }
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
-    this.notify(this, 'display option')
+    this.notify(this, 'display option change')
   }
   
   get uppercase_user() { 
@@ -111,7 +111,7 @@ class MediatorWelcomeUserRight extends Observer {
   }
   set uppercase_user(val) { 
     this._uppercase_user = val
-    this.notify(this, 'display option')
+    this.notify(this, 'display option change')
   }
 
   notify(target, data) {
