@@ -1,15 +1,19 @@
 //
+// Idiomatic Javascript Eventing to implement Subject/Observer pattern
+///
+
+function notify_all(event_name, target, data) {
+  document.dispatchEvent(new CustomEvent(event_name, { details: {target: target, data: data } }))
+  document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: target, data: data } }))  // debugging hook
+  console.log(`notify all of '${event_name}' ${target != null ? 'from: ' + target.constructor.name : target} ${data != null ? 'data: ' + data : ''}`)
+}
+
+//
 // Model - The Welcome model and User model are Observable.
 //
 
-function notify(event_name, target, data) {
-  document.dispatchEvent(new CustomEvent(event_name, { details: {target: target, data: data } }))
-  document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: target, data: data } }))  // debugging hook
-}
-
 class Welcome {
   constructor(message) {
-      // super();
       this._msg = message == undefined ? "Welcome" : message;
     }
   
@@ -19,16 +23,12 @@ class Welcome {
   
     set message(v) {
       this._msg = v;
-      notify("modified welcome", this, this._msg)
-      // document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: v } }))
-      // console.log('event this is', this)
-      // this.notifyall(`modified ${this._msg}`)
+      notify_all("modified welcome", this, this._msg)
     }
 }
 
 class User {
   constructor() {
-      // super();
       this._firstname = "Sam"
       this._surname = "Smith"
     }
@@ -39,9 +39,7 @@ class User {
   
     set firstname(v) {
       this._firstname = v;
-      notify("modified user", this, this._firstname)
-      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
-      // this.notifyall(`modified ${this._firstname}`)
+      notify_all("modified user", this, this._firstname)
     }
   
     get surname() {
@@ -50,9 +48,7 @@ class User {
   
     set surname(v) {
       this._surname = v;
-      notify("modified user", this, this._surname)
-      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
-      // this.notifyall(`modified ${this._surname}`)
+      notify_all("modified user", this, this._surname)
     }
 }
 
@@ -64,19 +60,12 @@ class Model {  // aggregates all the sub models into one housing
   
     dirty_startup() {
       this.dirty_all()
-      // mediator_page_title.notify(null, "dirty startup")  // notify 'mediator_page_title' directly since this only happens once and 'mediator_page_title' doesn't subscribe to anyone
-      notify("startup", this)
-      // document.dispatchEvent(new CustomEvent("startup", { details: {target: this, data: null } }))
-
+      notify_all("startup", this)
     }
 
     dirty_all() {
-      // this.welcome.notifyall("dirty all")
-      // this.user.notifyall("dirty all")
-      notify("modified welcome", this)
-      notify("modified user", this)
-      // document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: null } }))
-      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: null } }))
+      notify_all("modified welcome", this)
+      notify_all("modified user", this)
     }
 }
 
@@ -86,7 +75,6 @@ class Model {  // aggregates all the sub models into one housing
 
 class MediatorWelcomeLeft {
   constructor(welcome_model, id) {
-    // super()
     this.welcome = welcome_model  // ref to Welcome model
     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
     this._uppercase_welcome = false
@@ -104,13 +92,11 @@ class MediatorWelcomeLeft {
   notify(target, data) {
     let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     $('#' + this.gui_div).html(msg)
-    // super.notify(target, data)
   }
 }
 
 class MediatorWelcomeUserRight {
   constructor(welcome_model, user_model, id) {
-    // super()
     this.welcome = welcome_model
     this.user = user_model
     this.gui_div = id
@@ -141,61 +127,49 @@ class MediatorWelcomeUserRight {
     let firstname = this.uppercase_user ? this.user.firstname.toUpperCase() : this.user.firstname
     let surname = this.uppercase_user ? this.user.surname.toUpperCase() : this.user.surname
     $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
-    // super.notify(target, data)
   }
 }
 
 class MediatorEditWelcome {
   constructor(welcome_model, id) {
-    // super()
     this.welcome = welcome_model
     this.gui_input = id  // name (not id) of input to hold welcome message
   }
   
   notify(target, data) {
-    // super.notify(target, data)
-    // assert(target == this.welcome)  FIXME target here is 'document' !!
     $(`input[name=${this.gui_input}]`).val(this.welcome.message)
   }
 }
 
 class MediatorEditUserFirstName {
   constructor(user_model, id) {
-    // super()
     this.user = user_model
     this.gui_input = id
   }
   
   notify(target, data) {
-    // super.notify(target, data)
-    // assert(target == this.user)
     $(`input[name=${this.gui_input}]`).val(this.user.firstname)
   }
 }
 
 class MediatorEditUserSurName {
   constructor(user_model, id) {
-    // super()
     this.user = user_model
     this.gui_input = id
   }
   
   notify(target, data) {
-    // super.notify(target, data)
-    // assert(target == this.user)
     $(`input[name=${this.gui_input}]`).val(this.user.surname)
   }
 }
 
 class MediatorPageTitle {
   constructor(s, $id) {
-    // super()
     this.s = s
     this.$id = $id
   }
   
   notify(target, data) {
-    // super.notify(target, data)
     this.$id.html(this.s)
   }
 }
@@ -300,12 +274,6 @@ mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#tit
 controller_dump_models = new DebugDumpModels("debug_info")  // not an OO Observer (to avoid infinite recursion), but a listener nevertheless
 
 // Observer Wiring
-// model.welcome.add_observer(mediator_welcome_left)
-// model.welcome.add_observer(mediator_welcome_user_right)
-// model.welcome.add_observer(mediator_edit_welcome_msg)
-// model.user.add_observer(mediator_welcome_user_right)
-// model.user.add_observer(mediator_edit_user_name_msg)
-// model.user.add_observer(mediator_edit_user_surname_msg)
 document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event.target, event.details) })
 document.addEventListener("modified welcome", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
 document.addEventListener("modified user", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
