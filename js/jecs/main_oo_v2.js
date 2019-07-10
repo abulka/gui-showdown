@@ -70,25 +70,13 @@ class MediatorWelcomeLeft extends Observer {
     super()
     this.welcome = welcome_model  // ref to Welcome model
     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
-    this._uppercase_welcome = false
+    this.uppercase_welcome = false
   }
   
-  get uppercase_welcome() { 
-    return this._uppercase_welcome 
-  }
-  set uppercase_welcome(val) { 
-    this._uppercase_welcome = val
-    this.notify(this, 'display option')
-  }
-
   notify(target, data) {
     super.notify(target, data)
     let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     $('#' + this.gui_div).html(msg)
-
-    document.dispatchEvent(new CustomEvent("hello", {  // TODO put this in the superclass
-      detail: { name: "John" }
-    }));      
   }
 }
 
@@ -98,36 +86,16 @@ class MediatorWelcomeUserRight extends Observer {
     this.welcome = welcome_model
     this.user = user_model
     this.gui_div = id
-    this._uppercase_welcome = false
-    this._uppercase_user = false
+    this.uppercase_welcome = false
+    this.uppercase_user = false
   }
   
-  get uppercase_welcome() { 
-    return this._uppercase_welcome 
-  }
-  set uppercase_welcome(val) { 
-    this._uppercase_welcome = val
-    this.notify(this, 'display option')
-  }
-  
-  get uppercase_user() { 
-    return this._uppercase_user 
-  }
-  set uppercase_user(val) { 
-    this._uppercase_user = val
-    this.notify(this, 'display option')
-  }
-
   notify(target, data) {
     super.notify(target, data)
     let welcome = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     let firstname = this.uppercase_user ? this.user.firstname.toUpperCase() : this.user.firstname
     let surname = this.uppercase_user ? this.user.surname.toUpperCase() : this.user.surname
     $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
-
-    document.dispatchEvent(new CustomEvent("hello", {  // TODO put this in the superclass
-      detail: { name: "John" }
-    }));      
   }
 }
 
@@ -190,11 +158,6 @@ class MediatorDumpModels extends Observer {
   constructor(id) {
     super()
     this.gui_pre_id = id
-
-    // document.addEventListener("hello", function(event) {  // FIXME - event handler in mediator is confused about this
-    //   // alert(event.detail.name);
-    //   this.notify(this, 'debug dump')
-    // });    
   }
   
   notify(target, data) {
@@ -252,15 +215,26 @@ $('#reset_user_model').on('click', function(e) {
 $("input[name=uppercase_welcome]").change(function(e) {
   mediator_welcome_left.uppercase_welcome = $(e.target).prop('checked')
   mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
+
+  // Notify affected mediators directly, rather than inefficient model.dirty_all()
+  mediator_welcome_left.notify(null, "display option change")
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 })
 
 $("input[name=uppercase_user]").change(function(e) {
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
+
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 })
 
 $("input[name=uppercase_welcome_user]").change(function(e){
   mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
+
+  mediator_welcome_user_right.notify(null, "display option change")
+  mediator_dump_models.notify(null, "display option change")
 });
 
 $( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
@@ -301,10 +275,5 @@ model.user.add_observer(mediator_edit_user_name_msg)
 model.user.add_observer(mediator_edit_user_surname_msg)
 model.welcome.add_observer(mediator_dump_models)  // debug mediator is also an observer of the models
 model.user.add_observer(mediator_dump_models)
-
-// Debug Wiring
-document.addEventListener("hello", function(event) {
-  mediator_dump_models.notify(null, "display option change")
-});  
 
 model.dirty_startup()  // initialise the gui with initial model values
