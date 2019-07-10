@@ -82,13 +82,9 @@ class MediatorWelcomeLeft extends Observer {
   }
 
   notify(target, data) {
-    super.notify(target, data)
     let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     $('#' + this.gui_div).html(msg)
-
-    document.dispatchEvent(new CustomEvent("dump-model", {  // TODO put this in the superclass
-      detail: { name: "John" }
-    }));      
+    super.notify(target, data)
   }
 }
 
@@ -119,15 +115,11 @@ class MediatorWelcomeUserRight extends Observer {
   }
 
   notify(target, data) {
-    super.notify(target, data)
     let welcome = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     let firstname = this.uppercase_user ? this.user.firstname.toUpperCase() : this.user.firstname
     let surname = this.uppercase_user ? this.user.surname.toUpperCase() : this.user.surname
     $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
-
-    document.dispatchEvent(new CustomEvent("dump-model", {  // TODO put this in the superclass
-      detail: { name: "John" }
-    }));      
+    super.notify(target, data)
   }
 }
 
@@ -186,15 +178,13 @@ class MediatorPageTitle extends Observer {
   }
 }
 
-class MediatorDumpModels extends Observer {
+class DebugDumpModels {  // Not an OO Observer (to avoid infinite recursion), but a listener nevertheless
   constructor(id) {
-    super()
     this.gui_pre_id = id
-    document.addEventListener("dump-model", (event) => { this.notify(event.target, 'debug dump') }) // Debug Wiring - must use arrow function to get correct value of 'this'
+    document.addEventListener("observer-notification", (event) => { this.notify_ocurred(event.target) }) // Must use arrow function to get correct value of 'this'
   }
   
-  notify(target, data) {
-    super.notify(target, data)
+  notify_ocurred(target) {
     let info = {
       model: model,
       mediator_welcome_left: mediator_welcome_left,
@@ -205,7 +195,7 @@ class MediatorDumpModels extends Observer {
     }
     $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, function(key, value) {
 
-        // skip observers or circular references will break the json
+        // skip 'observers' fields or circular references will break the generated json
         if (key == 'observers') { 
           return value.id;
         } else {
@@ -285,8 +275,8 @@ mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.
 mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
 mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
-mediator_dump_models = new MediatorDumpModels("debug_info")
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Observer", $('#title > h1'))
+controller_dump_models = new DebugDumpModels("debug_info")  // not an OO Observer (to avoid infinite recursion), but a listener nevertheless
 
 // Observer Wiring
 model.welcome.add_observer(mediator_welcome_left)
@@ -295,7 +285,5 @@ model.welcome.add_observer(mediator_edit_welcome_msg)
 model.user.add_observer(mediator_welcome_user_right)
 model.user.add_observer(mediator_edit_user_name_msg)
 model.user.add_observer(mediator_edit_user_surname_msg)
-model.welcome.add_observer(mediator_dump_models)  // debug mediator is also an observer of the models
-model.user.add_observer(mediator_dump_models)
 
 model.dirty_startup()  // initialise the gui with initial model values
