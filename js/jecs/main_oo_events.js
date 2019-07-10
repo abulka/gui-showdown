@@ -2,6 +2,10 @@
 // Model - The Welcome model and User model are Observable.
 //
 
+function notify(event_name, target, data) {
+  document.dispatchEvent(new CustomEvent(event_name, { details: {target: target, data: data } }))
+}
+
 class Welcome {
   constructor(message) {
       // super();
@@ -14,8 +18,9 @@ class Welcome {
   
     set message(v) {
       this._msg = v;
-      document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: v } }))
-      console.log('event this is', this)
+      notify("modified welcome", this, this._msg)
+      // document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: v } }))
+      // console.log('event this is', this)
       // this.notifyall(`modified ${this._msg}`)
     }
 }
@@ -33,7 +38,8 @@ class User {
   
     set firstname(v) {
       this._firstname = v;
-      document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
+      notify("modified user", this, this._firstname)
+      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
       // this.notifyall(`modified ${this._firstname}`)
     }
   
@@ -43,7 +49,8 @@ class User {
   
     set surname(v) {
       this._surname = v;
-      document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
+      notify("modified user", this, this._surname)
+      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: v } }))
       // this.notifyall(`modified ${this._surname}`)
     }
 }
@@ -57,15 +64,18 @@ class Model {  // aggregates all the sub models into one housing
     dirty_startup() {
       this.dirty_all()
       // mediator_page_title.notify(null, "dirty startup")  // notify 'mediator_page_title' directly since this only happens once and 'mediator_page_title' doesn't subscribe to anyone
-      document.dispatchEvent(new CustomEvent("startup", { details: {target: this, data: null } }))
+      notify("startup", this)
+      // document.dispatchEvent(new CustomEvent("startup", { details: {target: this, data: null } }))
 
     }
 
     dirty_all() {
       // this.welcome.notifyall("dirty all")
       // this.user.notifyall("dirty all")
-      document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: null } }))
-      document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: null } }))
+      notify("modified welcome", this)
+      notify("modified user", this)
+      // document.dispatchEvent(new CustomEvent("modified welcome", { details: {target: this, data: null } }))
+      // document.dispatchEvent(new CustomEvent("modified user", { details: {target: this, data: null } }))
     }
 }
 
