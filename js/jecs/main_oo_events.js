@@ -86,8 +86,6 @@ class MediatorWelcomeLeft {
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
     notify_all("display option change", this, "uppercase_welcome")
-    // this.notify(this, 'display option change')
-    // document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
   }
 
   notify(event) {
@@ -110,9 +108,6 @@ class MediatorWelcomeUserRight {
   }
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
-    // TODO actually rather than calling yourself, should emit an event so that the debugging hook can work. A bit inefficient but better
-    // this.notify(this, 'display option change')
-    // document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
     notify_all("display option change", this, "uppercase_welcome")
   }
   
@@ -121,8 +116,6 @@ class MediatorWelcomeUserRight {
   }
   set uppercase_user(val) { 
     this._uppercase_user = val
-    // this.notify(this, 'display option change')
-    // document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
     notify_all("display option change", this, "uppercase_user")
   }
 
@@ -178,12 +171,12 @@ class MediatorPageTitle {
   }
 }
 
-class DebugDumpModels {  // Not an OO Observer (to avoid infinite recursion), but a listener nevertheless
+class DebugDumpModels {
   constructor(id) {
     this.gui_pre_id = id
   }
   
-  notify_ocurred(target) {
+  notify(event) {
     let info = {
       model: model,
       mediator_welcome_left: mediator_welcome_left,
@@ -192,17 +185,7 @@ class DebugDumpModels {  // Not an OO Observer (to avoid infinite recursion), bu
       mediator_edit_user_name_msg : mediator_edit_user_name_msg,
       mediator_edit_user_surname_msg : mediator_edit_user_surname_msg,
     }
-    $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, function(key, value) {
-
-        // skip 'observers' fields or circular references will break the generated json
-        if (key == 'observers') { 
-          return value.id;
-        } else {
-          return value;
-        }
-
-    }, 2)))
-
+    $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, null, 2)))
   }
 }
 
@@ -248,7 +231,7 @@ $("input[name=uppercase_welcome_user]").change(function(e){
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
 });
 
-$( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
+$( "input[name=welcome]" ).keypress(function(e) {  // use 'change' instead of 'keypress' if you want to wait for ENTER key
   model.welcome.message = $(e.target).val()
 });
 
@@ -287,15 +270,6 @@ document.addEventListener("modified user", (event) =>    { mediator_edit_user_su
 document.addEventListener("startup", (event) =>          { mediator_page_title.notify(event) })
 document.addEventListener("display option change", (event) => { mediator_welcome_left.notify(event) })
 document.addEventListener("display option change", (event) => { mediator_welcome_user_right.notify(event) })
-document.addEventListener("observer-notification", (event) => { controller_dump_models.notify_ocurred(event.target) }) // Must use arrow function to get correct value of 'this'
-
-// document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event.target, event.details) })
-// document.addEventListener("modified welcome", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
-// document.addEventListener("modified user", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
-// document.addEventListener("modified welcome", (event) => { mediator_edit_welcome_msg.notify(event.target, event.details) })
-// document.addEventListener("modified user", (event) => { mediator_edit_user_name_msg.notify(event.target, event.details) })
-// document.addEventListener("modified user", (event) => { mediator_edit_user_surname_msg.notify(event.target, event.details) })
-// document.addEventListener("startup", (event) => { mediator_page_title.notify(event.target, event.details) })
-// document.addEventListener("observer-notification", (event) => { controller_dump_models.notify_ocurred(event.target) }) // Must use arrow function to get correct value of 'this'
+document.addEventListener("observer-notification", (event) => { controller_dump_models.notify(event) })
 
 model.dirty_startup()  // initialise the gui with initial model values
