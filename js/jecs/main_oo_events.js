@@ -4,6 +4,7 @@
 
 function notify(event_name, target, data) {
   document.dispatchEvent(new CustomEvent(event_name, { details: {target: target, data: data } }))
+  document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: target, data: data } }))  // debugging hook
 }
 
 class Welcome {
@@ -97,6 +98,7 @@ class MediatorWelcomeLeft {
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
     this.notify(this, 'display option change')
+    document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
   }
 
   notify(target, data) {
@@ -122,6 +124,7 @@ class MediatorWelcomeUserRight {
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
     this.notify(this, 'display option change')
+    document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
   }
   
   get uppercase_user() { 
@@ -130,6 +133,7 @@ class MediatorWelcomeUserRight {
   set uppercase_user(val) { 
     this._uppercase_user = val
     this.notify(this, 'display option change')
+    document.dispatchEvent(new CustomEvent("observer-notification", { details: {target: this, data: 'display option change' } }))  // FIXME this is bad
   }
 
   notify(target, data) {
@@ -199,9 +203,6 @@ class MediatorPageTitle {
 class DebugDumpModels {  // Not an OO Observer (to avoid infinite recursion), but a listener nevertheless
   constructor(id) {
     this.gui_pre_id = id
-    // TODO nobody is sending this - no general engine from which to send, so may need to send manually when raising any event
-    // FIXME make a generic event emitter helper that simplifies the syntax AND emits the debug dump message at the same time
-    document.addEventListener("observer-notification", (event) => { this.notify_ocurred(event.target) }) // Must use arrow function to get correct value of 'this'
   }
   
   notify_ocurred(target) {
@@ -312,5 +313,6 @@ document.addEventListener("modified welcome", (event) => { mediator_edit_welcome
 document.addEventListener("modified user", (event) => { mediator_edit_user_name_msg.notify(event.target, event.details) })
 document.addEventListener("modified user", (event) => { mediator_edit_user_surname_msg.notify(event.target, event.details) })
 document.addEventListener("startup", (event) => { mediator_page_title.notify(event.target, event.details) })
+document.addEventListener("observer-notification", (event) => { controller_dump_models.notify_ocurred(event.target) }) // Must use arrow function to get correct value of 'this'
 
 model.dirty_startup()  // initialise the gui with initial model values
