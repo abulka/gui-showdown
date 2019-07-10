@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Various Gui wiring techniques">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 60%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        </style>
+
+  </head>
+
+  <body>
+    <div id="title">
+      <h1>Various GUI wiring techniques - Research Notes</h1>
+    </div>
+
+    <h2>Older versions</h2>
+    <p><a href="main_ecs_v1.html">ECS v1</a> (Deprecated) Flags are separate components, Gui refs not generic enough, no plain data components</p>
+    <p><a href="main_oo_v1.html">OO v1</a> (Deprecated) Stored display options both centrally and in each mediator.  312
+    lines of code (new version is 279 lines). This implemenation had a <code>display_options</code> mediator (as a Subject for a change, usually
+    mediators are observers of model subjects). Then <code>mediator_welcome_left</code> and
+    <code>mediator_welcome_user_right</code> observed display_options, and updated their own internal flags to match the
+    display options flags. This is rather clever, but also convoluted. The checkbox GUI handlers, instead of updating a
+    global display options "view" model (and the resulting observer notifications happening) could instead take the
+    <b>simpler</b> approach of modifying the flags in each mediator directly - which is what I implemented later.  This
+    then also allows the removal of the uppercase_all flag, since we no longer have a murky global view model, but
+    instead a specific view model in each mediator (see dicussion of this topic of dropping the 3rd flag, in
+    esper_extras.py). Note: The price to pay for this simplification is that in the checkbox handlers, you have to
+    trigger manually because mediator_dump_models cannot subscribe to this change, as this is a gui event, not a Subject
+    which can be subscribed to. viz. you have to <code>mediator_dump_models.notify(null, "display options
+    change")</code>. But since GUI needs to be recomputed, might as well do the simpler <code>model.dirty_all()</code>.
+      </p>
+    <p><a href="main_oo_v2.html">OO v2</a> (Deprecated) where the event handlers set properties then
+      had to manually notify() them of the change. Better approach is to have setters on the mediators, where they can auto
+      notify themselves.  This way, in the OO architecture, GUI event handler functions either set values on model object or
+      on controller objects - simple.
+      </p>
+    <h2>Other</h2>
+    <p><a href="mini-game.html">ECS jecs demo</a></p>
+    <h2>Back to...</h2>
+    <p><a href="index.html">Main Gui Showdown index demo</a></p>
+    <br>
+
+  </body>
+</html>
+
