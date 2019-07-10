@@ -89,7 +89,6 @@ class MediatorWelcomeLeft {
     this.welcome = welcome_model  // ref to Welcome model
     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
     this._uppercase_welcome = false
-    document.addEventListener("modified welcome", (event) => { this.notify(event.target, event.details) })
   }
   
   get uppercase_welcome() { 
@@ -115,8 +114,6 @@ class MediatorWelcomeUserRight {
     this.gui_div = id
     this._uppercase_welcome = false
     this._uppercase_user = false
-    document.addEventListener("modified welcome", (event) => { this.notify(event.target, event.details) })
-    document.addEventListener("modified user", (event) => { this.notify(event.target, event.details) })
   }
   
   get uppercase_welcome() { 
@@ -149,7 +146,6 @@ class MediatorEditWelcome {
     // super()
     this.welcome = welcome_model
     this.gui_input = id  // name (not id) of input to hold welcome message
-    document.addEventListener("modified welcome", (event) => { this.notify(event.target, event.details) })
   }
   
   notify(target, data) {
@@ -164,7 +160,6 @@ class MediatorEditUserFirstName {
     // super()
     this.user = user_model
     this.gui_input = id
-    document.addEventListener("modified user", (event) => { this.notify(event.target, event.details) })
   }
   
   notify(target, data) {
@@ -179,7 +174,6 @@ class MediatorEditUserSurName {
     // super()
     this.user = user_model
     this.gui_input = id
-    document.addEventListener("modified user", (event) => { this.notify(event.target, event.details) })
   }
   
   notify(target, data) {
@@ -194,7 +188,6 @@ class MediatorPageTitle {
     // super()
     this.s = s
     this.$id = $id
-    document.addEventListener("startup", (event) => { this.notify(event.target, event.details) })
   }
   
   notify(target, data) {
@@ -312,5 +305,12 @@ controller_dump_models = new DebugDumpModels("debug_info")  // not an OO Observe
 // model.user.add_observer(mediator_welcome_user_right)
 // model.user.add_observer(mediator_edit_user_name_msg)
 // model.user.add_observer(mediator_edit_user_surname_msg)
+document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event.target, event.details) })
+document.addEventListener("modified welcome", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
+document.addEventListener("modified user", (event) => { mediator_welcome_user_right.notify(event.target, event.details) })
+document.addEventListener("modified welcome", (event) => { mediator_edit_welcome_msg.notify(event.target, event.details) })
+document.addEventListener("modified user", (event) => { mediator_edit_user_name_msg.notify(event.target, event.details) })
+document.addEventListener("modified user", (event) => { mediator_edit_user_surname_msg.notify(event.target, event.details) })
+document.addEventListener("startup", (event) => { mediator_page_title.notify(event.target, event.details) })
 
 model.dirty_startup()  // initialise the gui with initial model values
