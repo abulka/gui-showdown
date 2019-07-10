@@ -1,4 +1,13 @@
-// https://medium.com/@majdasab/observer-pattern-with-javascript-es6-classes-2a19851e1506
+/*
+An Implementation of the Observer design pattern for Javascript.
+
+Subject classes should inherit from Subject and call notifyall() to broadcast, 'data' is arbitrary and optional.
+Observer classes should inherit from Observer and implement notify(from, data) to receive the notification.
+
+As a debugging aid, each notify() also emits a custom event 'observer-notification' which can be listened for e.g.
+document.addEventListener("observer-notification", (event) => { ... }) where event.detail will contain { from: from,
+data: data }
+*/
 
 class Subject {
     constructor() {
@@ -28,92 +37,15 @@ class Subject {
 }
 
 class Observer {
-    notify(target, data) {
+    notify(from, data) {
 
         document.dispatchEvent(new CustomEvent("observer-notification", {  // debug functions can listen for this
-            detail: { target: target, data: data }
+            detail: { from: from, data: data }
           }));      
       
-        if (target != null)
-            console.log(`  Observer ${this.constructor.name} got notification from: ${target.constructor.name}, data: '${data}'`)
+        if (from != null)
+            console.log(`  Observer ${this.constructor.name} got notification from: ${from.constructor.name}, data: '${data}'`)
         else
             console.log(`Observer ${this.constructor.name} got direct call to notify(), data: '${data}'`)
     }    
 }
-
-
-// TEST
-
-/*
-class Person extends Subject {
-    constructor(name) {
-        super();
-        this._name = name;
-      }
-    
-      get name() {
-        return this._name.toUpperCase();
-      }
-    
-      set name(newName) {
-        this._name = newName;   // validation could be checked here such as only allowing non numerical values
-        this.notifyall(`modified ${this._name}`)
-      }
-}
-
-class Watcher {
-    notify(target, data) {
-        console.log(`notification from: ${target.constructor.name} data: ${data}`)
-    }
-}
-p1 = new Person("Mary")
-p2 = new Person("Sam")
-watcher1 = new Watcher()
-watcher2 = new Watcher()
-p1.subscribe(watcher1)
-p1.name = "Mary Anne"
-
-*/
-
-
-
-// SCRAPS
-
-
-/*
-var settings = {
-    fonts: "medium",
-    colors: "light",
-    observers: [],
-    addObserver: function (observer) {
-       this.observers.push(observer);
-    },
-    update : function(newSettings) {
-       for (k in newSettings)
-           this[k] = newSettings[k];
-       this.fire();
-    },
-    fire: function() {
-       var self = this;
-       observers.forEach(function() { this.update(self); });
-    }
-  }
-*/
-
-/*
-https://stackoverflow.com/questions/25417547/observer-pattern-vs-mediator-pattern
-
-where each view would behave somewhat like this:
-
-var view = {
-   init: function() {
-      //... attach to DOM elements etc...
-      settings.addObserver(this); 
-   },
-   update: function(settings) {
-      //... use settings to toggle classes for fonts and colors...
-   } 
-}
-
-*/
-
