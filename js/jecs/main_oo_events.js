@@ -1,15 +1,5 @@
 //
-// Idiomatic Javascript Eventing to implement Subject/Observer pattern
-///
-
-function notify_all(event_name, target, data) {
-  document.dispatchEvent(new CustomEvent(event_name, { detail: {target: target, data: data } }))
-  document.dispatchEvent(new CustomEvent("observer-notification", { detail: {target: target, data: data } }))  // debugging hook
-  console.log(`notify all of '${event_name}' ${target != null ? 'from: ' + target.constructor.name : target} ${data != null ? 'data: ' + data : ''}`)
-}
-
-//
-// Model - The Welcome model and User model are Observable.
+// Models
 //
 
 class Welcome {
@@ -70,7 +60,7 @@ class Model {  // aggregates all the sub models into one housing
 }
 
 //
-// Mediators - are implemented as Observer classes, contain the display update behaviour plus refs to model and gui
+// Mediators - contain the View/GUI/DOM updating code, some display option flags plus refs to model and DOM
 //
 
 class MediatorWelcomeLeft {
@@ -85,7 +75,7 @@ class MediatorWelcomeLeft {
   }
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
-    notify_all("display option change", this, "uppercase_welcome")
+    notify_all("display option change", this, `flag uppercase_welcome ${val}`)
   }
 
   notify(event) {
@@ -108,7 +98,7 @@ class MediatorWelcomeUserRight {
   }
   set uppercase_welcome(val) { 
     this._uppercase_welcome = val
-    notify_all("display option change", this, "uppercase_welcome")
+    notify_all("display option change", this, `flag uppercase_welcome ${val}`)
   }
   
   get uppercase_user() { 
@@ -116,7 +106,7 @@ class MediatorWelcomeUserRight {
   }
   set uppercase_user(val) { 
     this._uppercase_user = val
-    notify_all("display option change", this, "uppercase_user")
+    notify_all("display option change", this, `flag uppercase_user ${val}`)
   }
 
   notify(event) {
@@ -258,7 +248,7 @@ mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
 mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
-controller_dump_models = new DebugDumpModels("debug_info")  // not an OO Observer (to avoid infinite recursion), but a listener nevertheless
+controller_dump_models = new DebugDumpModels("debug_info")
 
 // Observer Wiring
 document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event) })
@@ -270,6 +260,6 @@ document.addEventListener("modified user", (event) =>    { mediator_edit_user_su
 document.addEventListener("startup", (event) =>          { mediator_page_title.notify(event) })
 document.addEventListener("display option change", (event) => { mediator_welcome_left.notify(event) })
 document.addEventListener("display option change", (event) => { mediator_welcome_user_right.notify(event) })
-document.addEventListener("observer-notification", (event) => { controller_dump_models.notify(event) })
+document.addEventListener("notify all called", (event) => { controller_dump_models.notify(event) })
 
 model.dirty_startup()  // initialise the gui with initial model values
