@@ -44,31 +44,31 @@ class User {
 
 class App {  // aggregates all the sub models into one housing, with some business logic
   constructor(welcome_model, user_model) {
-      this.welcome = welcome_model
-      this.user = user_model
+      this.welcome_model = welcome_model
+      this.user_model = user_model
     }
   
     on_change_welcome_model(event) {
-      this.welcome.message = isUpperCaseAt(this.welcome.message, 1) ? this.welcome.message.toLowerCase() : this.welcome.message.toUpperCase()
+      this.welcome_model.message = isUpperCaseAt(this.welcome_model.message, 1) ? this.welcome_model.message.toLowerCase() : this.welcome_model.message.toUpperCase()
     }
 
     on_change_user_model(event) {
-      this.user.firstname = isUpperCaseAt(this.user.firstname, 1) ? this.user.firstname.toLowerCase() : this.user.firstname.toUpperCase()
-      this.user.surname = isUpperCaseAt(this.user.surname, 1) ? this.user.surname.toLowerCase() : this.user.surname.toUpperCase()
+      this.user_model.firstname = isUpperCaseAt(this.user_model.firstname, 1) ? this.user_model.firstname.toLowerCase() : this.user_model.firstname.toUpperCase()
+      this.user_model.surname = isUpperCaseAt(this.user_model.surname, 1) ? this.user_model.surname.toLowerCase() : this.user_model.surname.toUpperCase()
     }
 
     on_reset_welcome_model(event) {
-      this.welcome.message = "Hello"
+      this.welcome_model.message = "Hello"
     }
   
     on_reset_user_model(event) {
-      this.user.firstname = "Fred"
-      this.user.surname = "Flinstone"
+      this.user_model.firstname = "Fred"
+      this.user_model.surname = "Flinstone"
     }
   
-    on_keychar_welcome(e) { this.welcome.message = $(e.target).val() }
-    on_keychar_firstname(e) { this.user.firstname = $(e.target).val() }
-    on_keychar_surname(e) { this.user.surname = $(e.target).val() }
+    on_keychar_welcome(e) { this.welcome_model.message = $(e.target).val() }
+    on_keychar_firstname(e) { this.user_model.firstname = $(e.target).val() }
+    on_keychar_surname(e) { this.user_model.surname = $(e.target).val() }
 
     dirty_startup() {
       this.dirty_all()
@@ -87,7 +87,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 class MediatorWelcomeLeft {
   constructor(welcome_model, id) {
-    this.welcome = welcome_model  // ref to Welcome model
+    this.welcome_model = welcome_model  // ref to Welcome model
     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
     this._uppercase_welcome = false
   }
@@ -105,15 +105,15 @@ class MediatorWelcomeLeft {
   }
 
   notify(event) {
-    let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
+    let msg = this.uppercase_welcome ? this.welcome_model.message.toUpperCase() : this.welcome_model.message
     $('#' + this.gui_div).html(msg)
   }
 }
 
 class MediatorWelcomeUserRight {
   constructor(welcome_model, user_model, id) {
-    this.welcome = welcome_model
-    this.user = user_model
+    this.welcome_model = welcome_model
+    this.user_model = user_model
     this.gui_div = id
     this._uppercase_welcome = false
     this._uppercase_user = false
@@ -149,43 +149,43 @@ class MediatorWelcomeUserRight {
   }
 
   notify(event) {
-    let welcome = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
-    let firstname = this.uppercase_user ? this.user.firstname.toUpperCase() : this.user.firstname
-    let surname = this.uppercase_user ? this.user.surname.toUpperCase() : this.user.surname
+    let welcome = this.uppercase_welcome ? this.welcome_model.message.toUpperCase() : this.welcome_model.message
+    let firstname = this.uppercase_user ? this.user_model.firstname.toUpperCase() : this.user_model.firstname
+    let surname = this.uppercase_user ? this.user_model.surname.toUpperCase() : this.user_model.surname
     $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
   }
 }
 
 class MediatorEditWelcome {
   constructor(welcome_model, id) {
-    this.welcome = welcome_model
+    this.welcome_model = welcome_model
     this.gui_input = id  // name (not id) of input to hold welcome message
   }
   
   notify(event) {
-    $(`input[name=${this.gui_input}]`).val(this.welcome.message)
+    $(`input[name=${this.gui_input}]`).val(this.welcome_model.message)
   }
 }
 
 class MediatorEditUserFirstName {
   constructor(user_model, id) {
-    this.user = user_model
+    this.user_model = user_model
     this.gui_input = id
   }
   
   notify(event) {
-    $(`input[name=${this.gui_input}]`).val(this.user.firstname)
+    $(`input[name=${this.gui_input}]`).val(this.user_model.firstname)
   }
 }
 
 class MediatorEditUserSurName {
   constructor(user_model, id) {
-    this.user = user_model
+    this.user_model = user_model
     this.gui_input = id
   }
   
   notify(event) {
-    $(`input[name=${this.gui_input}]`).val(this.user.surname)
+    $(`input[name=${this.gui_input}]`).val(this.user_model.surname)
   }
 }
 
@@ -229,11 +229,11 @@ function isUpperCaseAt(str, n) {
 //
 
 app = new App(new Welcome(), new User())
-mediator_welcome_left = new MediatorWelcomeLeft(app.welcome, "welcome")
-mediator_welcome_user_right = new MediatorWelcomeUserRight(app.welcome, app.user, 'welcome-user')
-mediator_edit_welcome_msg = new MediatorEditWelcome(app.welcome, 'welcome')
-mediator_edit_user_name_msg = new MediatorEditUserFirstName(app.user, 'firstname')
-mediator_edit_user_surname_msg = new MediatorEditUserSurName(app.user, 'surname')
+mediator_welcome_left = new MediatorWelcomeLeft(app.welcome_model, "welcome")
+mediator_welcome_user_right = new MediatorWelcomeUserRight(app.welcome_model, app.user_model, 'welcome-user')
+mediator_edit_welcome_msg = new MediatorEditWelcome(app.welcome_model, 'welcome')
+mediator_edit_user_name_msg = new MediatorEditUserFirstName(app.user_model, 'firstname')
+mediator_edit_user_surname_msg = new MediatorEditUserSurName(app.user_model, 'surname')
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
 controller_dump_models = new DebugDumpModels("debug_info")
 
