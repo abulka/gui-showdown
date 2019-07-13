@@ -24,12 +24,12 @@ function isUpperCaseAt(str, n) {
 
 // Update 
 
-function update_welcome_top_left() {
+function update_welcome() {
   let msg = display_options.uppercase_welcome ? model.welcomemsg.toUpperCase() : model.welcomemsg
   $('#welcome').html(msg)
 }
 
-function update_welcome_user_top_right() {
+function update_welcome_user() {
   let welcome = (display_options.uppercase_welcome || display_options.uppercase_welcome_user) ? model.welcomemsg.toUpperCase() : model.welcomemsg
   let firstname = (display_options.uppercase_user || display_options.uppercase_welcome_user) ? model.user.firstname.toUpperCase() : model.user.firstname
   let surname = (display_options.uppercase_user || display_options.uppercase_welcome_user) ? model.user.surname.toUpperCase() : model.user.surname
@@ -62,8 +62,8 @@ function update_debug_dump_models() {
 }
 
 function update_all() {
-  update_welcome_top_left()
-  update_welcome_user_top_right()
+  update_welcome()
+  update_welcome_user()
   update_edit_welcome_input()
   update_edit_firstname_input()
   update_edit_surname_input()
@@ -77,8 +77,8 @@ function update_all() {
 
 $('#change_welcome_model').on('click', function(e) {
   model.welcomemsg = isUpperCaseAt(model.welcomemsg, 1) ? model.welcomemsg.toLowerCase() : model.welcomemsg.toUpperCase()
-  update_welcome_top_left()
-  update_welcome_user_top_right()
+  update_welcome()
+  update_welcome_user()
   update_edit_welcome_input()
   update_debug_dump_models()
 })
@@ -86,7 +86,7 @@ $('#change_welcome_model').on('click', function(e) {
 $('#change_user_model').on('click', function(e) {
   model.user.firstname = isUpperCaseAt(model.user.firstname, 1) ? model.user.firstname.toLowerCase() : model.user.firstname.toUpperCase()
   model.user.surname = isUpperCaseAt(model.user.surname, 1) ? model.user.surname.toLowerCase() : model.user.surname.toUpperCase()
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_edit_firstname_input()
   update_edit_surname_input()
   update_debug_dump_models()
@@ -94,8 +94,8 @@ $('#change_user_model').on('click', function(e) {
 
 $('#reset_welcome_model').on('click', function(e) {
   model.welcomemsg = "Hello"
-  update_welcome_top_left()
-  update_welcome_user_top_right()
+  update_welcome()
+  update_welcome_user()
   update_edit_welcome_input()
   update_debug_dump_models()
 })
@@ -103,47 +103,47 @@ $('#reset_welcome_model').on('click', function(e) {
 $('#reset_user_model').on('click', function(e) {
   model.user.firstname = "Fred"
   model.user.surname = "Flinstone"
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_edit_firstname_input()
   update_edit_surname_input()
   update_debug_dump_models()
 })
 
-$("input[name=uppercase_welcome]").change(function(e) {
+$("input[name=uppercase_welcome]").on('change', function(e) {
   display_options.uppercase_welcome = $(e.target).prop('checked')
-  update_welcome_top_left()
-  update_welcome_user_top_right()
+  update_welcome()
+  update_welcome_user()
   update_debug_dump_models()
 })
 
-$("input[name=uppercase_user]").change(function(e) {
+$("input[name=uppercase_user]").on('change', function(e) {
   display_options.uppercase_user = $(e.target).prop('checked')
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_debug_dump_models()
 })
 
-$("input[name=uppercase_welcome_user]").change(function(e){
+$("input[name=uppercase_welcome_user]").on('change', function(e){
   display_options.uppercase_welcome_user = $(e.target).prop('checked')
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_debug_dump_models()
 });
 
-$( "input[name=welcome]" ).keypress(function(e) {  // use 'change' if you want to wait for ENTER
+$( "input[name=welcome]" ).on('keyup', function(e) {  // use 'change' if you want to wait for ENTER
   model.welcomemsg = $(e.target).val()
-  update_welcome_top_left()
-  update_welcome_user_top_right()
+  update_welcome()
+  update_welcome_user()
   update_debug_dump_models()
 });
 
-$("input[name=firstname]").keypress(function(e) {
+$("input[name=firstname]").on('keyup', function(e) {
   model.user.firstname = $(e.target).val()
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_debug_dump_models()
 })
 
-$("input[name=surname]").keypress(function(e) {
+$("input[name=surname]").on('keyup', function(e) {
   model.user.surname = $(e.target).val()
-  update_welcome_user_top_right()
+  update_welcome_user()
   update_debug_dump_models()
 })
 
