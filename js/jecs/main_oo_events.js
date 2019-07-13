@@ -78,6 +78,10 @@ class MediatorWelcomeLeft {
     notify_all("display option change", this, `flag uppercase_welcome ${val}`)
   }
 
+  on_check_upper_welcome(e) {
+    this.uppercase_welcome = $(e.target).prop('checked')
+  }
+
   notify(event) {
     let msg = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     $('#' + this.gui_div).html(msg)
@@ -107,6 +111,10 @@ class MediatorWelcomeUserRight {
   set uppercase_user(val) { 
     this._uppercase_user = val
     notify_all("display option change", this, `flag uppercase_user ${val}`)
+  }
+
+  on_check_upper_welcome(e) {
+    this.uppercase_welcome = $(e.target).prop('checked')
   }
 
   notify(event) {
@@ -185,6 +193,21 @@ function isUpperCaseAt(str, n) {
     return str[n]=== str[n].toUpperCase();
 }  
 
+
+//
+// Create the model and mediators
+//
+
+model = new Model(new Welcome(), new User())
+mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
+mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
+mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
+mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
+mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
+mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
+controller_dump_models = new DebugDumpModels("debug_info")
+
+
 //
 // GUI events
 //
@@ -205,11 +228,6 @@ $('#reset_welcome_model').on('click', function(e) {
 $('#reset_user_model').on('click', function(e) {
   model.user.firstname = "Fred"
   model.user.surname = "Flinstone"
-})
-
-$("input[name=uppercase_welcome]").change(function(e) {
-  mediator_welcome_left.uppercase_welcome = $(e.target).prop('checked')
-  mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
 })
 
 $("input[name=uppercase_user]").change(function(e) {
@@ -237,19 +255,6 @@ $('#render-now').on('click', function(e) {
   model.dirty_all()
 })
 
-//
-// Wire up and build everything
-//
-
-model = new Model(new Welcome(), new User())
-mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
-mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
-mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
-mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
-mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
-mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
-controller_dump_models = new DebugDumpModels("debug_info")
-
 // Observer Wiring
 document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event) })
 document.addEventListener("modified welcome", (event) => { mediator_welcome_user_right.notify(event) })
@@ -261,5 +266,9 @@ document.addEventListener("startup", (event) =>          { mediator_page_title.n
 document.addEventListener("display option change", (event) => { mediator_welcome_left.notify(event) })
 document.addEventListener("display option change", (event) => { mediator_welcome_user_right.notify(event) })
 document.addEventListener("notify all called", (event) => { controller_dump_models.notify(event) })
+
+// Gui Event Wiring
+$("input[name=uppercase_welcome]").change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
+$("input[name=uppercase_welcome]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
 
 model.dirty_startup()  // initialise the gui with initial model values
