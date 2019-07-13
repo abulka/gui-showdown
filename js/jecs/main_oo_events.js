@@ -42,7 +42,7 @@ class User {
     }
 }
 
-class Model {  // aggregates all the sub models into one housing, with some business logic
+class App {  // aggregates all the sub models into one housing, with some business logic
   constructor(welcome_model, user_model) {
       this.welcome = welcome_model
       this.user = user_model
@@ -207,7 +207,7 @@ class DebugDumpModels {
   
   notify(event) {
     let info = {
-      model: model,
+      app_models: app,
       mediator_welcome_left: mediator_welcome_left,
       mediator_welcome_user_right : mediator_welcome_user_right,
       mediator_edit_welcome_msg : mediator_edit_welcome_msg,
@@ -225,15 +225,15 @@ function isUpperCaseAt(str, n) {
 }  
 
 //
-// Create the model and mediators
+// Create the app and mediators
 //
 
-model = new Model(new Welcome(), new User())
-mediator_welcome_left = new MediatorWelcomeLeft(model.welcome, "welcome")
-mediator_welcome_user_right = new MediatorWelcomeUserRight(model.welcome, model.user, 'welcome-user')
-mediator_edit_welcome_msg = new MediatorEditWelcome(model.welcome, 'welcome')
-mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstname')
-mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
+app = new App(new Welcome(), new User())
+mediator_welcome_left = new MediatorWelcomeLeft(app.welcome, "welcome")
+mediator_welcome_user_right = new MediatorWelcomeUserRight(app.welcome, app.user, 'welcome-user')
+mediator_edit_welcome_msg = new MediatorEditWelcome(app.welcome, 'welcome')
+mediator_edit_user_name_msg = new MediatorEditUserFirstName(app.user, 'firstname')
+mediator_edit_user_surname_msg = new MediatorEditUserSurName(app.user, 'surname')
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
 controller_dump_models = new DebugDumpModels("debug_info")
 
@@ -250,17 +250,17 @@ document.addEventListener("display option change", (event) => { mediator_welcome
 document.addEventListener("notify all called", (event) => { controller_dump_models.notify(event) })
 
 // Gui Event Wiring
-$('#change_welcome_model').on('click', (event) => { model.on_change_welcome_model(event) })
-$('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
-$('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
-$('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
-$('input[name=welcome]').on('keyup', (event) => { model.on_keychar_welcome(event) })
-$('input[name=firstname]').on('keyup', (event) => { model.on_keychar_firstname(event) })
-$('input[name=surname]').on('keyup', (event) => { model.on_keychar_surname(event) })
+$('#change_welcome_model').on('click', (event) => { app.on_change_welcome_model(event) })
+$('#change_user_model').on('click', (event) => { app.on_change_user_model(event) })
+$('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
+$('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
+$('input[name=welcome]').on('keyup', (event) => { app.on_keychar_welcome(event) })
+$('input[name=firstname]').on('keyup', (event) => { app.on_keychar_firstname(event) })
+$('input[name=surname]').on('keyup', (event) => { app.on_keychar_surname(event) })
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_left.on_check_upper_welcome(event) })
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
 $('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_user(event) })
 $('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
-$('#render-now').on('click', function(e) { model.dirty_all() })
+$('#render-now').on('click', function(e) { app.dirty_all() })
 
-model.dirty_startup()  // initialise the gui with initial model values
+app.dirty_startup()  // initialise the gui with initial model values
