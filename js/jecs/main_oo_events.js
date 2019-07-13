@@ -254,9 +254,9 @@ $('#change_welcome_model').on('click', (event) => { model.on_change_welcome_mode
 $('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
-$('input[name=welcome]' ).keypress((event) => { model.on_keychar_welcome(event) })
-$('input[name=firstname]').keypress((event) => { model.on_keychar_firstname(event) })
-$('input[name=surname]').keypress((event) => { model.on_keychar_surname(event) })
+$('input[name=welcome]' ).keyup((event) => { model.on_keychar_welcome(event) })  // how to do keypress?
+$('input[name=firstname]').keyup((event) => { model.on_keychar_firstname(event) })
+$('input[name=surname]').keyup((event) => { model.on_keychar_surname(event) })
 $('input[name=uppercase_welcome]').change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
 $('input[name=uppercase_welcome]').change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
 $('input[name=uppercase_user]').change((event) => { mediator_welcome_user_right.on_check_upper_user(event) })
