@@ -52,6 +52,20 @@
       notify themselves.  This way, in the OO architecture, GUI event handler functions either set values on model object or
       on controller objects - simple.
       </p>
+
+      <p>
+        <a href="main_oo_v3_observer.html">Object Oriented observer</a>
+        (Deprecated) Traditional Observer design pattern implementation (340
+        lines), with Models inheriting from Subject and Mediators inheriting
+        from Observer. Turns out to the be biggest! Replaced by idiomatic event
+        based pub/sub system more natural to Javascript, which removes the
+        explicit, 'old fashioned (i.e. not idiomatic to Javascript)'
+        Observer/Subject classes from which Models and Controllers inherit - in
+        favour of a Javascript native pub/sub mechanism, like
+        document.dispatchEvent() from subject functions and
+        document.addEventListener() on observing functions
+      </p>
+
     <h2>Other</h2>
     <p><a href="mini-game.html">ECS jecs demo</a></p>
     <h2>Back to...</h2>
