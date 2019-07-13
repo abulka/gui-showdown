@@ -208,11 +208,11 @@ class DebugDumpModels {
   notify(event) {
     let info = {
       app_models: app,
-      mediator_welcome_left: mediator_welcome_left,
-      mediator_welcome_user_right : mediator_welcome_user_right,
-      mediator_edit_welcome_msg : mediator_edit_welcome_msg,
-      mediator_edit_user_name_msg : mediator_edit_user_name_msg,
-      mediator_edit_user_surname_msg : mediator_edit_user_surname_msg,
+      mediator_welcome: mediator_welcome,
+      mediator_welcome_user : mediator_welcome_user,
+      mediator_edit_welcome : mediator_edit_welcome,
+      mediator_edit_firstname : mediator_edit_firstname,
+      mediator_edit_user_surname : mediator_edit_user_surname,
     }
     $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, null, 2)))
   }
@@ -229,38 +229,42 @@ function isUpperCaseAt(str, n) {
 //
 
 app = new App(new Welcome(), new User())
-mediator_welcome_left = new MediatorWelcomeLeft(app.welcome_model, "welcome")
-mediator_welcome_user_right = new MediatorWelcomeUserRight(app.welcome_model, app.user_model, 'welcome-user')
-mediator_edit_welcome_msg = new MediatorEditWelcome(app.welcome_model, 'welcome')
-mediator_edit_user_name_msg = new MediatorEditUserFirstName(app.user_model, 'firstname')
-mediator_edit_user_surname_msg = new MediatorEditUserSurName(app.user_model, 'surname')
+mediator_welcome = new MediatorWelcomeLeft(app.welcome_model, "welcome")
+mediator_welcome_user = new MediatorWelcomeUserRight(app.welcome_model, app.user_model, 'welcome-user')
+mediator_edit_welcome = new MediatorEditWelcome(app.welcome_model, 'welcome')
+mediator_edit_firstname = new MediatorEditUserFirstName(app.user_model, 'firstname')
+mediator_edit_user_surname = new MediatorEditUserSurName(app.user_model, 'surname')
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
-controller_dump_models = new DebugDumpModels("debug_info")
+mediator_debug_info = new DebugDumpModels("debug_info")
 
 // Observer Wiring
-document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event) })
-document.addEventListener("modified welcome", (event) => { mediator_welcome_user_right.notify(event) })
-document.addEventListener("modified welcome", (event) => { mediator_edit_welcome_msg.notify(event) })
-document.addEventListener("modified user", (event) =>    { mediator_welcome_user_right.notify(event) })
-document.addEventListener("modified user", (event) =>    { mediator_edit_user_name_msg.notify(event) })
-document.addEventListener("modified user", (event) =>    { mediator_edit_user_surname_msg.notify(event) })
+document.addEventListener("modified welcome", (event) => { mediator_welcome.notify(event) })
+document.addEventListener("modified welcome", (event) => { mediator_welcome_user.notify(event) })
+document.addEventListener("modified welcome", (event) => { mediator_edit_welcome.notify(event) })
+document.addEventListener("modified user", (event) =>    { mediator_welcome_user.notify(event) })
+document.addEventListener("modified user", (event) =>    { mediator_edit_firstname.notify(event) })
+document.addEventListener("modified user", (event) =>    { mediator_edit_user_surname.notify(event) })
 document.addEventListener("startup", (event) =>          { mediator_page_title.notify(event) })
-document.addEventListener("display option change", (event) => { mediator_welcome_left.notify(event) })
-document.addEventListener("display option change", (event) => { mediator_welcome_user_right.notify(event) })
-document.addEventListener("notify all called", (event) => { controller_dump_models.notify(event) })
+document.addEventListener("display option change", (event) => { mediator_welcome.notify(event) })
+document.addEventListener("display option change", (event) => { mediator_welcome_user.notify(event) })
+document.addEventListener("notify all called", (event) => { mediator_debug_info.notify(event) })
 
 // Gui Event Wiring
+
+// commands to change the model
 $('#change_welcome_model').on('click', (event) => { app.on_change_welcome_model(event) })
 $('#change_user_model').on('click', (event) => { app.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
+// text input, edit the model
 $('input[name=welcome]').on('keyup', (event) => { app.on_keychar_welcome(event) })
 $('input[name=firstname]').on('keyup', (event) => { app.on_keychar_firstname(event) })
 $('input[name=surname]').on('keyup', (event) => { app.on_keychar_surname(event) })
-$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_left.on_check_upper_welcome(event) })
-$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
-$('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_user(event) })
-$('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
+// display option checkboxes
+$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome.on_check_upper_welcome(event) })
+$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome(event) })
+$('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_user(event) })
+$('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome_user(event) })
 $('#render-now').on('click', function(e) { app.dirty_all() })
 
 app.dirty_startup()  // initialise the gui with initial model values
