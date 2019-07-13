@@ -254,13 +254,13 @@ $('#change_welcome_model').on('click', (event) => { model.on_change_welcome_mode
 $('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
-$('input[name=welcome]' ).keyup((event) => { model.on_keychar_welcome(event) })  // how to do keypress?
-$('input[name=firstname]').keyup((event) => { model.on_keychar_firstname(event) })
-$('input[name=surname]').keyup((event) => { model.on_keychar_surname(event) })
-$('input[name=uppercase_welcome]').change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
-$('input[name=uppercase_welcome]').change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
-$('input[name=uppercase_user]').change((event) => { mediator_welcome_user_right.on_check_upper_user(event) })
-$('input[name=uppercase_welcome_user]').change((event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
+$('input[name=welcome]').on('keyup', (event) => { model.on_keychar_welcome(event) })
+$('input[name=firstname]').on('keyup', (event) => { model.on_keychar_firstname(event) })
+$('input[name=surname]').on('keyup', (event) => { model.on_keychar_surname(event) })
+$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_left.on_check_upper_welcome(event) })
+$('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
+$('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_user(event) })
+$('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
 $('#render-now').on('click', function(e) { model.dirty_all() })
 
 model.dirty_startup()  // initialise the gui with initial model values
