@@ -135,6 +135,15 @@ class MediatorWelcomeUserRight {
     this.uppercase_welcome = $(e.target).prop('checked')
   }
 
+  on_check_upper_user(e) {
+    this.uppercase_user = $(e.target).prop('checked')
+  }
+
+  on_check_upper_welcome_user(e) {
+    this.uppercase_welcome = $(e.target).prop('checked')
+    this.uppercase_user = $(e.target).prop('checked')
+  }
+
   notify(event) {
     let welcome = this.uppercase_welcome ? this.welcome.message.toUpperCase() : this.welcome.message
     let firstname = this.uppercase_user ? this.user.firstname.toUpperCase() : this.user.firstname
@@ -230,23 +239,6 @@ controller_dump_models = new DebugDumpModels("debug_info")
 // GUI events
 //
 
-// $('#reset_welcome_model').on('click', function(e) {
-//   model.welcome.message = "Hello"
-// })
-
-// $('#reset_user_model').on('click', function(e) {
-//   model.user.firstname = "Fred"
-//   model.user.surname = "Flinstone"
-// })
-
-$("input[name=uppercase_user]").change(function(e) {
-  mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
-})
-
-$("input[name=uppercase_welcome_user]").change(function(e){
-  mediator_welcome_user_right.uppercase_welcome = $(e.target).prop('checked')
-  mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
-});
 
 $( "input[name=welcome]" ).keypress(function(e) {  // use 'change' instead of 'keypress' if you want to wait for ENTER key
   model.welcome.message = $(e.target).val()
@@ -281,8 +273,9 @@ $('#change_welcome_model').on('click', (event) => { model.on_change_welcome_mode
 $('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
-
 $("input[name=uppercase_welcome]").change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
 $("input[name=uppercase_welcome]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
+$("input[name=uppercase_user]").change((event) => { mediator_welcome_user_right.on_check_upper_user(event) })
+$("input[name=uppercase_welcome_user]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
 
 model.dirty_startup()  // initialise the gui with initial model values
