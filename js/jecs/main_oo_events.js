@@ -42,10 +42,28 @@ class User {
     }
 }
 
-class Model {  // aggregates all the sub models into one housing
+class Model {  // aggregates all the sub models into one housing, with some business logic
   constructor(welcome_model, user_model) {
       this.welcome = welcome_model
       this.user = user_model
+    }
+  
+    on_change_welcome_model(event) {
+      this.welcome.message = isUpperCaseAt(this.welcome.message, 1) ? this.welcome.message.toLowerCase() : this.welcome.message.toUpperCase()
+    }
+
+    on_change_user_model(event) {
+      this.user.firstname = isUpperCaseAt(this.user.firstname, 1) ? this.user.firstname.toLowerCase() : this.user.firstname.toUpperCase()
+      this.user.surname = isUpperCaseAt(this.user.surname, 1) ? this.user.surname.toLowerCase() : this.user.surname.toUpperCase()
+    }
+
+    on_reset_welcome_model(event) {
+      this.welcome.message = "Hello"
+    }
+  
+    on_reset_user_model(event) {
+      this.user.firstname = "Fred"
+      this.user.surname = "Flinstone"
     }
   
     dirty_startup() {
@@ -212,23 +230,14 @@ controller_dump_models = new DebugDumpModels("debug_info")
 // GUI events
 //
 
-$('#change_welcome_model').on('click', function(e) {
-  model.welcome.message = isUpperCaseAt(model.welcome.message, 1) ? model.welcome.message.toLowerCase() : model.welcome.message.toUpperCase()
-})
+// $('#reset_welcome_model').on('click', function(e) {
+//   model.welcome.message = "Hello"
+// })
 
-$('#change_user_model').on('click', function(e) {
-  model.user.firstname = isUpperCaseAt(model.user.firstname, 1) ? model.user.firstname.toLowerCase() : model.user.firstname.toUpperCase()
-  model.user.surname = isUpperCaseAt(model.user.surname, 1) ? model.user.surname.toLowerCase() : model.user.surname.toUpperCase()
-})
-
-$('#reset_welcome_model').on('click', function(e) {
-  model.welcome.message = "Hello"
-})
-
-$('#reset_user_model').on('click', function(e) {
-  model.user.firstname = "Fred"
-  model.user.surname = "Flinstone"
-})
+// $('#reset_user_model').on('click', function(e) {
+//   model.user.firstname = "Fred"
+//   model.user.surname = "Flinstone"
+// })
 
 $("input[name=uppercase_user]").change(function(e) {
   mediator_welcome_user_right.uppercase_user = $(e.target).prop('checked')
@@ -268,6 +277,11 @@ document.addEventListener("display option change", (event) => { mediator_welcome
 document.addEventListener("notify all called", (event) => { controller_dump_models.notify(event) })
 
 // Gui Event Wiring
+$('#change_welcome_model').on('click', (event) => { model.on_change_welcome_model(event) })
+$('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
+$('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
+$('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
+
 $("input[name=uppercase_welcome]").change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
 $("input[name=uppercase_welcome]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
 
