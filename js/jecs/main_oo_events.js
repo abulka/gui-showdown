@@ -66,6 +66,10 @@ class Model {  // aggregates all the sub models into one housing, with some busi
       this.user.surname = "Flinstone"
     }
   
+    on_keychar_welcome(e) { this.welcome.message = $(e.target).val() }
+    on_keychar_firstname(e) { this.user.firstname = $(e.target).val() }
+    on_keychar_surname(e) { this.user.surname = $(e.target).val() }
+
     dirty_startup() {
       this.dirty_all()
       notify_all("startup", this)
@@ -220,7 +224,6 @@ function isUpperCaseAt(str, n) {
     return str[n]=== str[n].toUpperCase();
 }  
 
-
 //
 // Create the model and mediators
 //
@@ -233,28 +236,6 @@ mediator_edit_user_name_msg = new MediatorEditUserFirstName(model.user, 'firstna
 mediator_edit_user_surname_msg = new MediatorEditUserSurName(model.user, 'surname')
 mediator_page_title = new MediatorPageTitle("Gui wired via OO + Events", $('#title > h1'))
 controller_dump_models = new DebugDumpModels("debug_info")
-
-
-//
-// GUI events
-//
-
-
-$( "input[name=welcome]" ).keypress(function(e) {  // use 'change' instead of 'keypress' if you want to wait for ENTER key
-  model.welcome.message = $(e.target).val()
-});
-
-$("input[name=firstname]").keypress(function(e) {
-  model.user.firstname = $(e.target).val()
-})
-
-$("input[name=surname]").keypress(function(e) {
-  model.user.surname = $(e.target).val()
-})
-
-$('#render-now').on('click', function(e) {
-  model.dirty_all()
-})
 
 // Observer Wiring
 document.addEventListener("modified welcome", (event) => { mediator_welcome_left.notify(event) })
@@ -273,9 +254,13 @@ $('#change_welcome_model').on('click', (event) => { model.on_change_welcome_mode
 $('#change_user_model').on('click', (event) => { model.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { model.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { model.on_reset_user_model(event) })
-$("input[name=uppercase_welcome]").change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
-$("input[name=uppercase_welcome]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
-$("input[name=uppercase_user]").change((event) => { mediator_welcome_user_right.on_check_upper_user(event) })
-$("input[name=uppercase_welcome_user]").change((event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
+$('input[name=welcome]' ).keypress((event) => { model.on_keychar_welcome(event) })
+$('input[name=firstname]').keypress((event) => { model.on_keychar_firstname(event) })
+$('input[name=surname]').keypress((event) => { model.on_keychar_surname(event) })
+$('input[name=uppercase_welcome]').change((event) => { mediator_welcome_left.on_check_upper_welcome(event) })
+$('input[name=uppercase_welcome]').change((event) => { mediator_welcome_user_right.on_check_upper_welcome(event) })
+$('input[name=uppercase_user]').change((event) => { mediator_welcome_user_right.on_check_upper_user(event) })
+$('input[name=uppercase_welcome_user]').change((event) => { mediator_welcome_user_right.on_check_upper_welcome_user(event) })
+$('#render-now').on('click', function(e) { model.dirty_all() })
 
 model.dirty_startup()  // initialise the gui with initial model values
