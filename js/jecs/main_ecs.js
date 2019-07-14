@@ -53,21 +53,21 @@ class DisplayOptions {
 // Wire up and build everything
 //
 
-const entity_welcome_left = world.entity('entity_welcome_left')
-entity_welcome_left.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
-entity_welcome_left.setComponent('c_gui_ref', new GuiControlRef($('#welcome'), 'div'))  // id of div to hold welcome message, top left
-entity_welcome_left.setComponent('c_display_options', new DisplayOptions())
+const entity_welcome = world.entity('entity_welcome')
+entity_welcome.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
+entity_welcome.setComponent('c_gui_ref', new GuiControlRef($('#welcome'), 'div'))  // id of div to hold welcome message, top left
+entity_welcome.setComponent('c_display_options', new DisplayOptions())
 
-const entity_welcome_user_right = world.entity('entity_welcome_user_right')
-entity_welcome_user_right.setComponent('c_multi_model_ref', new MultiModelRef(
+const entity_welcome_user = world.entity('entity_welcome_user')
+entity_welcome_user.setComponent('c_multi_model_ref', new MultiModelRef(
   [
     new ModelRef(model, ['welcomemsg']),
     new ModelRef(model, ["user", "firstname"]),
     new ModelRef(model, ["user", "surname"]),
   ]
 ));
-entity_welcome_user_right.setComponent('c_gui_ref', new GuiControlRef($('#welcome-user'), 'div'));
-entity_welcome_user_right.setComponent('c_display_options', new DisplayOptions())
+entity_welcome_user.setComponent('c_gui_ref', new GuiControlRef($('#welcome-user'), 'div'));
+entity_welcome_user.setComponent('c_display_options', new DisplayOptions())
 
 const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
 entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']));
@@ -144,8 +144,8 @@ world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c
 world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
   let part1_html = syntaxHighlight(JSON.stringify({
     model: model, 
-    "entity_welcome_left[c_display_options]": entity_welcome_left.components.c_display_options,
-    "entity_welcome_user_right[c_display_options]": entity_welcome_user_right.components.c_display_options,
+    "entity_welcome[c_display_options]": entity_welcome.components.c_display_options,
+    "entity_welcome_user[c_display_options]": entity_welcome_user.components.c_display_options,
   }, null, 2))
   let part2_html = dump_world(world, c_debug_dump_options.verbose)
   c_debug_dump_options.$el.html(part1_html + '<br>' + part2_html)
@@ -183,40 +183,40 @@ $('#reset_user_model').on('click', function(e) {
   world.tick()
 })
 
-$("input[name=uppercase_welcome]").change(function(e) {
-  entity_welcome_left.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  entity_welcome_user_right.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+$("input[name=uppercase_welcome]").on('change', function(e) {
+  entity_welcome.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+  entity_welcome_user.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
   world.tick()
 })
 
-$("input[name=uppercase_user]").change(function(e) {
-  entity_welcome_user_right.components.c_display_options.uppercase_user = $(e.target).prop('checked')
+$("input[name=uppercase_user]").on('change', function(e) {
+  entity_welcome_user.components.c_display_options.uppercase_user = $(e.target).prop('checked')
   world.tick()
 })
 
-$("input[name=uppercase_welcome_user]").change(function(e) {
-  entity_welcome_user_right.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  entity_welcome_user_right.components.c_display_options.uppercase_user = $(e.target).prop('checked')
+$("input[name=uppercase_welcome_user]").on('change', function(e) {
+  entity_welcome_user.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
+  entity_welcome_user.components.c_display_options.uppercase_user = $(e.target).prop('checked')
   world.tick()
 });
 
-$("input[name=verbose_debug]").change(function(e) {
+$("input[name=verbose_debug]").on('change', function(e) {
   let component = {$el: $('#debug_info'), verbose: $(e.target).prop('checked')}
   entity_dump_models.setComponent('c_debug_dump_options', component)  // replaces any existing component
   world.tick()
 });
 
-$("input[name=welcome]").keypress(function(e) {
+$("input[name=welcome]").on('keyup', function(e) {
     model["welcomemsg"] = $(e.target).val()
     world.tick()
 })
 
-$("input[name=firstname]").keypress(function(e) {
+$("input[name=firstname]").on('keyup', function(e) {
   model["user"]["firstname"] = $(e.target).val()
   world.tick()
 })
 
-$("input[name=surname]").keypress(function(e) {
+$("input[name=surname]").on('keyup', function(e) {
   model["user"]["surname"] = $(e.target).val()
   world.tick()
 })
