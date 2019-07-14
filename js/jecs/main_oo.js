@@ -249,18 +249,18 @@ document.addEventListener("display option change", (event) => { mediator_welcome
 document.addEventListener("display option change", (event) => { mediator_welcome_user.notify(event) })
 document.addEventListener("notify all called", (event) => { mediator_debug_info.notify(event) })
 
-// Gui Event Wiring
+// Gui Event Wiring - front line controller event hander functions
 
-// commands to change the model
+// button click commands that change the model
 $('#change_welcome_model').on('click', (event) => { app.on_change_welcome_model(event) })
 $('#change_user_model').on('click', (event) => { app.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
-// text input, edit the model
+// text input keystrokes that edit the model
 $('input[name=welcome]').on('keyup', (event) => { app.on_keychar_welcome(event) })
 $('input[name=firstname]').on('keyup', (event) => { app.on_keychar_firstname(event) })
 $('input[name=surname]').on('keyup', (event) => { app.on_keychar_surname(event) })
-// display option checkboxes
+// checkbox display options that change the way the models are rendered
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome.on_check_upper_welcome(event) })
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome(event) })
 $('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_user(event) })
