@@ -1,5 +1,5 @@
 
-@startuml MVA MGM Architecture
+@startuml MVA_MGM_Architecture
 
 class "Model"  << (M,#FF7700) >> {
 }

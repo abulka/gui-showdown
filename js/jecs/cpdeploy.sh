@@ -6,10 +6,12 @@ observer_oo.js observer_events.js \
 main_plain.html main_plain.js \
 main_vue.html main_vue.js \
 main.css \
-screenshot01.png \
 syntax_highlighting.js \
 ~/Devel/abulka.github.io/gui-showdown
 
+cp -vR images/* ~/Devel/abulka.github.io/gui-showdown/images
+
+echo
 echo "Now cd into ~/Devel/abulka.github.io/gui-showdown, git commit, git push 
 Then access with
 https://abulka.github.io/gui-showdown/index.html 
