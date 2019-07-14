@@ -1,0 +1,29 @@
+
+@startuml MVA MGM Architecture
+
+class "Model"  << (M,#FF7700) >> {
+}
+
+class "Mediators (adapters)" << (A,#FF7700) >> {
+    model reference
+    dom reference
+    notify()
+}
+
+class "GUI (View, DOM)" << (V,#FF7700) >> {
+    buttons
+    text inputs
+    checkbox inputs
+}
+
+class App {
+    model reference
+}
+
+"Mediators (adapters)" --> "GUI (View, DOM)" : set DOM
+"GUI (View, DOM)" ..> "Mediators (adapters)" : GUI events
+"GUI (View, DOM)" ..> App : GUI events
+Model ..> "Mediators (adapters)" : setter events (notify)
+App --> Model : set model
+@enduml
+
