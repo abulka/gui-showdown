@@ -66,10 +66,6 @@ class App {  // aggregates all the sub models into one housing, with some busine
       this.user_model.surname = "Flinstone"
     }
   
-    on_keychar_welcome(e) { this.welcome_model.message = $(e.target).val() }
-    on_keychar_firstname(e) { this.user_model.firstname = $(e.target).val() }
-    on_keychar_surname(e) { this.user_model.surname = $(e.target).val() }
-
     dirty_startup() {
       this.dirty_all()
       notify_all("startup", this)
@@ -161,7 +157,9 @@ class MediatorEditWelcome {
     this.welcome_model = welcome_model
     this.gui_input = id  // name (not id) of input to hold welcome message
   }
-  
+
+  on_keychar_welcome(e) { this.welcome_model.message = $(e.target).val() }
+
   notify(event) {
     $(`input[name=${this.gui_input}]`).val(this.welcome_model.message)
   }
@@ -172,7 +170,9 @@ class MediatorEditUserFirstName {
     this.user_model = user_model
     this.gui_input = id
   }
-  
+
+  on_keychar_firstname(e) { this.user_model.firstname = $(e.target).val() }
+
   notify(event) {
     $(`input[name=${this.gui_input}]`).val(this.user_model.firstname)
   }
@@ -184,6 +184,8 @@ class MediatorEditUserSurName {
     this.gui_input = id
   }
   
+  on_keychar_surname(e) { this.user_model.surname = $(e.target).val() }
+
   notify(event) {
     $(`input[name=${this.gui_input}]`).val(this.user_model.surname)
   }
@@ -257,9 +259,9 @@ $('#change_user_model').on('click', (event) => { app.on_change_user_model(event)
 $('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
 // text input keystrokes that edit the model
-$('input[name=welcome]').on('keyup', (event) => { app.on_keychar_welcome(event) })
-$('input[name=firstname]').on('keyup', (event) => { app.on_keychar_firstname(event) })
-$('input[name=surname]').on('keyup', (event) => { app.on_keychar_surname(event) })
+$('input[name=welcome]').on('keyup', (event) => { mediator_edit_welcome.on_keychar_welcome(event) })
+$('input[name=firstname]').on('keyup', (event) => { mediator_edit_firstname.on_keychar_firstname(event) })
+$('input[name=surname]').on('keyup', (event) => { mediator_edit_user_surname.on_keychar_surname(event) })
 // checkbox display options that change the way the models are rendered
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome.on_check_upper_welcome(event) })
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome(event) })
