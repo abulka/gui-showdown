@@ -125,6 +125,13 @@ class RenderProcessor(esper.Processor):
         elif gui.el_type == GuiElType.frametitle:
             gui.el.SetTitle(s)
 
+    def gather_model_refs_into_single_dict(self, c_multi_model_ref):  # Helper
+        data = {}  # can't target how model ref components get found, so build up multi model output string here, via dict
+        for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
+            for model_ref in component.refs:
+                data[model_ref.keys[-1]] = model_ref.finalstr + 'xx'
+        return data
+
     def process(self):
         print("--Render System--")
 
@@ -134,13 +141,9 @@ class RenderProcessor(esper.Processor):
         for ent, (component, gui, _) in self.world.get_components(PlainData, GuiControlRef, Dirty):
             self.render(component.finalstr, gui)
 
-        msg = {}  # can't target how model ref components get found, so build up what we need here
-        for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
-            for model_ref in component.refs:
-                assert gui.el_type == GuiElType.label
-                msg[model_ref.keys[-1]] = model_ref.finalstr
-            gui.el.SetLabel(f"{msg['welcomemsg']} {msg['firstname']} {msg['surname']}")
-            print("render staticText for", ent)
+        for ent, (component_multi_model_ref, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
+            data = self.gather_model_refs_into_single_dict(component_multi_model_ref)
+            self.render(f"{data['welcomemsg']} {data['firstname']} {data['surname']}", gui)
 
         do.dirty_all(False, entities=mediators)
 
@@ -231,19 +234,19 @@ class MyFrame1A(MyFrame1):
 
     def on_enter_welcome(self, event):
         model["welcomemsg"] = event.GetEventObject().GetValue()
-        do.dirty(ModelRef, lambda component : component.key == "welcomemsg", filter_nice_name="welcomemsg")
+        do.dirty(ModelRef, lambda component : "welcomemsg" in component.keys, filter_nice_name="welcomemsg")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_firstname(self, event):
         model["user"]["firstname"] = event.GetEventObject().GetValue()
-        do.dirty(ModelRef, lambda component : component.key == "firstname", filter_nice_name="firstname")
+        do.dirty(ModelRef, lambda component : "firstname" in component.keys, filter_nice_name="firstname")
         do.dirty(MultiModelRef)
         world.process()
 
     def on_enter_user_surname(self, event):
         model["user"]["surname"] = event.GetEventObject().GetValue()
-        do.dirty(ModelRef, lambda component : component.key == "surname", filter_nice_name="surname")
+        do.dirty(ModelRef, lambda component : "surname" in component.key, filter_nice_name="surname")
         do.dirty(MultiModelRef)
         world.process()
 
