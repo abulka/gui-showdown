@@ -81,7 +81,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 // Mediators - contain the View/GUI/DOM updating code, some display option flags plus refs to model and DOM
 //
 
-class MediatorWelcomeLeft {
+class MediatorWelcome {
   constructor(welcome_model, id) {
     this.welcome_model = welcome_model  // ref to Welcome model
     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
@@ -106,7 +106,7 @@ class MediatorWelcomeLeft {
   }
 }
 
-class MediatorWelcomeUserRight {
+class MediatorWelcomeUser {
   constructor(welcome_model, user_model, id) {
     this.welcome_model = welcome_model
     this.user_model = user_model
@@ -231,8 +231,8 @@ function isUpperCaseAt(str, n) {
 //
 
 app = new App(new Welcome(), new User())
-mediator_welcome = new MediatorWelcomeLeft(app.welcome_model, "welcome")
-mediator_welcome_user = new MediatorWelcomeUserRight(app.welcome_model, app.user_model, 'welcome-user')
+mediator_welcome = new MediatorWelcome(app.welcome_model, "welcome")
+mediator_welcome_user = new MediatorWelcomeUser(app.welcome_model, app.user_model, 'welcome-user')
 mediator_edit_welcome = new MediatorEditWelcome(app.welcome_model, 'welcome')
 mediator_edit_firstname = new MediatorEditUserFirstName(app.user_model, 'firstname')
 mediator_edit_user_surname = new MediatorEditUserSurName(app.user_model, 'surname')
@@ -253,20 +253,20 @@ document.addEventListener("notify all called", (event) => { mediator_debug_info.
 
 // Gui Event Wiring - front line controller event hander functions
 
-// button click commands that change the model
+// button click commands that change the model, go to the app controller
 $('#change_welcome_model').on('click', (event) => { app.on_change_welcome_model(event) })
 $('#change_user_model').on('click', (event) => { app.on_change_user_model(event) })
 $('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
 $('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
-// text input keystrokes that edit the model
+$('#render-now').on('click', function(e) { app.dirty_all() })
+// text input keystrokes that edit the model, go to the individual mediator controllers
 $('input[name=welcome]').on('keyup', (event) => { mediator_edit_welcome.on_keychar_welcome(event) })
 $('input[name=firstname]').on('keyup', (event) => { mediator_edit_firstname.on_keychar_firstname(event) })
 $('input[name=surname]').on('keyup', (event) => { mediator_edit_user_surname.on_keychar_surname(event) })
-// checkbox display options that change the way the models are rendered
+// checkbox display options that change the way the models are rendered, go to the individual mediator controllers
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome.on_check_upper_welcome(event) })
 $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome(event) })
 $('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_user(event) })
 $('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome_user(event) })
-$('#render-now').on('click', function(e) { app.dirty_all() })
 
 app.dirty_startup()  // initialise the gui with initial model values
