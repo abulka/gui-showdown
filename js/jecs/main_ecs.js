@@ -25,7 +25,7 @@ class ModelRef extends NestedDictAccess {  // Reference to a shared model object
 
 class PlainData{  // plain string
   constructor(s) {
-    this.s = s
+    this.finalstr = s
   }
 }
 
@@ -89,11 +89,10 @@ const entity_dump_models = world.entity('entity_dump_models')
 entity_dump_models.setComponent('c_debug_dump_options', {$el: $('#debug_info'), verbose: false});  // dict as component is ok
 
 // Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
+// Tip - the variables receiving the component must be named exactly the same as the registered component name string
 
-world.system('extract-model-ref-system', ['c_model_ref'], (entity, {c_model_ref}) => {
-  // Tip - the variables receiving the component must be named exactly the same as the component name
-  let c = c_model_ref
-  c.finalstr = c.val
+world.system('extract-model-ref', ['c_model_ref'], (entity, {c_model_ref}) => {
+  c_model_ref.finalstr = c_model_ref.val
 });
 world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {c_multi_model_ref}) => {
   for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
@@ -118,18 +117,19 @@ world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_d
 
 // Render Systems
 
-world.system('render-divs-and-inputs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
-  if (c_model_ref.keys.includes("welcomemsg") && c_gui_ref.el_type == 'div')
-    c_gui_ref.$el.html(c_model_ref.finalstr)
+function render_generic(s, c_gui_ref) {
+  if (c_gui_ref.el_type == 'div')
+    c_gui_ref.$el.html(s)
   else if (c_gui_ref.el_type == 'input')
-    c_gui_ref.$el.val(c_model_ref.finalstr)
+    c_gui_ref.$el.val(s)
+}
+
+world.system('render-model_refs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
+  render_generic(c_model_ref.finalstr, c_gui_ref)
 });
 
 world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_data, c_gui_ref}) => {
-  if (c_gui_ref.el_type == 'div')
-    c_gui_ref.$el.html(c_plain_data.s)
-  else if (c_gui_ref.el_type == 'input')
-    c_gui_ref.$el.val(c_plain_data.s)
+  render_generic(c_plain_data.finalstr, c_gui_ref)
 });
 
 world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
