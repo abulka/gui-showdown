@@ -4,13 +4,13 @@
 class "Model"  << (M,#FF7700) >> {
 }
 
-class "Mediators (adapters, controllers)" << (C,#FF7700) >> {
+class "Mediators (adapter/controller)" << (C,#FF7700) >> {
     model reference
     dom reference
     notify()
 }
 
-class "GUI (View, DOM)" << (V,#FF7700) >> {
+class "View (GUI/DOM)" << (V,#FF7700) >> {
     buttons
     text inputs
     checkbox inputs
@@ -20,10 +20,10 @@ class App {
     model reference
 }
 
-"Mediators (adapters, controllers)" --> "GUI (View, DOM)" : set DOM
-"GUI (View, DOM)" ..> "Mediators (adapters, controllers)" : GUI events
-"GUI (View, DOM)" ..> App : GUI events
-Model ..> "Mediators (adapters, controllers)" : setter events (notify)
+"Mediators (adapter/controller)" --> "View (GUI/DOM)" : set DOM
+"View (GUI/DOM)" ..> "Mediators (adapter/controller)" : GUI events
+"View (GUI/DOM)" ..> App : GUI events
+Model ..> "Mediators (adapter/controller)" : setter events (notify)
 App --> Model : set model
 @enduml
 
