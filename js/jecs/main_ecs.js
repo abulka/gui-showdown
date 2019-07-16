@@ -117,7 +117,7 @@ world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_d
 
 // Render Systems
 
-function render_generic(s, c_gui_ref) {  // Helper, stores 's' into DOM referenced by 'c_gui_ref'
+function render(s, c_gui_ref) {  // Helper, stores 's' into DOM referenced by 'c_gui_ref'
   if (c_gui_ref.el_type == 'div')
     c_gui_ref.$el.html(s)
   else if (c_gui_ref.el_type == 'input')
@@ -131,19 +131,19 @@ function gather_model_refs_into_single_dict(c_multi_model_ref) {  // Helper
 }
 
 world.system('render-model_refs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
-  render_generic(c_model_ref.finalstr, c_gui_ref)
+  render(c_model_ref.finalstr, c_gui_ref)
 });
 
 world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_data, c_gui_ref}) => {
-  render_generic(c_plain_data.finalstr, c_gui_ref)
+  render(c_plain_data.finalstr, c_gui_ref)
 });
 
 world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
   data = gather_model_refs_into_single_dict(c_multi_model_ref)
-  render_generic(`${data['welcomemsg']} ${data['firstname']} ${data['surname']}`, c_gui_ref)
+  render(`${data['welcomemsg']} ${data['firstname']} ${data['surname']}`, c_gui_ref)
 });
 
-world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
+world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {  // For debugging
   let part1_html = syntaxHighlight(JSON.stringify({
     model: model, 
     "entity_welcome[c_display_options]": entity_welcome.components.c_display_options,
