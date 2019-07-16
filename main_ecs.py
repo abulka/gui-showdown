@@ -116,25 +116,23 @@ class CaseTransformProcessor(esper.Processor):
 
 
 class RenderProcessor(esper.Processor):
+
+    def render(self, s, gui):  # Helper
+        if gui.el_type == GuiElType.label:
+            gui.el.SetLabel(s)
+        elif gui.el_type == GuiElType.textctrl:
+            gui.el.SetValue(s)
+        elif gui.el_type == GuiElType.frametitle:
+            gui.el.SetTitle(s)
+
     def process(self):
         print("--Render System--")
 
         for ent, (component, gui, _) in self.world.get_components(ModelRef, GuiControlRef, Dirty):
-            if "welcomemsg" in component.keys and gui.el_type == GuiElType.label:
-                print("render static text for", ent)
-                gui.el.SetLabel(component.finalstr)
-            elif gui.el_type == GuiElType.textctrl:
-                print("render textctrl for", ent)
-                gui.el.SetValue(component.finalstr)
+            self.render(component.finalstr, gui)
 
         for ent, (component, gui, _) in self.world.get_components(PlainData, GuiControlRef, Dirty):
-            print("Plain data being rendered", gui)
-            if gui.el_type == GuiElType.label:
-                gui.el.SetLabel(component.finalstr)
-            elif gui.el_type == GuiElType.textctrl:
-                gui.el.SetValue(component.finalstr)
-            elif gui.el_type == GuiElType.frametitle:
-                gui.el.SetTitle(component.finalstr)
+            self.render(component.finalstr, gui)
 
         msg = {}  # can't target how model ref components get found, so build up what we need here
         for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
