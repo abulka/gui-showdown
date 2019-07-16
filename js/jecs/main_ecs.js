@@ -117,11 +117,17 @@ world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_d
 
 // Render Systems
 
-function render_generic(s, c_gui_ref) {
+function render_generic(s, c_gui_ref) {  // Helper, stores 's' into DOM referenced by 'c_gui_ref'
   if (c_gui_ref.el_type == 'div')
     c_gui_ref.$el.html(s)
   else if (c_gui_ref.el_type == 'input')
     c_gui_ref.$el.val(s)
+}
+function gather_model_refs_into_single_dict(c_multi_model_ref) {  // Helper
+  let data = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
+  for (const c_model_ref of c_multi_model_ref.refs)
+    data[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
+  return data
 }
 
 world.system('render-model_refs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
@@ -133,12 +139,8 @@ world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_da
 });
 
 world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
-  let msg = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
-  for (const c_model_ref of c_multi_model_ref.refs) {
-    assert(c_gui_ref.el_type == 'div')
-    msg[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
-  }
-  c_gui_ref.$el.html(`${msg['welcomemsg']} ${msg['firstname']} ${msg['surname']}`)
+  data = gather_model_refs_into_single_dict(c_multi_model_ref)
+  render_generic(`${data['welcomemsg']} ${data['firstname']} ${data['surname']}`, c_gui_ref)
 });
 
 world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {
