@@ -64,3 +64,4 @@ docs/_build
 .pytest_cache/
 node_modules/
 gui_showdown_deploy.zip
+out/doco.plantuml/
