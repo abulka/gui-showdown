@@ -129,7 +129,7 @@ class RenderProcessor(esper.Processor):
         data = {}  # can't target how model ref components get found, so build up multi model output string here, via dict
         for ent, (component, gui, _) in self.world.get_components(MultiModelRef, GuiControlRef, Dirty):
             for model_ref in component.refs:
-                data[model_ref.keys[-1]] = model_ref.finalstr + 'xx'
+                data[model_ref.keys[-1]] = model_ref.finalstr
         return data
 
     def process(self):
