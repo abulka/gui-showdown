@@ -1,3 +1,5 @@
+cd js/jecs
+
 cp -v assert.js index.html jecs_extras.js jecs_min.js jecs.js \
 main_ecs.html main_ecs.js \
 nested_dict_accessor.js \

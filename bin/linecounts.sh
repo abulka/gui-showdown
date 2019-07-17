@@ -1,3 +1,5 @@
+cd js/jecs
+
 echo ---------LINE COUNTS-----------------
 wc -l main_oo_v3_observer.js observer_oo.js 
 echo -------------------------------------
