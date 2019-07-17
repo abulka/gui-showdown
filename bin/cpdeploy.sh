@@ -1,3 +1,14 @@
+cp -v main_oo.py observer_oo.py test_observer_oo.py \
+main_ecs.py esper_observer.py esper.py \
+gui.py \
+~/Devel/abulka.github.io/gui-showdown/python-implementation
+
+cp -v wx_esper.fbp \
+~/Devel/abulka.github.io/gui-showdown/python-implementation/gui_via_wxformbuilder.fbp
+
+cp -v "README for deploy.md" \
+~/Devel/abulka.github.io/gui-showdown/python-implementation/README.md
+
 cd js/jecs
 
 cp -v assert.js index.html jecs_extras.js jecs_min.js jecs.js \
