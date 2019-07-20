@@ -1,0 +1,27 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'ModelRef', 'x':55, 'y':104, 'width':77, 'height':54, 'attrs': 'finalstr', 'meths': ''}
+{'type':'umlshape', 'id':'PlainData', 'x':450, 'y':113, 'width':86, 'height':54, 'attrs': 'finalstr', 'meths': ''}
+{'type':'umlshape', 'id':'MultiModelRef', 'x':9, 'y':196, 'width':119, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'GuiElType', 'x':320, 'y':99, 'width':86, 'height':74, 'attrs': 'frametitle|label|textctrl', 'meths': ''}
+{'type':'umlshape', 'id':'GuiControlRef', 'x':164, 'y':102, 'width':119, 'height':64, 'attrs': 'el|el_type', 'meths': ''}
+{'type':'umlshape', 'id':'DisplayOptions', 'x':570, 'y':108, 'width':128, 'height':64, 'attrs': 'uppercase_welcome|uppercase_user', 'meths': ''}
+{'type':'umlshape', 'id':'ModelExtractProcessor', 'x':16, 'y':355, 'width':186, 'height':54, 'attrs': '', 'meths': 'process'}
+{'type':'umlshape', 'id':'CaseTransformProcessor', 'x':133, 'y':442, 'width':195, 'height':54, 'attrs': '', 'meths': 'process'}
+{'type':'umlshape', 'id':'RenderProcessor', 'x':254, 'y':349, 'width':214, 'height':74, 'attrs': '', 'meths': 'process|render|gather_model_refs_into_single_dict'}
+{'type':'umlshape', 'id':'MyFrame1A', 'x':562, 'y':347, 'width':238, 'height':154, 'attrs': '', 'meths': 'on_check_toggle_welcome_outputs_only|on_enter_user_surname|on_button_change_welcome_model_case|on_enter_welcome|on_button_reset_welcome|on_button_reset_user|onClickRenderNow|on_enter_user_firstname|on_check_upper_entire_top_right_output|on_check_toggle_user_outputs_only|on_button_change_user_model_case'}
+{'type':'umlshape', 'id':'esper.Processor', 'x':121, 'y':284, 'width':199, 'height':33, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'MyFrame1', 'x':643, 'y':255, 'width':77, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'NestedDictAccess', 'x':24, 'y':10, 'width':144, 'height':64, 'attrs': 'data|keys', 'meths': ''}
+{'type':'umlshape', 'id':'Enum', 'x':340, 'y':33, 'width':44, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'comment', 'id':'C6118', 'x':455, 'y':18, 'width':107, 'height':37, 'comment': 'Q29tcG9uZW50cw=='}
+{'type':'comment', 'id':'C3834', 'x':376, 'y':283, 'width':91, 'height':31, 'comment': 'U3lzdGVtcw=='}
+{'type':'umlshape', 'id':'Dirty', 'x':716, 'y':110, 'width':52, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'ModelExtractProcessor_to_esper.Processor', 'source':'ModelExtractProcessor', 'target':'esper.Processor', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MyFrame1A_to_MyFrame1', 'source':'MyFrame1A', 'target':'MyFrame1', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ModelRef_to_NestedDictAccess', 'source':'ModelRef', 'target':'NestedDictAccess', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'GuiElType_to_Enum', 'source':'GuiElType', 'target':'Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'CaseTransformProcessor_to_esper.Processor', 'source':'CaseTransformProcessor', 'target':'esper.Processor', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'RenderProcessor_to_esper.Processor', 'source':'RenderProcessor', 'target':'esper.Processor', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ModelRef_to_MultiModelRef', 'source':'ModelRef', 'target':'MultiModelRef', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'GuiElType_to_GuiControlRef', 'source':'GuiElType', 'target':'GuiControlRef', 'uml_edge_type': 'composition'}
