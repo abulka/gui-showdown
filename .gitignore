@@ -66,4 +66,5 @@ node_modules/
 gui_showdown_deploy.zip
 out/doco.plantuml/
 .mypy_cache/
+.python-version
 
