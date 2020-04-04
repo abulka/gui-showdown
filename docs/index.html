@@ -1,0 +1,84 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Various Gui wiring techniques">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 60%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        </style>
+
+  </head>
+
+  <body>
+    <div id="title">
+      <h1>Various GUI wiring techniques</h1>
+    </div>
+
+    <p>Here are various working examples of the same GUI implemented using various techniques/frameworks:</p>
+
+    <table>
+        <tr>
+          <th>Technique</th>
+          <th>Example</th>
+          <th>Lines of Code</th>
+          <th>Comments</th>
+        </tr>
+        <tr>
+          <td>Object Oriented</td>
+            <td><a href="main_oo.html">OO</a></td>
+            <td>292</td>
+            <td>Object Oriented Models with Observer Pattern (using Event Listeners). MVA architecture with mediating adapters between model and view.</td>
+        </tr>
+        <tr>
+          <td>Entity Component System</td>
+          <td><a href="main_ecs.html">ECS</a></td>
+          <td>261</td>
+          <td>Entity Component System</td>
+        </tr>
+       <tr>
+          <td>Plain Javascript</td>
+          <td><a href="main_plain.html">Plain</a></td>
+          <td>154</td>
+          <td>Simple plain JQuery approach.  Could even remove the Jquery and use plain javascript -- the point is, no fancy framework.</td>
+        </tr>
+         <tr>
+          <td>Vue.js</td>
+          <td><a href="main_vue.html">Vue</a></td>
+          <td>58</td>
+          <td>Clearly the winner in terms of conciseness</td>
+        </tr>
+      </table>
+
+    <h2>Our Example App</h2>
+    <p>The GUI is the same for all demos, just the underlying implementation changes.</p>
+    <img src="images/screenshot01.png" width="20%" border="2" style="padding: 10px">
+    <hr>
+    <h2>Misc Links</h2>
+    <p>My Medium Article Part I - <a href="https://medium.com/p/7904d92d2938/edit">Implementing Object Oriented MVC in Javascript vs. Vue.js</a> (editing)</p>
+    <p>My Medium Article Part II - <a href="https://medium.com/p/88bb86ea5e98/edit">Is the Entity Component System any good for building traditional GUIs?</a> (editing)</p>
+    <p><a href="https://github.com/abulka/abulka.github.io/tree/master/gui-showdown">Source code to all the examples</a> on Github</p>
+    <p><a href="https://www.npmjs.com/package/jecs">Doco on the jecs javascript ECS library</a></p>
+    <p><a href="https://vuejs.org/v2/guide/events.html">Doco on Vue.js</a></p>
+    <p><a href="https:www.gituml.com">GitUML</a> my biggest Javascript (and Python) project to date, with a complex GUI, which I am refactoring using the techniques in this article. GitUML lets you visualise your Github source code as UML via point and click, and have UML diagrams update automatically as you check in code.</p>
+    <p><a href="https:www.andypatterns.com">More about me</a>, my MVC design patterns and other articles.</p>
+
+  </body>
+</html>
+

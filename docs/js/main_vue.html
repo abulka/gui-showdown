@@ -1,0 +1,65 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta title="Gui wired via Vue">
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+
+  </head>
+
+  <body>
+    <div id="app">
+
+      <div id="title">
+        <h1>{{ page_title }}</h1>
+      </div>
+
+      <form>
+        <div class="row yell">
+          <div id="welcome" class="column">{{welcome_msg}}</div>
+          <div id="welcome-user" class="column bl">{{welcome_user_msg}}</div>
+        </div>
+        <br>
+        Welcome Message (model): <input v-model="model.welcomemsg" type="text" name="welcome"><br>
+        <br>
+        User (model): <input v-model="model.user.firstname" type="text" name="firstname"> <input v-model="model.user.surname" type="text" name="surname">
+        <br>
+        <br>
+
+        <h3>Model Manipulations</h3>
+        <button v-on:click="change_welcome_model" type="button">Change Case of Welcome Model</button>
+        <button v-on:click="reset_welcome_model" type="button">Reset Welcome</button>
+        <br>
+        <button v-on:click="change_user_model" type="button">Change Case of User Model</button>
+        <button v-on:click="reset_user_model" type="button">Reset User</button>
+        <br>
+        <h3>Display Options</h3>
+        <label><input v-model="uppercase_welcome" type="checkbox">Uppercase welcome</label><br>
+        <label><input v-model="uppercase_user" type="checkbox">Uppercase user</label><br>
+        <br>
+        <label><input v-model="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+        <br>
+
+        <h4>Debug</h4>
+        <pre v-html=dump_vue_data></pre>
+      </form>
+      
+      <br>
+      <a href="index.html">Back to index of examples</a>
+
+    </div>
+
+    <script src="syntax_highlighting.js"></script>
+    <script src="main_vue.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+      });
+    </script>
+  </body>
+</html>
+
