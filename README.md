@@ -1,6 +1,4 @@
-# wx_esper
-
-## Need to rename this project
+# GUI Showdown
 
 Contains two wx python programs
 

@@ -1,3 +1,12 @@
+# DEST=~/Devel/abulka.github.io/gui-showdown
+DEST=docs
+# cp -v index.html $DEST
+echo need to update this script to copy into docs dir instead and deploy as github page
+exit 1
+
+
+
+
 cp -v main_oo.py observer_oo.py test_observer_oo.py \
 main_ecs.py esper_observer.py esper.py \
 gui.py \

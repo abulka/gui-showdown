@@ -4,8 +4,8 @@
   "description": "misc stuff for testing",
   "main": "observer_jquery.js",
   "dependencies": {
-    "jsdom": "^15.1.1",
-    "jquery": "^3.4.1"
+    "jquery": "^3.4.1",
+    "jsdom": "^15.2.1"
   },
   "devDependencies": {},
   "scripts": {
