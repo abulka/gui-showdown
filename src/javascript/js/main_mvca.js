@@ -2,6 +2,7 @@
 // Models
 //
 
+
 class Welcome {
   constructor(message) {
       this._msg = message == undefined ? "Welcome" : message;
@@ -16,6 +17,7 @@ class Welcome {
       notify_all("modified welcome", this, this._msg)
     }
 }
+
 
 class User {
   constructor() {
@@ -42,9 +44,11 @@ class User {
     }
 }
 
+
 //
 // Application
 //
+
 
 class Application {
   constructor(config) {
@@ -61,6 +65,7 @@ class Application {
 
     this.config.cb_create_controllers1(this)
     this.config.cb_create_controllers2(this)
+    this.config.cb_debug_dump_controller(this)
 
     this.dirty_startup()
   }
@@ -116,9 +121,11 @@ class Application {
   }
 }
 
+
 //
 // Controllers
 //
+
 
 class ControllerHeader {
   constructor(app, gui_dict) {
@@ -151,6 +158,7 @@ class ControllerHeader {
   }
   
 }
+
 
 class ControllerDisplayOptions {  // Could merge this with the Controller Header
   constructor(app, gui_dict) {
@@ -218,7 +226,6 @@ class ControllerButtons {  // The four buttons which cause a change in the model
 }
 
 
-
 class ControllerPageTitle {
   constructor(app, $gui_h1, title) {
     this.app = app
@@ -234,23 +241,37 @@ class ControllerPageTitle {
   }
 }
 
-// class DebugDumpModels {
-//   constructor(id) {
-//     this.gui_pre_id = id
-//   }
+
+class ControllerDebugDumpModels {
+  constructor(app, gui_dict) {
+    this.app = app
+    this.gui = gui_dict
+
+		// Gui events
+		this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
+
+    // Internal events - listen to special meta event which is broadcast each event
+    document.addEventListener("notify all called", (event) => { this.notify(event) })
+  }
   
-//   notify(event) {
-//     let info = {
-//       app_models: app,
-//       mediator_welcome: mediator_welcome,
-//       mediator_welcome_user : mediator_welcome_user,
-//       mediator_edit_welcome : mediator_edit_welcome,
-//       mediator_edit_firstname : mediator_edit_firstname,
-//       mediator_edit_user_surname : mediator_edit_user_surname,
-//     }
-//     $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, null, 2)))
-//   }
-// }
+  display_debug_info(event) {
+		this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
+  }
+  
+  notify(event) {
+    let info = {
+      app: this.app,
+      // mediator_welcome: mediator_welcome,
+      // mediator_welcome_user : mediator_welcome_user,
+      // mediator_edit_welcome : mediator_edit_welcome,
+      // mediator_edit_firstname : mediator_edit_firstname,
+      // mediator_edit_user_surname : mediator_edit_user_surname,
+    }
+    this.gui.$pre_output.html(syntaxHighlight(JSON.stringify(info, null, 2)))
+
+  }
+}
+
 
 // Util
 
@@ -258,80 +279,26 @@ function isUpperCaseAt(str, n) {
     return str[n]=== str[n].toUpperCase();
 }  
 
-//
-// Create the app and mediators
-//
-
-// app = new App(new Welcome(), new User())
-
-// // Mediators (old)
-// mediator_welcome = new MediatorWelcome(app.welcome_model, "welcome")
-// mediator_welcome_user = new MediatorWelcomeUser(app.welcome_model, app.user_model, 'welcome-user')
-// mediator_edit_welcome = new MediatorEditWelcome(app.welcome_model, 'welcome')
-// mediator_edit_firstname = new MediatorEditUserFirstName(app.user_model, 'firstname')
-// mediator_edit_user_surname = new MediatorEditUserSurName(app.user_model, 'surname')
-// mediator_page_title = new MediatorPageTitle("Gui wired via MVCA Architecture", $('#title > h1'))
-// mediator_debug_info = new DebugDumpModels("debug_info")
-
-// // Observer Wiring
-// document.addEventListener("modified welcome", (event) => { mediator_welcome.notify(event) })
-// document.addEventListener("modified welcome", (event) => { mediator_welcome_user.notify(event) })
-// document.addEventListener("modified welcome", (event) => { mediator_edit_welcome.notify(event) })
-// document.addEventListener("modified user", (event) =>    { mediator_welcome_user.notify(event) })
-// document.addEventListener("modified user", (event) =>    { mediator_edit_firstname.notify(event) })
-// document.addEventListener("modified user", (event) =>    { mediator_edit_user_surname.notify(event) })
-// document.addEventListener("startup", (event) =>          { mediator_page_title.notify(event) })
-// document.addEventListener("display option change", (event) => { mediator_welcome.notify(event) })
-// document.addEventListener("display option change", (event) => { mediator_welcome_user.notify(event) })
-// document.addEventListener("notify all called", (event) => { mediator_debug_info.notify(event) })
-
-// // Gui Event Wiring - front line controller event hander functions
-
-// // button click commands that change the model, go to the app controller
-// $('#change_welcome_model').on('click', (event) => { app.on_change_welcome_model(event) })
-// $('#change_user_model').on('click', (event) => { app.on_change_user_model(event) })
-// $('#reset_welcome_model').on('click', (event) => { app.on_reset_welcome_model(event) })
-// $('#reset_user_model').on('click', (event) => { app.on_reset_user_model(event) })
-// $('#render-now').on('click', function(e) { app.dirty_all() })
-// // text input keystrokes that edit the model, go to the individual mediator controllers
-// $('input[name=welcome]').on('keyup', (event) => { mediator_edit_welcome.on_keychar_welcome(event) })
-// $('input[name=firstname]').on('keyup', (event) => { mediator_edit_firstname.on_keychar_firstname(event) })
-// $('input[name=surname]').on('keyup', (event) => { mediator_edit_user_surname.on_keychar_surname(event) })
-// // checkbox display options that change the way the models are rendered, go to the individual mediator controllers
-// $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome.on_check_upper_welcome(event) })
-// $('input[name=uppercase_welcome]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome(event) })
-// $('input[name=uppercase_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_user(event) })
-// $('input[name=uppercase_welcome_user]').on('change', (event) => { mediator_welcome_user.on_check_upper_welcome_user(event) })
-
-// app.dirty_startup()  // initialise the gui with initial model values
-
-// New
 
 //
 // Bootstrapping
 //
 
-/*  
-  Start here!
-  
-  Create an instance of 'Application' passing in a config object.
-
-  Controller classes and this config of callbacks are the only things
-  that know about the UI.
-*/
 
 let config = {
-  // Callbacks to create the permanent controllers
+  // Controller classes and this config of callbacks (to create the controllers) are the only things
+  // that know about the UI.
 
-// 	cb_dump: function (app) {
-// 		new ControllerDebugDumpModels(
-// 			app,
-// 			{
-// 				$toggle_checkbox: $('input[name="debug"]'),
-// 				pre_output: document.querySelector('pre.debug')
-// 			}
-// 		)
-// 	},
+	cb_debug_dump_controller: function (app) {
+		new ControllerDebugDumpModels(
+			app,
+			{
+				$toggle_checkbox: $('input[name="debug"]'),
+        $pre_output: $('#debug_info')
+        
+			}
+		)
+	},
 
   cb_create_controllers1: function (app) {
     new ControllerHeader(app, {
@@ -346,7 +313,6 @@ let config = {
     })
   },
 
-  
   cb_create_controllers2: function (app) {
     new ControllerEditors(app, {
       $input_welcome: $('input[name=welcome]'),
@@ -362,11 +328,9 @@ let config = {
     })
 
     new ControllerPageTitle(app, $('#title > h1'), "Gui wired via MVCA Architecture")
-
   }
 
-  
 }
 
+// Create an instance of 'Application' passing in a config object.
 let app = new Application(config)
-console.log('created new application')
