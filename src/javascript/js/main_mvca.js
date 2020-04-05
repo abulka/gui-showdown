@@ -44,17 +44,21 @@ class User {
 
 class Application {
   constructor(config) {
+    this.config = config  // callbacks for creating controllers
+
     // Models
     this.welcome_model = new Welcome()
     this.user_model = new User()
 
-      // View state (used to live in controllers in OO version), these control the display of the header titles at top
-      this._uppercase_welcome = false
-      this._uppercase_user = false
-      this._uppercase_welcome_user = false
+    // View state (used to live in controllers in OO version), these control the display of the header titles at top
+    this._uppercase_welcome = false
+    this._uppercase_user = false
+    this._uppercase_welcome_user = false
 
-      this.dirty_startup()
-    }
+    this.config.cb_create_controllers1(this)
+
+    this.dirty_startup()
+  }
     
     get uppercase_welcome() { 
       return this._uppercase_welcome 
@@ -399,15 +403,18 @@ function isUpperCaseAt(str, n) {
 	// 			}
 	// 		)
 	// 	},
-		// cb_header: function (app) {
-		// 	new ControllerHeader(
-		// 		app,
-		// 		{
-		// 			$input: $('.new-todo'),
-		// 			$toggle_all: $('.toggle-all')
-		// 		}
-		// 	)
-		// }
+		cb_create_controllers1: function (app) {
+      new ControllerHeader(app, {
+        $title_welcome: $('#welcome'),
+        $title_welcome_user: $('#welcome-user'),
+      })
+    
+      new ControllerDisplayOptions(app, {
+        $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
+        $cb_uppercase_user: $('input[name=uppercase_user]'),
+        $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
+      })
+		}
 	// 	cb_footer: function (app) {
 	// 		new ControllerFooter(
 	// 			app,
@@ -422,16 +429,16 @@ function isUpperCaseAt(str, n) {
   console.log('created new application')
 
   // Controllers
-  let controller_welcome = new ControllerHeader(app, {
-    $title_welcome: $('#welcome'),
-    $title_welcome_user: $('#welcome-user'),
-  })
+  // let controller_welcome = new ControllerHeader(app, {
+  //   $title_welcome: $('#welcome'),
+  //   $title_welcome_user: $('#welcome-user'),
+  // })
 
-  let controller_display_options = new ControllerDisplayOptions(app, {
-    $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
-    $cb_uppercase_user: $('input[name=uppercase_user]'),
-    $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
-  })
+  // let controller_display_options = new ControllerDisplayOptions(app, {
+  //   $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
+  //   $cb_uppercase_user: $('input[name=uppercase_user]'),
+  //   $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
+  // })
 
 // })(window);
 
