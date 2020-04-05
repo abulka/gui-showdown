@@ -42,6 +42,10 @@ class User {
     }
 }
 
+//
+// Application
+//
+
 class Application {
   constructor(config) {
     this.config = config  // callbacks for creating controllers
@@ -60,73 +64,60 @@ class Application {
 
     this.dirty_startup()
   }
-    
-    get uppercase_welcome() { 
-      return this._uppercase_welcome 
-    }
-    set uppercase_welcome(val) { 
-      this._uppercase_welcome = val
-      notify_all("display option change", this, {what: 'uppercase_welcome', is_upper: val})
-    }
+   
+  // getters / setters which broadcast
 
-    get uppercase_user() { 
-      return this._uppercase_user 
-    }
-    set uppercase_user(val) { 
-      this._uppercase_user = val
-      notify_all("display option change", this, {what: 'uppercase_user', is_upper: val})
-    }
+  get uppercase_welcome() { 
+    return this._uppercase_welcome 
+  }
+  set uppercase_welcome(val) { 
+    this._uppercase_welcome = val
+    notify_all("display option change", this, {what: 'uppercase_welcome', is_upper: val})
+  }
 
-    get uppercase_welcome_user() { 
-      return this._uppercase_welcome_user 
-    }
-    set uppercase_welcome_user(val) { 
-      this._uppercase_welcome_user = val
-      notify_all("display option change", this, {what: 'uppercase_welcome_user', is_upper: val})
-    }
+  get uppercase_user() { 
+    return this._uppercase_user 
+  }
+  set uppercase_user(val) { 
+    this._uppercase_user = val
+    notify_all("display option change", this, {what: 'uppercase_user', is_upper: val})
+  }
 
-    dirty_startup() {
-      notify_all("startup", this)
-    }
+  get uppercase_welcome_user() { 
+    return this._uppercase_welcome_user 
+  }
+  set uppercase_welcome_user(val) { 
+    this._uppercase_welcome_user = val
+    notify_all("display option change", this, {what: 'uppercase_welcome_user', is_upper: val})
+  }
+
+  // business logic
+
+  on_change_welcome_model(event) {
+    this.welcome_model.message = isUpperCaseAt(this.welcome_model.message, 1) ? this.welcome_model.message.toLowerCase() : this.welcome_model.message.toUpperCase()
+  }
+
+  on_change_user_model(event) {
+    this.user_model.firstname = isUpperCaseAt(this.user_model.firstname, 1) ? this.user_model.firstname.toLowerCase() : this.user_model.firstname.toUpperCase()
+    this.user_model.surname = isUpperCaseAt(this.user_model.surname, 1) ? this.user_model.surname.toLowerCase() : this.user_model.surname.toUpperCase()
+  }
+
+  on_reset_welcome_model(event) {
+    this.welcome_model.message = "Hello"
+  }
+
+  on_reset_user_model(event) {
+    this.user_model.firstname = "Fred"
+    this.user_model.surname = "Flinstone"
+  }
+
+  dirty_startup() {
+    notify_all("startup", this)
+  }
 }
 
-// class App {  // aggregates all the sub models into one housing, with some business logic
-//   constructor(welcome_model, user_model) {
-//       this.welcome_model = welcome_model
-//       this.user_model = user_model
-//     }
-  
-//     on_change_welcome_model(event) {
-//       this.welcome_model.message = isUpperCaseAt(this.welcome_model.message, 1) ? this.welcome_model.message.toLowerCase() : this.welcome_model.message.toUpperCase()
-//     }
-
-//     on_change_user_model(event) {
-//       this.user_model.firstname = isUpperCaseAt(this.user_model.firstname, 1) ? this.user_model.firstname.toLowerCase() : this.user_model.firstname.toUpperCase()
-//       this.user_model.surname = isUpperCaseAt(this.user_model.surname, 1) ? this.user_model.surname.toLowerCase() : this.user_model.surname.toUpperCase()
-//     }
-
-//     on_reset_welcome_model(event) {
-//       this.welcome_model.message = "Hello"
-//     }
-  
-//     on_reset_user_model(event) {
-//       this.user_model.firstname = "Fred"
-//       this.user_model.surname = "Flinstone"
-//     }
-  
-//     dirty_startup() {
-//       this.dirty_all()
-//       notify_all("startup", this)
-//     }
-
-//     dirty_all() {
-//       notify_all("modified welcome", this)
-//       notify_all("modified user", this)
-//     }
-// }
-
 //
-// Mediators - contain the View/GUI/DOM updating code, some display option flags plus refs to model and DOM
+// Controllers
 //
 
 class ControllerHeader {
@@ -210,31 +201,23 @@ class ControllerEditors {
   }
 }
 
-// class MediatorEditUserFirstName {
-//   constructor(user_model, id) {
-//     this.user_model = user_model
-//     this.gui_input = id
-//   }
 
-//   on_keychar_firstname(e) { this.user_model.firstname = $(e.target).val() }
+class ControllerButtons {  // The four buttons which cause a change in the models
+  constructor(app, gui_dict) {
+    this.app = app
+    this.gui = gui_dict
 
-//   notify(event) {
-//     $(`input[name=${this.gui_input}]`).val(this.user_model.firstname)
-//   }
-// }
+    // Gui events -> this controller, which then manipulate the model via the app
+    this.gui.$btn_change_welcome_model.on('click', (event) => { this.app.on_change_welcome_model(event) })
+    this.gui.$btn_change_user_model.on('click', (event) => { this.app.on_change_user_model(event) })
+    this.gui.$btn_reset_welcome_model.on('click', (event) => { this.app.on_reset_welcome_model(event) })
+    this.gui.$btn_reset_user_model.on('click', (event) => { this.app.on_reset_user_model(event) })
 
-// class MediatorEditUserSurName {
-//   constructor(user_model, id) {
-//     this.user_model = user_model
-//     this.gui_input = id
-//   }
-  
-//   on_keychar_surname(e) { this.user_model.surname = $(e.target).val() }
+    // Internal events - none, this controller just listens to gui
+  }
+}
 
-//   notify(event) {
-//     $(`input[name=${this.gui_input}]`).val(this.user_model.surname)
-//   }
-// }
+
 
 // class MediatorPageTitle {
 //   constructor(s, $id) {
@@ -320,61 +303,64 @@ function isUpperCaseAt(str, n) {
 
 // New
 
+//
+// Bootstrapping
+//
 
-// (function (window) {
-// 	'use strict';
-
-	/*  
-		Start here!
-		
-		Create an instance of 'Application' passing in a config object.
-
-		Controller classes and this config of callbacks are the only things
-	 	that know about the UI.
-	*/
-
-	let config = {
-		// Callbacks to create the permanent controllers
-
-	// 	cb_dump: function (app) {
-	// 		new ControllerDebugDumpModels(
-	// 			app,
-	// 			{
-	// 				$toggle_checkbox: $('input[name="debug"]'),
-	// 				pre_output: document.querySelector('pre.debug')
-	// 			}
-	// 		)
-  // 	},
+/*  
+  Start here!
   
-		cb_create_controllers1: function (app) {
-      new ControllerHeader(app, {
-        $title_welcome: $('#welcome'),
-        $title_welcome_user: $('#welcome-user'),
-      })
-    
-      new ControllerDisplayOptions(app, {
-        $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
-        $cb_uppercase_user: $('input[name=uppercase_user]'),
-        $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
-      })
-		},
+  Create an instance of 'Application' passing in a config object.
 
-    
-		cb_create_controllers2: function (app) {
-      new ControllerEditors(app, {
-        $input_welcome: $('input[name=welcome]'),
-        $input_firstname: $('input[name=firstname]'),
-        $input_surname: $('input[name=surname]')
-      })
+  Controller classes and this config of callbacks are the only things
+  that know about the UI.
+*/
 
-		}
+let config = {
+  // Callbacks to create the permanent controllers
 
-    
-	}
+// 	cb_dump: function (app) {
+// 		new ControllerDebugDumpModels(
+// 			app,
+// 			{
+// 				$toggle_checkbox: $('input[name="debug"]'),
+// 				pre_output: document.querySelector('pre.debug')
+// 			}
+// 		)
+// 	},
 
-	let app = new Application(config)
-  console.log('created new application')
+  cb_create_controllers1: function (app) {
+    new ControllerHeader(app, {
+      $title_welcome: $('#welcome'),
+      $title_welcome_user: $('#welcome-user'),
+    })
+  
+    new ControllerDisplayOptions(app, {
+      $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
+      $cb_uppercase_user: $('input[name=uppercase_user]'),
+      $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
+    })
+  },
 
+  
+  cb_create_controllers2: function (app) {
+    new ControllerEditors(app, {
+      $input_welcome: $('input[name=welcome]'),
+      $input_firstname: $('input[name=firstname]'),
+      $input_surname: $('input[name=surname]')
+    })
 
-// })(window);
+    new ControllerButtons(app, {
+      $btn_change_welcome_model: $('#change_welcome_model'),
+      $btn_change_user_model: $('#change_user_model'),
+      $btn_reset_welcome_model: $('#reset_welcome_model'),
+      $btn_reset_user_model: $('#reset_user_model'),
+    })
 
+  }
+
+  
+}
+
+let app = new Application(config)
+console.log('created new application')
