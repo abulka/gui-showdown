@@ -219,16 +219,20 @@ class ControllerButtons {  // The four buttons which cause a change in the model
 
 
 
-// class MediatorPageTitle {
-//   constructor(s, $id) {
-//     this.s = s
-//     this.$id = $id
-//   }
+class ControllerPageTitle {
+  constructor(app, $gui_h1, title) {
+    this.app = app
+    this.$gui_h1 = $gui_h1
+    this.title = title
+
+    // Internal events - only runs at startup and never changes
+		document.addEventListener("startup", (event) => { this.notify(event) })
+  }
   
-//   notify(event) {
-//     this.$id.html(this.s)
-//   }
-// }
+  notify(event) {
+    this.$gui_h1.html(this.title)
+  }
+}
 
 // class DebugDumpModels {
 //   constructor(id) {
@@ -356,6 +360,8 @@ let config = {
       $btn_reset_welcome_model: $('#reset_welcome_model'),
       $btn_reset_user_model: $('#reset_user_model'),
     })
+
+    new ControllerPageTitle(app, $('#title > h1'), "Gui wired via MVCA Architecture")
 
   }
 
