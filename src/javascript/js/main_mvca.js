@@ -280,9 +280,9 @@ class ControllerButtons {  // The four buttons which cause a change in the model
 
 
 class ControllerPageTitle {
-  constructor(app, $gui_h1, title) {
+  constructor(app, gui_dict, title) {
     this.app = app
-    this.$gui_h1 = $gui_h1
+    this.gui = gui_dict
     this.title = title
 
     // Internal events - only runs at startup and never changes
@@ -306,7 +306,7 @@ class ControllerPageTitle {
   // }
 
   notify(event) {
-    this.$gui_h1.html(this.title)
+    this.gui.$h1.html(this.title)
   }
 }
 
@@ -327,17 +327,17 @@ class ControllerDebugDumpModels {
     this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
   }
 
-  _debug_controller_report(controller, gui_events, internal_events) {
-    let report = {}
-    report[controller.constructor.name] = {
-      gui: Object.keys(controller.gui),
-      listening: {
-        gui_events: gui_events,
-        internal_events: internal_events
-      },
-    }
-    return report
-  }
+  // _debug_controller_report(controller, gui_events, internal_events) {
+  //   let report = {}
+  //   report[controller.constructor.name] = {
+  //     gui: Object.keys(controller.gui),
+  //     listening: {
+  //       gui_events: gui_events,
+  //       internal_events: internal_events
+  //     },
+  //   }
+  //   return report
+  // }
 
   get _debug_report() {
     return {controller: this, gui_events: ['change'], internal_events: ["notify all called"]}
@@ -360,13 +360,19 @@ class ControllerDebugDumpModels {
     // build controller report
     let all_controllers_info = {}
     for (const controller of all_controllers) {
-      
-      // let dict = controller._debug_report
-      // dict = this._debug_controller_report(dict)
-      // let key = Object.keys(dict)[0]
-      // all_controllers_info[key] = dict[key]
+      let dict = controller._debug_report
+      let report = {}
+      report[dict.controller.constructor.name] = {
+        gui: Object.keys(dict.controller.gui),
+        listening: {
+          gui_events: dict.gui_events,
+          internal_events: dict.internal_events
+        }
+      }
+      let key = Object.keys(report)[0]
+      all_controllers_info[key] = report[key]
     }
-
+    // final report
     let info = {
       app: this.app,
       controllers: all_controllers_info,
@@ -388,12 +394,11 @@ function isUpperCaseAt(str, n) {
 // Bootstrapping
 //
 
-let all_controllers = []  // record them for debug dump purposes
+let all_controllers = []  // record all controllers for debug dump purposes
 
 let config = {
   // Controller classes and this config of callbacks (to create the controllers) are the only things
   // that know about the UI.
-
 
   cb_debug_dump_controller: function (app) {
     all_controllers.push(
@@ -439,10 +444,13 @@ let config = {
       }))
 
     all_controllers.push(
-      new ControllerPageTitle(app, $('#title > h1'), "Gui wired via MVCA Architecture"))
+      new ControllerPageTitle(app, {
+        $h1: $('#title > h1')
+      },
+      "Gui wired via MVCA Architecture")
+    )
   }
 
 }
 
-// Create an instance of 'Application' passing in a config object.
 let app = new Application(config)
