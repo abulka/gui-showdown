@@ -1,4 +1,4 @@
-cd js/jecs
+cd src/javascript/js
 
 echo ---------LINE COUNTS-----------------
 wc -l main_oo_v3_observer.js observer_oo.js 
@@ -10,4 +10,6 @@ echo -------------------------------------
 wc -l main_vue.js
 echo -------------------------------------
 wc -l main_ecs.js nested_dict_accessor.js
+echo -------------------------------------
+wc -l main_mvca.js
 echo -------------------------------------
