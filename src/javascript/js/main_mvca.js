@@ -56,6 +56,7 @@ class Application {
     this._uppercase_welcome_user = false
 
     this.config.cb_create_controllers1(this)
+    this.config.cb_create_controllers2(this)
 
     this.dirty_startup()
   }
@@ -138,6 +139,8 @@ class ControllerHeader {
 		// Internal events - we listen via 'notify()' in order to display as per the view state
 		document.addEventListener("display option change", (event) => { this.notify(event) })
 		document.addEventListener("startup", (event) => { this.notify(event) })
+    document.addEventListener("modified welcome", (event) => { this.notify(event) })
+    document.addEventListener("modified user", (event) =>    { this.notify(event) })  // either firstname or surname
   }
 
 	notify(event) {
@@ -173,89 +176,39 @@ class ControllerDisplayOptions {  // Could merge this with the Controller Header
 
 }
 
-// class MediatorWelcome {
-//   constructor(welcome_model, id) {
-//     this.welcome_model = welcome_model  // ref to Welcome model
-//     this.gui_div = id             // ref to DOM div where we want the welcome message to appear
-//     this._uppercase_welcome = false
-//   }
-  
-//   get uppercase_welcome() { 
-//     return this._uppercase_welcome 
-//   }
-//   set uppercase_welcome(val) { 
-//     this._uppercase_welcome = val
-//     notify_all("display option change", this, `flag uppercase_welcome ${val}`)
-//   }
 
-//   on_check_upper_welcome(e) {
-//     this.uppercase_welcome = $(e.target).prop('checked')
-//   }
+class ControllerEditors {
+  constructor(app, gui_dict) {
+    this.app = app
+    this.gui = gui_dict
 
-//   notify(event) {
-//     let msg = this.uppercase_welcome ? this.welcome_model.message.toUpperCase() : this.welcome_model.message
-//     $('#' + this.gui_div).html(msg)
-//   }
-// }
+    // Gui events -> this controller, which then manipulate the model
+    this.gui.$input_welcome.on('keyup', (event) => {  this.app.welcome_model.message = $(event.target).val() })
+    this.gui.$input_firstname.on('keyup', (event) => {  this.app.user_model.firstname = $(event.target).val() })
+    this.gui.$input_surname.on('keyup', (event) => { this.app.user_model.surname = $(event.target).val() })
 
-// class MediatorWelcomeUser {
-//   constructor(welcome_model, user_model, id) {
-//     this.welcome_model = welcome_model
-//     this.user_model = user_model
-//     this.gui_div = id
-//     this._uppercase_welcome = false
-//     this._uppercase_user = false
-//   }
-  
-//   get uppercase_welcome() { 
-//     return this._uppercase_welcome 
-//   }
-//   set uppercase_welcome(val) { 
-//     this._uppercase_welcome = val
-//     notify_all("display option change", this, `flag uppercase_welcome ${val}`)
-//   }
-  
-//   get uppercase_user() { 
-//     return this._uppercase_user 
-//   }
-//   set uppercase_user(val) { 
-//     this._uppercase_user = val
-//     notify_all("display option change", this, `flag uppercase_user ${val}`)
-//   }
+    // Internal events - typically from the model
+    document.addEventListener("modified welcome", (event) => { this.notify(event) })
+    document.addEventListener("modified user", (event) =>    { this.notify(event) })  // either firstname or surname
+		document.addEventListener("startup", (event) => { this.notify(event) })
+  }
 
-//   on_check_upper_welcome(e) {
-//     this.uppercase_welcome = $(e.target).prop('checked')
-//   }
-
-//   on_check_upper_user(e) {
-//     this.uppercase_user = $(e.target).prop('checked')
-//   }
-
-//   on_check_upper_welcome_user(e) {
-//     this.uppercase_welcome = $(e.target).prop('checked')
-//     this.uppercase_user = $(e.target).prop('checked')
-//   }
-
-//   notify(event) {
-//     let welcome = this.uppercase_welcome ? this.welcome_model.message.toUpperCase() : this.welcome_model.message
-//     let firstname = this.uppercase_user ? this.user_model.firstname.toUpperCase() : this.user_model.firstname
-//     let surname = this.uppercase_user ? this.user_model.surname.toUpperCase() : this.user_model.surname
-//     $('#' + this.gui_div).html(welcome + ' ' + firstname + ' ' + surname )
-//   }
-// }
-
-// class MediatorEditWelcome {
-//   constructor(welcome_model, id) {
-//     this.welcome_model = welcome_model
-//     this.gui_input = id  // name (not id) of input to hold welcome message
-//   }
-
-//   on_keychar_welcome(e) { this.welcome_model.message = $(e.target).val() }
-
-//   notify(event) {
-//     $(`input[name=${this.gui_input}]`).val(this.welcome_model.message)
-//   }
-// }
+  notify(event) {
+    console.log(`\tControllerEditors got event '${event.type}' data is '${JSON.stringify(event.detail.data)}'`)
+    if (event.type == "startup") {
+      this.gui.$input_welcome.val(this.app.welcome_model.message)
+      this.gui.$input_firstname.val(this.app.user_model.firstname)
+      this.gui.$input_surname.val(this.app.user_model.surname)
+    }
+    // this level of granular updates is tedious, could always update all input fields each time if you wanted
+    else if (event.type == "modified welcome")
+      this.gui.$input_welcome.val(this.app.welcome_model.message)
+    else if (event.type == "modified user") {
+      this.gui.$input_firstname.val(this.app.user_model.firstname)
+      this.gui.$input_surname.val(this.app.user_model.surname)
+    }
+  }
+}
 
 // class MediatorEditUserFirstName {
 //   constructor(user_model, id) {
@@ -379,20 +332,9 @@ function isUpperCaseAt(str, n) {
 		Controller classes and this config of callbacks are the only things
 	 	that know about the UI.
 	*/
-  // let config = {}
 
 	let config = {
-	// 	// Callback to create the todo item controllers - are added as needed
-
-	// 	cb_todo: function (app, todo) {
-	// 		new ControllerTodoItem(
-	// 			app,
-	// 			todo,
-	// 			{ $todolist: $('ul.todo-list') }
-	// 		)
-	// 	},
-
-	// 	// Callbacks to create the permanent controllers
+		// Callbacks to create the permanent controllers
 
 	// 	cb_dump: function (app) {
 	// 		new ControllerDebugDumpModels(
@@ -402,7 +344,8 @@ function isUpperCaseAt(str, n) {
 	// 				pre_output: document.querySelector('pre.debug')
 	// 			}
 	// 		)
-	// 	},
+  // 	},
+  
 		cb_create_controllers1: function (app) {
       new ControllerHeader(app, {
         $title_welcome: $('#welcome'),
@@ -414,31 +357,24 @@ function isUpperCaseAt(str, n) {
         $cb_uppercase_user: $('input[name=uppercase_user]'),
         $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
       })
+		},
+
+    
+		cb_create_controllers2: function (app) {
+      new ControllerEditors(app, {
+        $input_welcome: $('input[name=welcome]'),
+        $input_firstname: $('input[name=firstname]'),
+        $input_surname: $('input[name=surname]')
+      })
+
 		}
-	// 	cb_footer: function (app) {
-	// 		new ControllerFooter(
-	// 			app,
-	// 			{
-	// 				$footer: $('footer'),
-	// 				$footer_interactive_area: $('.footer')
-	// 			})
-	// 	}
+
+    
 	}
 
 	let app = new Application(config)
   console.log('created new application')
 
-  // Controllers
-  // let controller_welcome = new ControllerHeader(app, {
-  //   $title_welcome: $('#welcome'),
-  //   $title_welcome_user: $('#welcome-user'),
-  // })
-
-  // let controller_display_options = new ControllerDisplayOptions(app, {
-  //   $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
-  //   $cb_uppercase_user: $('input[name=uppercase_user]'),
-  //   $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
-  // })
 
 // })(window);
 
