@@ -5,43 +5,43 @@
 
 class Welcome {
   constructor(message) {
-      this._msg = message == undefined ? "Welcome" : message;
-    }
-  
-    get message() {
-      return this._msg
-    }
-  
-    set message(v) {
-      this._msg = v;
-      notify_all("modified welcome", this, this._msg)
-    }
+    this._msg = message == undefined ? "Welcome" : message;
+  }
+
+  get message() {
+    return this._msg
+  }
+
+  set message(v) {
+    this._msg = v;
+    notify_all("modified welcome", this, this._msg)
+  }
 }
 
 
 class User {
   constructor() {
-      this._firstname = "Sam"
-      this._surname = "Smith"
-    }
-  
-    get firstname() {
-      return this._firstname
-    }
-  
-    set firstname(v) {
-      this._firstname = v;
-      notify_all("modified user", this, this._firstname)
-    }
-  
-    get surname() {
-      return this._surname
-    }
-  
-    set surname(v) {
-      this._surname = v;
-      notify_all("modified user", this, this._surname)
-    }
+    this._firstname = "Sam"
+    this._surname = "Smith"
+  }
+
+  get firstname() {
+    return this._firstname
+  }
+
+  set firstname(v) {
+    this._firstname = v;
+    notify_all("modified user", this, this._firstname)
+  }
+
+  get surname() {
+    return this._surname
+  }
+
+  set surname(v) {
+    this._surname = v;
+    notify_all("modified user", this, this._surname)
+  }
 }
 
 
@@ -69,31 +69,31 @@ class Application {
 
     this.dirty_startup()
   }
-   
+
   // getters / setters which broadcast
 
-  get uppercase_welcome() { 
-    return this._uppercase_welcome 
+  get uppercase_welcome() {
+    return this._uppercase_welcome
   }
-  set uppercase_welcome(val) { 
+  set uppercase_welcome(val) {
     this._uppercase_welcome = val
-    notify_all("display option change", this, {what: 'uppercase_welcome', is_upper: val})
+    notify_all("display option change", this, { what: 'uppercase_welcome', is_upper: val })
   }
 
-  get uppercase_user() { 
-    return this._uppercase_user 
+  get uppercase_user() {
+    return this._uppercase_user
   }
-  set uppercase_user(val) { 
+  set uppercase_user(val) {
     this._uppercase_user = val
-    notify_all("display option change", this, {what: 'uppercase_user', is_upper: val})
+    notify_all("display option change", this, { what: 'uppercase_user', is_upper: val })
   }
 
-  get uppercase_welcome_user() { 
-    return this._uppercase_welcome_user 
+  get uppercase_welcome_user() {
+    return this._uppercase_welcome_user
   }
-  set uppercase_welcome_user(val) { 
+  set uppercase_welcome_user(val) {
     this._uppercase_welcome_user = val
-    notify_all("display option change", this, {what: 'uppercase_welcome_user', is_upper: val})
+    notify_all("display option change", this, { what: 'uppercase_welcome_user', is_upper: val })
   }
 
   // business logic
@@ -134,14 +134,26 @@ class ControllerHeader {
 
     // Gui events - none, because these are 'display only' titles, its the other controller that handles checkbox inputs
 
-		// Internal events - we listen via 'notify()' in order to display as per the view state
-		document.addEventListener("display option change", (event) => { this.notify(event) })
-		document.addEventListener("startup", (event) => { this.notify(event) })
+    // Internal events - we listen via 'notify()' in order to display as per the view state
+    document.addEventListener("display option change", (event) => { this.notify(event) })
+    document.addEventListener("startup", (event) => { this.notify(event) })
     document.addEventListener("modified welcome", (event) => { this.notify(event) })
-    document.addEventListener("modified user", (event) =>    { this.notify(event) })  // either firstname or surname
+    document.addEventListener("modified user", (event) => { this.notify(event) })  // either firstname or surname
   }
 
-	notify(event) {
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: Object.keys(this.gui),
+      listening: {
+        gui_events: [],
+        internal_events: ["display option change", "modified welcome", "modified user", "startup"]
+      },
+    }
+    return report
+  }
+
+  notify(event) {
     // We could interrogate event.detail.data.what and event.detail.data.is_upper to do more granular updates, 
     //   but simpler to update whole header here each time
     console.log(`\tControllerHeader got event '${event.type}' data is '${JSON.stringify(event.detail.data)}'`)
@@ -156,7 +168,7 @@ class ControllerHeader {
     let surname = this.app.uppercase_user || this.app.uppercase_welcome_user ? this.app.user_model.surname.toUpperCase() : this.app.user_model.surname
     this.gui.$title_welcome_user.html(`${welcome} ${firstname} ${surname}`)
   }
-  
+
 }
 
 
@@ -173,6 +185,17 @@ class ControllerDisplayOptions {  // Could merge this with the Controller Header
     // Internal events - none, this controller just listens to gui
   }
 
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: Object.keys(this.gui),
+      listening: {
+        gui_events: 'change',
+        internal_events: []
+      },
+    }
+    return report
+  }
 }
 
 
@@ -182,14 +205,14 @@ class ControllerEditors {
     this.gui = gui_dict
 
     // Gui events -> this controller, which then manipulate the model
-    this.gui.$input_welcome.on('keyup', (event) => {  this.app.welcome_model.message = $(event.target).val() })
-    this.gui.$input_firstname.on('keyup', (event) => {  this.app.user_model.firstname = $(event.target).val() })
+    this.gui.$input_welcome.on('keyup', (event) => { this.app.welcome_model.message = $(event.target).val() })
+    this.gui.$input_firstname.on('keyup', (event) => { this.app.user_model.firstname = $(event.target).val() })
     this.gui.$input_surname.on('keyup', (event) => { this.app.user_model.surname = $(event.target).val() })
 
     // Internal events - typically from the model
     document.addEventListener("modified welcome", (event) => { this.notify(event) })
-    document.addEventListener("modified user", (event) =>    { this.notify(event) })  // either firstname or surname
-		document.addEventListener("startup", (event) => { this.notify(event) })
+    document.addEventListener("modified user", (event) => { this.notify(event) })  // either firstname or surname
+    document.addEventListener("startup", (event) => { this.notify(event) })
   }
 
   notify(event) {
@@ -207,6 +230,18 @@ class ControllerEditors {
       this.gui.$input_surname.val(this.app.user_model.surname)
     }
   }
+
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: Object.keys(this.gui),
+      listening: {
+        gui_events: 'keyup',
+        internal_events: ["modified welcome", "modified user", "startup"]
+      },
+    }
+    return report
+  }
 }
 
 
@@ -223,6 +258,18 @@ class ControllerButtons {  // The four buttons which cause a change in the model
 
     // Internal events - none, this controller just listens to gui
   }
+
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: Object.keys(this.gui),
+      listening: {
+        gui_events: 'click',
+        internal_events: []
+      },
+    }
+    return report
+  }
 }
 
 
@@ -233,9 +280,21 @@ class ControllerPageTitle {
     this.title = title
 
     // Internal events - only runs at startup and never changes
-		document.addEventListener("startup", (event) => { this.notify(event) })
+    document.addEventListener("startup", (event) => { this.notify(event) })
   }
-  
+
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: '$gui_h1',
+      listening: {
+        gui_events: [],
+        internal_events: ["startup"]
+      },
+    }
+    return report
+  }
+
   notify(event) {
     this.$gui_h1.html(this.title)
   }
@@ -247,25 +306,43 @@ class ControllerDebugDumpModels {
     this.app = app
     this.gui = gui_dict
 
-		// Gui events
-		this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
+    // Gui events
+    this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
 
     // Internal events - listen to special meta event which is broadcast each event
     document.addEventListener("notify all called", (event) => { this.notify(event) })
   }
-  
+
   display_debug_info(event) {
-		this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
+    this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
   }
+
   
+  _debug_report_state() {
+    let report = {}
+    report[this.constructor.name] = {
+      gui: Object.keys(this.gui),
+      listening: {
+        gui_events: ['change'],
+        internal_events: ["notify all called"]
+      }
+    }
+    return report
+  }
+
   notify(event) {
+
+    // build controller report
+    let all_controllers_info = {}
+    for (const controller of all_controllers) {
+      let dict = controller._debug_report_state()
+      let key = Object.keys(dict)[0]
+      all_controllers_info[key] = dict[key]
+    }
+
     let info = {
       app: this.app,
-      // mediator_welcome: mediator_welcome,
-      // mediator_welcome_user : mediator_welcome_user,
-      // mediator_edit_welcome : mediator_edit_welcome,
-      // mediator_edit_firstname : mediator_edit_firstname,
-      // mediator_edit_user_surname : mediator_edit_user_surname,
+      controllers: all_controllers_info,
     }
     this.gui.$pre_output.html(syntaxHighlight(JSON.stringify(info, null, 2)))
 
@@ -276,58 +353,66 @@ class ControllerDebugDumpModels {
 // Util
 
 function isUpperCaseAt(str, n) {
-    return str[n]=== str[n].toUpperCase();
-}  
+  return str[n] === str[n].toUpperCase();
+}
 
 
 //
 // Bootstrapping
 //
 
+let all_controllers = []  // record them for debug dump purposes
 
 let config = {
   // Controller classes and this config of callbacks (to create the controllers) are the only things
   // that know about the UI.
 
-	cb_debug_dump_controller: function (app) {
-		new ControllerDebugDumpModels(
-			app,
-			{
-				$toggle_checkbox: $('input[name="debug"]'),
-        $pre_output: $('#debug_info')
-        
-			}
-		)
-	},
+
+  cb_debug_dump_controller: function (app) {
+    all_controllers.push(
+      new ControllerDebugDumpModels(
+        app,
+        {
+          $toggle_checkbox: $('input[name="debug"]'),
+          $pre_output: $('#debug_info')
+
+        }
+      ))
+  },
 
   cb_create_controllers1: function (app) {
-    new ControllerHeader(app, {
-      $title_welcome: $('#welcome'),
-      $title_welcome_user: $('#welcome-user'),
-    })
-  
-    new ControllerDisplayOptions(app, {
-      $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
-      $cb_uppercase_user: $('input[name=uppercase_user]'),
-      $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),    
-    })
+    all_controllers.push(
+      new ControllerHeader(app, {
+        $title_welcome: $('#welcome'),
+        $title_welcome_user: $('#welcome-user'),
+      }))
+
+    all_controllers.push(
+      new ControllerDisplayOptions(app, {
+        $cb_uppercase_welcome: $('input[name=uppercase_welcome]'),
+        $cb_uppercase_user: $('input[name=uppercase_user]'),
+        $cb_uppercase_welcome_user: $('input[name=uppercase_welcome_user]'),
+      }))
   },
 
   cb_create_controllers2: function (app) {
-    new ControllerEditors(app, {
-      $input_welcome: $('input[name=welcome]'),
-      $input_firstname: $('input[name=firstname]'),
-      $input_surname: $('input[name=surname]')
-    })
+    all_controllers.push(
+      new ControllerEditors(app, {
+        $input_welcome: $('input[name=welcome]'),
+        $input_firstname: $('input[name=firstname]'),
+        $input_surname: $('input[name=surname]')
+      }))
 
-    new ControllerButtons(app, {
-      $btn_change_welcome_model: $('#change_welcome_model'),
-      $btn_change_user_model: $('#change_user_model'),
-      $btn_reset_welcome_model: $('#reset_welcome_model'),
-      $btn_reset_user_model: $('#reset_user_model'),
-    })
+    all_controllers.push(
+      new ControllerButtons(app, {
+        $btn_change_welcome_model: $('#change_welcome_model'),
+        $btn_change_user_model: $('#change_user_model'),
+        $btn_reset_welcome_model: $('#reset_welcome_model'),
+        $btn_reset_user_model: $('#reset_user_model'),
+      }))
 
-    new ControllerPageTitle(app, $('#title > h1'), "Gui wired via MVCA Architecture")
+    all_controllers.push(
+      new ControllerPageTitle(app, $('#title > h1'), "Gui wired via MVCA Architecture"))
   }
 
 }

@@ -333,9 +333,11 @@ class ControllerDebugDumpModels {
   notify(event) {
 
     // build controller report
-    let all_controllers_info = []
+    let all_controllers_info = {}
     for (const controller of all_controllers) {
-      all_controllers_info.push(controller._debug_report_state())
+      let dict = controller._debug_report_state()
+      let key = Object.keys(dict)[0]
+      all_controllers_info[key] = dict[key]
     }
 
     let info = {
