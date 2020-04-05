@@ -50,9 +50,16 @@
 
           <!-- debug area -->
           <label><input type="checkbox" name="debug" value="value" checked>Debug</label>
-          <pre id="debug_info" style="display: block;" class="debug">
-          </pre>
-          
+          <div id="debug_area" style="display: block;">
+            <h4>App:</h4>
+            <pre id="debug_app_info" class="debug">
+            </pre>
+            <h4>Controllers:</h4>
+            <p><i>This following information does not change once it is set up.</i></p>
+            <pre id="debug_controller_info" class="debug">
+            </pre>
+          </div>
+
           <h4>Source code</h4>
           <p>View the 
             <a href="https://github.com/abulka/gui-showdown/blob/master/src/javascript/js/main_mvca.js">source code for this example</a> on Github</p>

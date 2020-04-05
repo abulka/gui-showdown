@@ -145,18 +145,6 @@ class ControllerHeader {
     return {controller: this, gui_events: [], internal_events: ["display option change", "modified welcome", "modified user", "startup"]}
   }
 
-  // _debug_report_state() {
-  //   let report = {}
-  //   report[this.constructor.name] = {
-  //     gui: Object.keys(this.gui),
-  //     listening: {
-  //       gui_events: [],
-  //       internal_events: ["display option change", "modified welcome", "modified user", "startup"]
-  //     },
-  //   }
-  //   return report
-  // }
-
   notify(event) {
     // We could interrogate event.detail.data.what and event.detail.data.is_upper to do more granular updates, 
     //   but simpler to update whole header here each time
@@ -192,19 +180,6 @@ class ControllerDisplayOptions {  // Could merge this with the Controller Header
   get _debug_report() {
     return {controller: this, gui_events: ['change'], internal_events: []}
   }
-
-  // _debug_report_state() {
-  //   let report = {}
-  //   report[this.constructor.name] = {
-  //     gui: Object.keys(this.gui),
-  //     listening: {
-  //       gui_events: 'change',
-  //       internal_events: []
-  //     },
-  //   }
-  //   return report
-  // }
-
 
 }
 
@@ -245,17 +220,6 @@ class ControllerEditors {
     return {controller: this, gui_events: ['keyup'], internal_events: ["modified welcome", "modified user", "startup"]}
   }
 
-  // _debug_report_state() {
-  //   let report = {}
-  //   report[this.constructor.name] = {
-  //     gui: Object.keys(this.gui),
-  //     listening: {
-  //       gui_events: 'keyup',
-  //       internal_events: ["modified welcome", "modified user", "startup"]
-  //     },
-  //   }
-  //   return report
-  // }
 }
 
 
@@ -293,18 +257,6 @@ class ControllerPageTitle {
     return {controller: this, gui_events: [], internal_events: ["startup"]}
   }
 
-  // _debug_report_state() {
-  //   let report = {}
-  //   report[this.constructor.name] = {
-  //     gui: '$gui_h1',
-  //     listening: {
-  //       gui_events: [],
-  //       internal_events: ["startup"]
-  //     },
-  //   }
-  //   return report
-  // }
-
   notify(event) {
     this.gui.$h1.html(this.title)
   }
@@ -317,47 +269,21 @@ class ControllerDebugDumpModels {
     this.gui = gui_dict
 
     // Gui events
-    this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
+    this.gui.$cb_show_debug_area.on('change', (event) => { this.display_debug_area(event) })
 
     // Internal events - listen to special meta event which is broadcast each event
     document.addEventListener("notify all called", (event) => { this.notify(event) })
   }
 
-  display_debug_info(event) {
-    this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
+  display_debug_area(event) {
+    this.gui.$debug_area[0].style.display = event.target.checked ? 'block' : 'none'
   }
-
-  // _debug_controller_report(controller, gui_events, internal_events) {
-  //   let report = {}
-  //   report[controller.constructor.name] = {
-  //     gui: Object.keys(controller.gui),
-  //     listening: {
-  //       gui_events: gui_events,
-  //       internal_events: internal_events
-  //     },
-  //   }
-  //   return report
-  // }
 
   get _debug_report() {
     return {controller: this, gui_events: ['change'], internal_events: ["notify all called"]}
   }
 
-  // _debug_report_state() {
-  //   let report = {}
-  //   report[this.constructor.name] = {
-  //     gui: Object.keys(this.gui),
-  //     listening: {
-  //       gui_events: ['change'],
-  //       internal_events: ["notify all called"]
-  //     }
-  //   }
-  //   return report
-  // }
-
-  notify(event) {
-
-    // build controller report
+  _calc_all_controllers_info() {
     let all_controllers_info = {}
     for (const controller of all_controllers) {
       let dict = controller._debug_report
@@ -372,13 +298,13 @@ class ControllerDebugDumpModels {
       let key = Object.keys(report)[0]
       all_controllers_info[key] = report[key]
     }
-    // final report
-    let info = {
-      app: this.app,
-      controllers: all_controllers_info,
-    }
-    this.gui.$pre_output.html(syntaxHighlight(JSON.stringify(info, null, 2)))
+    return all_controllers_info
+  }
 
+  notify(event) {
+    // build controller report
+    this.gui.$debug_app_info.html(syntaxHighlight(JSON.stringify(this.app, null, 2)))
+    this.gui.$debug_controller_info.html(syntaxHighlight(JSON.stringify(this._calc_all_controllers_info(), null, 2)))
   }
 }
 
@@ -405,9 +331,10 @@ let config = {
       new ControllerDebugDumpModels(
         app,
         {
-          $toggle_checkbox: $('input[name="debug"]'),
-          $pre_output: $('#debug_info')
-
+          $cb_show_debug_area: $('input[name="debug"]'),
+          $debug_area: $('#debug_area'),
+          $debug_app_info: $('#debug_app_info'),
+          $debug_controller_info: $('#debug_controller_info')
         }
       ))
   },
