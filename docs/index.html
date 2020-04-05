@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta title="Various Gui wiring techniques">
+    <meta title="Various Gui wiring techniques (Javascript implementations)">
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
 
@@ -28,7 +28,7 @@
 
   <body>
     <div id="title">
-      <h1>Various GUI wiring techniques</h1>
+      <h1>Various GUI wiring techniques (Javascript implementations)</h1>
     </div>
 
     <p>Here are various working examples of the same GUI implemented using various techniques/frameworks:</p>
@@ -44,15 +44,25 @@
           <td>Object Oriented</td>
             <td><a href="main_oo.html">OO</a></td>
             <td>292</td>
-            <td>Object Oriented Models with Observer Pattern (using Event Listeners). 
-              MVA architecture with mediating adapters between model and view. 
-              Quite granular and versbose - the OO MVCA approach is superior.</td>
+            <td>Object Oriented Models with Observer Pattern (using Event Listeners). MVA architecture with mediating adapters between model and view.</td>
+        </tr>
+        <tr>
+          <td>MVCA "Model View Controller App" - architecture</td>
+          <td><a href="main_mvca.html">MVCA</a></td>
+          <td>383</td>
+          <td>Another OO version using the <a href="https://github.com/abulka/todomvc-oo">MVCA</a> "Model View Controller App" approach. 
+            <br>
+            <br>
+            Its a clearer, more organised implementation, despite a few extra lines of code. 😉</td>
         </tr>
         <tr>
           <td>Entity Component System</td>
           <td><a href="main_ecs.html">ECS</a></td>
           <td>261</td>
-          <td>Entity Component System</td>
+          <td>Entity Component System. 
+            <br>
+            <br>
+            Can we really use a "gaming" architecture to build a traditional simple GUI? Yes we can, but its overkill.</td>
         </tr>
        <tr>
           <td>Plain Javascript</td>
@@ -66,12 +76,6 @@
           <td>58</td>
           <td>Clearly the winner in terms of conciseness</td>
         </tr>
-         <tr>
-          <td>Model View Controller App - architecture</td>
-          <td><a href="main_mvca.html">MVCA</a></td>
-          <td>383</td>
-          <td>Another OO version using MVCA approach</td>
-        </tr>
       </table>
 
     <h2>Our Example App</h2>
@@ -81,7 +85,7 @@
     <h2>Misc Links</h2>
     <p>My Medium Article Part I - <a href="https://medium.com/p/7904d92d2938/edit">Implementing Object Oriented MVC in Javascript vs. Vue.js</a> (editing)</p>
     <p>My Medium Article Part II - <a href="https://medium.com/p/88bb86ea5e98/edit">Is the Entity Component System any good for building traditional GUIs?</a> (editing)</p>
-    <p><a href="https://github.com/abulka/abulka.github.io/tree/master/gui-showdown">Source code to all the examples</a> on Github</p>
+    <p><a href="https://github.com/abulka/abulka.github.io/tree/master/gui-showdown">Source code to all the examples</a> on Github. A couple of <a href="https://wxpython.org/">wxPython</a> 🐍 implementations here too!</p>
     <p><a href="https://www.npmjs.com/package/jecs">Doco on the jecs javascript ECS library</a></p>
     <p><a href="https://vuejs.org/v2/guide/events.html">Doco on Vue.js</a></p>
     <p><a href="https:www.gituml.com">GitUML</a> my biggest Javascript (and Python) project to date, with a complex GUI, which I am refactoring using the techniques in this article. GitUML lets you visualise your Github source code as UML via point and click, and have UML diagrams update automatically as you check in code.</p>
