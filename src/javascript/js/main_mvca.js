@@ -141,17 +141,21 @@ class ControllerHeader {
     document.addEventListener("modified user", (event) => { this.notify(event) })  // either firstname or surname
   }
 
-  _debug_report_state() {
-    let report = {}
-    report[this.constructor.name] = {
-      gui: Object.keys(this.gui),
-      listening: {
-        gui_events: [],
-        internal_events: ["display option change", "modified welcome", "modified user", "startup"]
-      },
-    }
-    return report
+  get _debug_report() {
+    return {controller: this, gui_events: [], internal_events: ["display option change", "modified welcome", "modified user", "startup"]}
   }
+
+  // _debug_report_state() {
+  //   let report = {}
+  //   report[this.constructor.name] = {
+  //     gui: Object.keys(this.gui),
+  //     listening: {
+  //       gui_events: [],
+  //       internal_events: ["display option change", "modified welcome", "modified user", "startup"]
+  //     },
+  //   }
+  //   return report
+  // }
 
   notify(event) {
     // We could interrogate event.detail.data.what and event.detail.data.is_upper to do more granular updates, 
@@ -184,18 +188,24 @@ class ControllerDisplayOptions {  // Could merge this with the Controller Header
 
     // Internal events - none, this controller just listens to gui
   }
-
-  _debug_report_state() {
-    let report = {}
-    report[this.constructor.name] = {
-      gui: Object.keys(this.gui),
-      listening: {
-        gui_events: 'change',
-        internal_events: []
-      },
-    }
-    return report
+  
+  get _debug_report() {
+    return {controller: this, gui_events: ['change'], internal_events: []}
   }
+
+  // _debug_report_state() {
+  //   let report = {}
+  //   report[this.constructor.name] = {
+  //     gui: Object.keys(this.gui),
+  //     listening: {
+  //       gui_events: 'change',
+  //       internal_events: []
+  //     },
+  //   }
+  //   return report
+  // }
+
+
 }
 
 
@@ -231,17 +241,21 @@ class ControllerEditors {
     }
   }
 
-  _debug_report_state() {
-    let report = {}
-    report[this.constructor.name] = {
-      gui: Object.keys(this.gui),
-      listening: {
-        gui_events: 'keyup',
-        internal_events: ["modified welcome", "modified user", "startup"]
-      },
-    }
-    return report
+  get _debug_report() {
+    return {controller: this, gui_events: ['keyup'], internal_events: ["modified welcome", "modified user", "startup"]}
   }
+
+  // _debug_report_state() {
+  //   let report = {}
+  //   report[this.constructor.name] = {
+  //     gui: Object.keys(this.gui),
+  //     listening: {
+  //       gui_events: 'keyup',
+  //       internal_events: ["modified welcome", "modified user", "startup"]
+  //     },
+  //   }
+  //   return report
+  // }
 }
 
 
@@ -259,16 +273,8 @@ class ControllerButtons {  // The four buttons which cause a change in the model
     // Internal events - none, this controller just listens to gui
   }
 
-  _debug_report_state() {
-    let report = {}
-    report[this.constructor.name] = {
-      gui: Object.keys(this.gui),
-      listening: {
-        gui_events: 'click',
-        internal_events: []
-      },
-    }
-    return report
+  get _debug_report() {
+    return {controller: this, gui_events: ['click'], internal_events: []}
   }
 }
 
@@ -283,17 +289,21 @@ class ControllerPageTitle {
     document.addEventListener("startup", (event) => { this.notify(event) })
   }
 
-  _debug_report_state() {
-    let report = {}
-    report[this.constructor.name] = {
-      gui: '$gui_h1',
-      listening: {
-        gui_events: [],
-        internal_events: ["startup"]
-      },
-    }
-    return report
+  get _debug_report() {
+    return {controller: this, gui_events: [], internal_events: ["startup"]}
   }
+
+  // _debug_report_state() {
+  //   let report = {}
+  //   report[this.constructor.name] = {
+  //     gui: '$gui_h1',
+  //     listening: {
+  //       gui_events: [],
+  //       internal_events: ["startup"]
+  //     },
+  //   }
+  //   return report
+  // }
 
   notify(event) {
     this.$gui_h1.html(this.title)
@@ -317,27 +327,44 @@ class ControllerDebugDumpModels {
     this.gui.$pre_output[0].style.display = event.target.checked ? 'block' : 'none'
   }
 
-  
-  _debug_report_state() {
+  _debug_controller_report(controller, gui_events, internal_events) {
     let report = {}
-    report[this.constructor.name] = {
-      gui: Object.keys(this.gui),
+    report[controller.constructor.name] = {
+      gui: Object.keys(controller.gui),
       listening: {
-        gui_events: ['change'],
-        internal_events: ["notify all called"]
-      }
+        gui_events: gui_events,
+        internal_events: internal_events
+      },
     }
     return report
   }
+
+  get _debug_report() {
+    return {controller: this, gui_events: ['change'], internal_events: ["notify all called"]}
+  }
+
+  // _debug_report_state() {
+  //   let report = {}
+  //   report[this.constructor.name] = {
+  //     gui: Object.keys(this.gui),
+  //     listening: {
+  //       gui_events: ['change'],
+  //       internal_events: ["notify all called"]
+  //     }
+  //   }
+  //   return report
+  // }
 
   notify(event) {
 
     // build controller report
     let all_controllers_info = {}
     for (const controller of all_controllers) {
-      let dict = controller._debug_report_state()
-      let key = Object.keys(dict)[0]
-      all_controllers_info[key] = dict[key]
+      
+      // let dict = controller._debug_report
+      // dict = this._debug_controller_report(dict)
+      // let key = Object.keys(dict)[0]
+      // all_controllers_info[key] = dict[key]
     }
 
     let info = {
