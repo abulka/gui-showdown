@@ -45,24 +45,7 @@ certain combination of components and knows what to do with them.
 The checkbox and button events change the model, then in the asence of a observer pattern,
 simply trigger a world.process() to render.  A bit inefficient, but I hope to introduce a dirty flag.
 
-## Code Example
 
-The behaviour we are modelling is:
-
-Model:
-- a welcome message, default "Hi"
-- a user, default "Andy"
-
-The GUI displays:
-- the welcome message twice
-    - top left: pure message
-    - top right: message + user
-- text entry, which allows editing of the welcome message
-- text entry, which allows editing of the user name and surname
-- checkbox1, which toggles the model welcome message uppercase/lowercase
-- checkbox2, which toggles the top right user to uppercase (not via model)
-- button1, which resets the welcome message to "Hi"
-- button2, which resets the user to "Fred Flinstone"
 
 ## On Observers and Dirty
 
