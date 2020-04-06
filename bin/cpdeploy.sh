@@ -12,6 +12,7 @@ main_ecs.html \
 main_oo.html \
 main_plain.html \
 main_vue.html  \
+main_mvca.html  \
 $DEST
 
 # cp -v main_oo.py observer_oo.py test_observer_oo.py \
@@ -35,6 +36,7 @@ jecs.js \
 main_ecs.js \
 nested_dict_accessor.js \
 main_oo.js \
+main_mvca.js \
 observer_oo.js \
 observer_events.js \
 main_plain.js \
