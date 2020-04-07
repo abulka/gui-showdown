@@ -98,20 +98,20 @@ class Application {
 
   // business logic
 
-  on_change_welcome_model(event) {
+  toggle_welcome_model(event) {
     this.welcome_model.message = isUpperCaseAt(this.welcome_model.message, 1) ? this.welcome_model.message.toLowerCase() : this.welcome_model.message.toUpperCase()
   }
 
-  on_change_user_model(event) {
+  toggle_user_model(event) {
     this.user_model.firstname = isUpperCaseAt(this.user_model.firstname, 1) ? this.user_model.firstname.toLowerCase() : this.user_model.firstname.toUpperCase()
     this.user_model.surname = isUpperCaseAt(this.user_model.surname, 1) ? this.user_model.surname.toLowerCase() : this.user_model.surname.toUpperCase()
   }
 
-  on_reset_welcome_model(event) {
+  reset_welcome_model(event) {
     this.welcome_model.message = "Hello"
   }
 
-  on_reset_user_model(event) {
+  reset_user_model(event) {
     this.user_model.firstname = "Fred"
     this.user_model.surname = "Flinstone"
   }
@@ -229,10 +229,10 @@ class ControllerButtons {  // The four buttons which cause a change in the model
     this.gui = gui_dict
 
     // Gui events -> this controller, which then manipulate the model via the app
-    this.gui.$btn_change_welcome_model.on('click', (event) => { this.app.on_change_welcome_model(event) })
-    this.gui.$btn_change_user_model.on('click', (event) => { this.app.on_change_user_model(event) })
-    this.gui.$btn_reset_welcome_model.on('click', (event) => { this.app.on_reset_welcome_model(event) })
-    this.gui.$btn_reset_user_model.on('click', (event) => { this.app.on_reset_user_model(event) })
+    this.gui.$btn_change_welcome_model.on('click', (event) => { this.app.toggle_welcome_model(event) })
+    this.gui.$btn_change_user_model.on('click', (event) => { this.app.toggle_user_model(event) })
+    this.gui.$btn_reset_welcome_model.on('click', (event) => { this.app.reset_welcome_model(event) })
+    this.gui.$btn_reset_user_model.on('click', (event) => { this.app.reset_user_model(event) })
 
     // Internal events - none, this controller just listens to gui
   }
