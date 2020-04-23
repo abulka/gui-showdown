@@ -15,9 +15,20 @@
 
   <body>
     <p>open the console to see output</p>
+
+    <div class="buttons">
+      <button id="tick">tick</button>
+    </div>
+
     <script src="basics.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
+
+        $('#tick').on('click', function() {
+          console.log('hi there')
+          engine.tick()
+        })
+
       });
     </script>
   </body>
