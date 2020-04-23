@@ -18,9 +18,12 @@ var app = (function () {
 
   message.setComponent('displayOptions', {upper: false})
 
-  function uppercase_message() {
-    message.getComponent('displayOptions').upper = true
+  function toggle_message_case() {
+    let options = message.getComponent('displayOptions')
+    options.upper = !options.upper
   }
+  
+  engine.on('tick:before', (engine) => { log_clear() })
 
   engine.system('pre-render', ['data', 'displayOptions'], (entity, {data, displayOptions}) => {
     data.val = displayOptions.upper ? data.val.toUpperCase() : data.val.toLowerCase()
@@ -50,6 +53,10 @@ var app = (function () {
     // Scroll log to bottom
     logarea.scrollTop = logarea.scrollHeight;
   }
+  function log_clear() {
+    logarea.innerHTML = ""
+    logarea.scrollTop = logarea.scrollHeight;
+  }
 
 
 
@@ -77,7 +84,7 @@ var app = (function () {
 
   return {
     // simulator: sim,
-    uppercase_message: uppercase_message,
+    toggle_message_case: toggle_message_case,
     engine: engine,
     // reset: function() {
     //   init();
