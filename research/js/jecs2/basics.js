@@ -17,9 +17,15 @@ var app = (function () {
   surname.setComponent('data', {val: "Smith"})
 
   message.setComponent('displayOptions', {upper: false})
+  surname.setComponent('displayOptions', {upper: false})
 
   function toggle_message_case() {
     let options = message.getComponent('displayOptions')
+    options.upper = !options.upper
+  }
+  
+  function toggle_surname_case() {
+    let options = surname.getComponent('displayOptions')
     options.upper = !options.upper
   }
   
@@ -85,6 +91,7 @@ var app = (function () {
   return {
     // simulator: sim,
     toggle_message_case: toggle_message_case,
+    toggle_surname_case: toggle_surname_case,
     engine: engine,
     // reset: function() {
     //   init();
