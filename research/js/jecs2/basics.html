@@ -138,6 +138,55 @@
           app.engine.tick()
         })
 
+        //
+        // GUI events
+        //
+
+        // Which change the actual model
+
+        $('#change_welcome_model').on('click', function(e) {
+          app.toggle_message()
+          app.engine.tick()
+        })
+
+        $('#change_user_model').on('click', function(e) {
+          app.toggle_user()
+          app.engine.tick()
+        })
+
+        $('#reset_welcome_model').on('click', function(e) {
+          app.set_message("Hello")
+          app.engine.tick()
+        })
+
+        $('#reset_user_model').on('click', function(e) {
+          app.set_firstname("Fred")
+          app.set_surname("Flinstone")
+          app.engine.tick()
+        })
+
+        // Which change the way the model is displayed at the top left and top right, but does not change the model
+
+        $("input[name=uppercase_welcome]").on('change', function(e) {
+          // uppercase welcome in both top left and top right - but nothing else, esp. not the model
+          app.display_option_toggle_message_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+        $("input[name=uppercase_user]").on('change', function(e) {
+          // uppercase top right user (firstname + surname) - but nothing else, esp. not the model
+          app.display_option_toggle_surname_case($(e.target).prop('checked'))
+          app.display_option_toggle_firstname_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+
+        $("input[name=uppercase_welcome_user]").on('change', function(e) {
+          // uppercase top right - but nothing else, esp. not the model
+          // app.display_option_toggle_message_case($(e.target).prop('checked'))  <--- this will affect both top left and top right !! Hmmm
+          app.display_option_toggle_surname_case($(e.target).prop('checked'))
+          app.display_option_toggle_firstname_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+
       });
     </script>
   </body>
