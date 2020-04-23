@@ -15,6 +15,10 @@ surname.setComponent('data', {val: ""})
 
 message.setComponent('displayOptions', {upper: false})
 
+function uppercase_message() {
+  console.log(message)
+  message.getComponent('displayOptions').upper = true
+}
 // Define a 'render' system for updating val of
 // entities associated to components 'data'
 engine.system('render', ['data'], (entity, {data}) => {
