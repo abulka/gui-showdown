@@ -10,24 +10,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <style lang="text/css">
+
+      #log {
+        border-top: 1px solid #888;
+        font-family: monospace;
+        padding: 0.5rem;
+        overflow: auto;
+        background-color: #eee;
+      }
+
+      .buttons {
+        text-align: center;
+      }
+
     </style>
   </head>
 
   <body>
-    <p>open the console to see output</p>
-
+    <p>open the console to see even more output</p>
+    
     <div class="buttons">
       <button id="tick">tick</button>
     </div>
+
+    <div id="log-cont">
+      <div id="log"></div>
+    </div>
+
 
     <script src="basics.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
 
         $('#tick').on('click', function() {
-          console.log('hi there')
-          uppercase_message()
-          engine.tick()
+          app.uppercase_message()
+          app.engine.tick()
         })
 
       });
