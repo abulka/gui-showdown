@@ -36,14 +36,41 @@ var app = (function () {
     // console.log('hi', entity.name, displayOptions, data.val)
   });
 
+  // buffer
+  let welcome_user_render = {welcome, firstname, surname}  // create an empty object to buffer
+
   // Define a 'render' system for updating val of
   // entities associated to components 'data'
   engine.system('render', ['data'], (entity, {data}) => {
     // data.val += "x"
     console.log('hi', entity.name, data.val)
+    
+    // how to distinguish re who the data is from? Ans: Check entity.name
+    // but how to do a combo display that relies on TWO model entities - here we get only one at a time. Ans. buffer?
+    if (entity.name == 'model-welcome-message') {
+      $('#welcome').html(data.val)
+      $('input[name=welcome]').val(data.val)
+      welcome_user_render.welcome = data.val
+    }
+    else if (entity.name == 'model-firstname') {
+      $('input[name=firstname]').val(data.val)
+      welcome_user_render.firstname = data.val
+    }
+    else if (entity.name == 'model-surname') {
+      $('input[name=surname]').val(data.val)
+      welcome_user_render.surname = data.val
+    }
+    else {
+      console.log('unknown?')
+    }
+
     log(`render: ${entity.name}, ${data.val}`);
   });
 
+  engine.on('tick:after', (engine) => { 
+    // flush out pending renders
+    $('#welcome-user').html(`${welcome_user_render.welcome} ${welcome_user_render.firstname} ${welcome_user_render.surname} `)
+  })
 
 
   // util

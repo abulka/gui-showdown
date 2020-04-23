@@ -23,6 +23,52 @@
         text-align: center;
       }
 
+
+      .row {
+        display: flex;
+      }
+
+      .column {
+        flex: 33.33%;
+        padding: 5px;
+      }    
+      .yell {
+        background-color: rgb(244, 241, 173);
+      }
+      .bl {
+        background-color: rgb(166, 186, 242);
+        margin: 4px;
+      }
+
+      /* syntax highlighting */
+
+      pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+      .string { color: green; }
+      .number { color: darkorange; }
+      .boolean { color: blue; }
+      .null { color: magenta; }
+      .key { color: red; }
+
+      .pre-scroller {
+        width: 90%;
+        height: 80vh;
+        overflow-y:scroll;
+      }
+
+      /* two column for debug view in vue.js example */
+
+      .column-half {
+        float: left;
+        width: 50%;
+      }
+      
+      /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
     </style>
   </head>
 
@@ -32,6 +78,50 @@
     <div class="buttons">
       <button id="tick">tick</button>
     </div>
+
+
+    <div class="row">
+      <div class="column-half">
+          <div id="title">
+              <h1>Gui wired via ECS</h1>
+          </div>
+
+          <form>
+            <div class="row yell">
+              <div id="welcome" class="column"></div>
+              <div id="welcome-user" class="column bl"></div>
+            </div>
+            <br>
+            Welcome Message (model): <input type="text" name="welcome"><br>
+            <br>
+            User (model): <input type="text" name="firstname"> <input type="text" name="surname">
+            <br>
+            <br>
+      
+            <h3>Model Manipulations</h3>
+            <button id="change_welcome_model" type="button">Change Case of Welcome Model</button>
+            <button id="reset_welcome_model" type="button">Reset Welcome</button>
+            <br>
+            <button id="change_user_model" type="button">Change Case of User Model</button>
+            <button id="reset_user_model" type="button">Reset User</button>
+            <br>
+            <h3>Display Options</h3>
+            <label><input name="uppercase_welcome" type="checkbox">Uppercase welcome</label><br>
+            <label><input name="uppercase_user" type="checkbox">Uppercase user</label><br>
+            <br>
+            <label><input name="uppercase_welcome_user" type="checkbox"> Uppercase 'welcome user' message (top right)</label><br>
+            <br>
+          </form>
+      </div>
+      <div class="column-half">
+          <h4>Debug</h4>
+          <label><input name="verbose_debug" type="checkbox">Verbose</label><br>
+          <pre id="debug_info" class="pre-scroller"></pre>
+      </div>
+  </div>
+
+
+
 
     <div id="log-cont">
       <div id="log"></div>
