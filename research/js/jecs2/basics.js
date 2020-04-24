@@ -63,35 +63,23 @@ var app = (function () {
 
   function display_option_toggle_topright_case(flag) {
     topright.getComponent('displayOptions').upper = flag
-    // message.getComponent('displayOptions').upperright = flag
-    // firstname.getComponent('displayOptions').upperright = flag
-    // surname.getComponent('displayOptions').upperright = flag
   }
 
-  // buffer for 'render-display' system - perhaps this could be an entity instead?
-  // let topright = { welcome, firstname, surname }  // create an empty object to buffer
   let $topleft = $('#welcome')
   let $topright = $('#welcome-user')
 
   engine.on('tick:before', (engine) => {
     log_clear()
-    topright.welcome = ""
-    topright.firstname = ""
-    topright.surname = ""
   })
 
-  engine.system('render-model', ['data'], (entity, { data }) => {
-    if (entity.name == 'model-welcome-message')
-      $('input[name=welcome]').val(data.val)
-    else if (entity.name == 'model-firstname')
-      $('input[name=firstname]').val(data.val)
-    else if (entity.name == 'model-surname')
-      $('input[name=surname]').val(data.val)
-
+  engine.system('controller-render-model', ['data'], (entity, { data }) => {
+    if (entity.name == 'model-welcome-message') $('input[name=welcome]').val(data.val)
+    else if (entity.name == 'model-firstname') $('input[name=firstname]').val(data.val)
+    else if (entity.name == 'model-surname') $('input[name=surname]').val(data.val)
     log(`render-model: ${entity.name}, ${data.val}`);
   });
 
-  engine.system('render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+  engine.system('controller-render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
     if (entity.name == 'model-welcome-message') {
       $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
       topright.getComponent('renderData').welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
@@ -104,7 +92,7 @@ var app = (function () {
     log(`render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(topright.getComponent('renderData'))}, displayOptions=${JSON.stringify(displayOptions)}`);
   });
 
-  engine.system('render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
+  engine.system('controller-render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
     let s = `${renderData.welcome} ${renderData.firstname} ${renderData.surname}`
     if (displayOptions.upper)
       s = s.toUpperCase()
