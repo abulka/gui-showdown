@@ -125,10 +125,8 @@ var app = (function () {
   // });
   
   engine.on('tick:after', (engine) => {
-    let part1_html = syntaxHighlight(JSON.stringify({message, firstname, surname, topright} , null, 2))
-    // let part2_html = dump_world(world, c_debug_dump_options.verbose)
-    let part2_html = ""    
-    $('#debug_info').html(part1_html + '<br>' + part2_html)
+    let html = syntaxHighlight(JSON.stringify({message, firstname, surname, topright} , null, 2))
+    $('#debug_info').html(html)
   })
 
   // Util - Logging
