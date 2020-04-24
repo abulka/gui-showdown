@@ -11,6 +11,8 @@ var app = (function () {
   const firstname = engine.entity('model-firstname');
   const surname = engine.entity('model-surname');
 
+  // const topright = engine.entity('display-model-topright');
+
   // Associate the model entities to components.
   message.setComponent('data', {val: "Welcome"})
   firstname.setComponent('data', {val: "Sam"})
@@ -18,9 +20,10 @@ var app = (function () {
 
   // we need display option re uppercase for welcome, the whole user, and the 'welcome user' message (top right)
   // only the first is an entity, the second is a combo of two entities and the third is a combo of three
-  message.setComponent('displayOptions', {upper: false})
-  firstname.setComponent('displayOptions', {upper: false})
-  surname.setComponent('displayOptions', {upper: false})
+  message.setComponent('displayOptions', {upper: false, upperright: false})
+  firstname.setComponent('displayOptions', {upper: false, upperright: false})
+  surname.setComponent('displayOptions', {upper: false, upperright: false}
+  )
 
   // Set Model
 
@@ -51,79 +54,62 @@ var app = (function () {
   // Display Option Checkbox toggles
 
   function display_option_toggle_message_case(flag) {
-    // the key is in here - display options need to be associated with maybe ???
-    let options = message.getComponent('displayOptions')
-    options.upper = flag //!options.upper
+    message.getComponent('displayOptions').upper = flag
   }
   
-  function display_option_toggle_surname_case(flag) {
-    let options = surname.getComponent('displayOptions')
-    options.upper = flag //!options.upper
+  function display_option_toggle_user_case(flag) {
+    firstname.getComponent('displayOptions').upper = flag
+    surname.getComponent('displayOptions').upper = flag
   }
     
-  function display_option_toggle_firstname_case(flag) {
-    let options = firstname.getComponent('displayOptions')
-    options.upper = flag //!options.upper
+  function display_option_toggle_topright_case(flag) {
+    message.getComponent('displayOptions').upperright = flag
+    firstname.getComponent('displayOptions').upperright = flag
+    surname.getComponent('displayOptions').upperright = flag
   }
 
-  engine.on('tick:before', (engine) => { log_clear() })
+  // buffer for 'render-display' system - perhaps this could be an entity instead?
+  let topright = {welcome, firstname, surname}  // create an empty object to buffer
+  let $topleft = $('#welcome')
+  let $topright = $('#welcome-user')
 
-  // engine.system('pre-render', ['data', 'displayOptions'], (entity, {data, displayOptions}) => {
-  //   // data.val = displayOptions.upper ? data.val.toUpperCase() : data.val.toLowerCase()
-  //   // console.log('hi', entity.name, displayOptions, data.val)
-  // });
+  engine.on('tick:before', (engine) => { 
+    log_clear() 
+    topright.welcome = "XX"
+    topright.firstname = "XX"
+    topright.surname = "XX"
+  })
 
   // Define a 'render' system for updating val of
   // entities associated to components 'data'
   engine.system('render-model', ['data'], (entity, {data}) => {
-    // how to distinguish re who the data is from? Ans: Check entity.name
-    // but how to do a combo display that relies on TWO model entities - here we get only one at a time. Ans. buffer?
-    if (entity.name == 'model-welcome-message') {
+    if (entity.name == 'model-welcome-message')
       $('input[name=welcome]').val(data.val)
-    }
-    else if (entity.name == 'model-firstname') {
+    else if (entity.name == 'model-firstname')
       $('input[name=firstname]').val(data.val)
-    }
-    else if (entity.name == 'model-surname') {
+    else if (entity.name == 'model-surname')
       $('input[name=surname]').val(data.val)
-    }
-    else {
-      console.log('unknown render-model entity?')
-    }
 
     log(`render-model: ${entity.name}, ${data.val}`);
   });
 
-  // buffer
-  let welcome_user_render = {welcome, firstname, surname}  // create an empty object to buffer
 
   engine.system('render-display', ['data', 'displayOptions'], (entity, {data, displayOptions}) => {
-    
-    // how to distinguish re who the data is from? Ans: Check entity.name
-    // but how to do a combo display that relies on TWO model entities - here we get only one at a time. Ans. buffer?
     if (entity.name == 'model-welcome-message') {
-      let val = displayOptions.upper ? data.val.toUpperCase() : data.val
-      $('#welcome').html(val)
-      welcome_user_render.welcome = val
+      $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
+      topright.welcome = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
     }
-    else if (entity.name == 'model-firstname') {
-      let val = displayOptions.upper ? data.val.toUpperCase() : data.val
-      welcome_user_render.firstname = val
-    }
-    else if (entity.name == 'model-surname') {
-      let val = displayOptions.upper ? data.val.toUpperCase() : data.val
-      welcome_user_render.surname = val
-    }
-    else {
-      console.log('unknown render-display entiry?')
-    }
+    else if (entity.name == 'model-firstname')
+      topright.firstname = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
+    else if (entity.name == 'model-surname')
+      topright.surname = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
 
     log(`render-display: ${entity.name}, ${data.val}`);
   });
 
   engine.on('tick:after', (engine) => { 
-    // flush out pending renders
-    $('#welcome-user').html(`${welcome_user_render.welcome} ${welcome_user_render.firstname} ${welcome_user_render.surname} `)
+    // flush out pending 'render-display' renders
+    $topright.html(`${topright.welcome} ${topright.firstname} ${topright.surname} `)
   })
 
 
@@ -186,28 +172,10 @@ var app = (function () {
     toggle_user,
     
     display_option_toggle_message_case,
-    display_option_toggle_surname_case,
-    display_option_toggle_firstname_case,
+    display_option_toggle_user_case,
+    display_option_toggle_topright_case,
     engine,    
   }
-
-  // return {
-  //   // simulator: sim,
-  //   set_message: set_message,
-  //   set_firstname: set_firstname,
-  //   set_surname: set_surname,
-
-  //   toggle_message: toggle_message,
-  //   toggle_user: toggle_user,
-
-  //   display_option_toggle_message_case: display_option_toggle_message_case,
-  //   toggle_surname_case: toggle_surname_case,
-  //   engine: engine,
-  //   // reset: function() {
-  //   //   init();
-  //   //   draw();
-  //   // },
-  // }
   
 }());
 

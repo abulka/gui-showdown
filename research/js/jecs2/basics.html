@@ -80,8 +80,8 @@
     </div>
 
 
-    <div class="row">
-      <div class="column-half">
+    <!-- <div class="row">
+      <div class="column-half"> -->
           <div id="title">
               <h1>Gui wired via ECS</h1>
           </div>
@@ -113,12 +113,12 @@
             <br>
           </form>
       </div>
-      <div class="column-half">
+      <!-- <div class="column-half">
           <h4>Debug</h4>
           <label><input name="verbose_debug" type="checkbox">Verbose</label><br>
           <pre id="debug_info" class="pre-scroller"></pre>
       </div>
-  </div>
+  </div> -->
 
 
 
@@ -174,16 +174,14 @@
         })
         $("input[name=uppercase_user]").on('change', function(e) {
           // uppercase top right user (firstname + surname) - but nothing else, esp. not the model
-          app.display_option_toggle_surname_case($(e.target).prop('checked'))
-          app.display_option_toggle_firstname_case($(e.target).prop('checked'))
+          app.display_option_toggle_user_case($(e.target).prop('checked'))
           app.engine.tick()
         })
 
         $("input[name=uppercase_welcome_user]").on('change', function(e) {
           // uppercase top right - but nothing else, esp. not the model
           // app.display_option_toggle_message_case($(e.target).prop('checked'))  <--- this will affect both top left and top right !! Hmmm
-          app.display_option_toggle_surname_case($(e.target).prop('checked'))
-          app.display_option_toggle_firstname_case($(e.target).prop('checked'))
+          app.display_option_toggle_topright_case($(e.target).prop('checked'))
           app.engine.tick()
         })
 

@@ -521,3 +521,43 @@ Alternatively, what if we could target dirty to the same component type, but sub
 ```python
 do.dirty(ModelRef, lambda component : component.key == "welcome_msg")
 ```
+
+# Big ECS revisit Apr 2020
+
+Let's do it another way
+
+- Entity = like a model
+- Component = model data and associated attributes attached arbitrarily
+- System = behaviour incl. controller rendering to GUI
+
+This is more in line with the intent of the ECS.  My previous interpretation 
+in `main_ecs_v2.js` was backwards and uncomfortable - even though it worked.
+
+## how to distinguish re who the data is from? 
+
+Ans: Check entity.name
+
+## how to do a combo display that relies on TWO model entities - here we get only one at a time. 
+
+Ans. buffer intermediate results:
+
+```javascript
+  let welcome_user_render = {welcome, firstname, surname}  // create an empty object to buffer
+
+  engine.system('render-display', ['data', 'displayOptions'], (entity, {data, displayOptions}) => {
+    if (entity.name == 'model-welcome-message') {
+      // buffer intermediate result
+      welcome_user_render.welcome = displayOptions.upperright ? data.val.toUpperCase() : data.val
+    }
+  }
+...
+
+  engine.on('tick:after', (engine) => { 
+    // flush out pending renders from buffer
+    $('#welcome-user').html(`${welcome_user_render.welcome} ${welcome_user_render.firstname} ${welcome_user_render.surname} `)
+  })
+
+```
+
+More to think about here - could levergae the ECS pipeline and rendering to do things in stages
+properly.
