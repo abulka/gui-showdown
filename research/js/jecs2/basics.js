@@ -19,10 +19,10 @@ var app = (function () {
 
   // we need display option re uppercase for welcome, the whole user, and the 'welcome user' message (top right)
   // only the first is an entity, the second is a combo of two entities and the third is a combo of three
-  message.setComponent('displayOptions', { upper: false, upperright: false })
-  firstname.setComponent('displayOptions', { upper: false, upperright: false })
-  surname.setComponent('displayOptions', { upper: false, upperright: false }
-  )
+  message.setComponent('displayOptions', { upper: false })
+  firstname.setComponent('displayOptions', { upper: false })
+  surname.setComponent('displayOptions', { upper: false })
+  topright.setComponent('displayOptions', { upper: false })
 
   // Set Model
 
@@ -62,9 +62,10 @@ var app = (function () {
   }
 
   function display_option_toggle_topright_case(flag) {
-    message.getComponent('displayOptions').upperright = flag
-    firstname.getComponent('displayOptions').upperright = flag
-    surname.getComponent('displayOptions').upperright = flag
+    topright.getComponent('displayOptions').upper = flag
+    // message.getComponent('displayOptions').upperright = flag
+    // firstname.getComponent('displayOptions').upperright = flag
+    // surname.getComponent('displayOptions').upperright = flag
   }
 
   // buffer for 'render-display' system - perhaps this could be an entity instead?
@@ -93,19 +94,22 @@ var app = (function () {
   engine.system('render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
     if (entity.name == 'model-welcome-message') {
       $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
-      topright.getComponent('renderData').welcome = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
+      topright.getComponent('renderData').welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
     }
     else if (entity.name == 'model-firstname')
-      topright.getComponent('renderData').firstname = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
+      topright.getComponent('renderData').firstname = displayOptions.upper ? data.val.toUpperCase() : data.val
     else if (entity.name == 'model-surname')
-      topright.getComponent('renderData').surname = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
+      topright.getComponent('renderData').surname = displayOptions.upper ? data.val.toUpperCase() : data.val
 
-    log(`render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(topright.getComponent('renderData'))}`);
+    log(`render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(topright.getComponent('renderData'))}, displayOptions=${JSON.stringify(displayOptions)}`);
   });
 
-  engine.system('render-display-topright', ['renderData'], (entity, { renderData }) => {
-    $topright.html(`${renderData.welcome} ${renderData.firstname} ${renderData.surname} `)
-    log(`render-display-topright: ${entity.name}, ${JSON.stringify(renderData)}`);
+  engine.system('render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
+    let s = `${renderData.welcome} ${renderData.firstname} ${renderData.surname}`
+    if (displayOptions.upper)
+      s = s.toUpperCase()
+    $topright.html(s)
+    log(`render-display-topright: ${entity.name}, ${JSON.stringify(renderData)}, displayOptions=${JSON.stringify(displayOptions)}`);
   });
 
 
