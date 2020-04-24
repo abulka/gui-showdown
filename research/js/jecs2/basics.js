@@ -1,11 +1,10 @@
 // Andy revamp - Apr 2020 - "its gotta be simpler than my first attempt!"
 
-// $(document).ready(function() {
 var app = (function () {
 
   // Instantiating engine, timer and simulator
   var engine = new Jecs.Engine();
-    
+
   // Declare entities - this is like the model, but without data - we attach that later, as 'components'
   const message = engine.entity('model-welcome-message');
   const firstname = engine.entity('model-firstname');
@@ -14,15 +13,15 @@ var app = (function () {
   // const topright = engine.entity('display-model-topright');
 
   // Associate the model entities to components.
-  message.setComponent('data', {val: "Welcome"})
-  firstname.setComponent('data', {val: "Sam"})
-  surname.setComponent('data', {val: "Smith"})
+  message.setComponent('data', { val: "Welcome" })
+  firstname.setComponent('data', { val: "Sam" })
+  surname.setComponent('data', { val: "Smith" })
 
   // we need display option re uppercase for welcome, the whole user, and the 'welcome user' message (top right)
   // only the first is an entity, the second is a combo of two entities and the third is a combo of three
-  message.setComponent('displayOptions', {upper: false, upperright: false})
-  firstname.setComponent('displayOptions', {upper: false, upperright: false})
-  surname.setComponent('displayOptions', {upper: false, upperright: false}
+  message.setComponent('displayOptions', { upper: false, upperright: false })
+  firstname.setComponent('displayOptions', { upper: false, upperright: false })
+  surname.setComponent('displayOptions', { upper: false, upperright: false }
   )
 
   // Set Model
@@ -38,7 +37,7 @@ var app = (function () {
   }
 
   // Toggle Model
-  
+
   function toggle_message() {
     let data = message.getComponent('data')
     data.val = toggleCase(data.val)
@@ -50,18 +49,18 @@ var app = (function () {
     data = surname.getComponent('data')
     data.val = toggleCase(data.val)
   }
-  
+
   // Display Option Checkbox toggles
 
   function display_option_toggle_message_case(flag) {
     message.getComponent('displayOptions').upper = flag
   }
-  
+
   function display_option_toggle_user_case(flag) {
     firstname.getComponent('displayOptions').upper = flag
     surname.getComponent('displayOptions').upper = flag
   }
-    
+
   function display_option_toggle_topright_case(flag) {
     message.getComponent('displayOptions').upperright = flag
     firstname.getComponent('displayOptions').upperright = flag
@@ -69,20 +68,18 @@ var app = (function () {
   }
 
   // buffer for 'render-display' system - perhaps this could be an entity instead?
-  let topright = {welcome, firstname, surname}  // create an empty object to buffer
+  let topright = { welcome, firstname, surname }  // create an empty object to buffer
   let $topleft = $('#welcome')
   let $topright = $('#welcome-user')
 
-  engine.on('tick:before', (engine) => { 
-    log_clear() 
-    topright.welcome = "XX"
-    topright.firstname = "XX"
-    topright.surname = "XX"
+  engine.on('tick:before', (engine) => {
+    log_clear()
+    topright.welcome = ""
+    topright.firstname = ""
+    topright.surname = ""
   })
 
-  // Define a 'render' system for updating val of
-  // entities associated to components 'data'
-  engine.system('render-model', ['data'], (entity, {data}) => {
+  engine.system('render-model', ['data'], (entity, { data }) => {
     if (entity.name == 'model-welcome-message')
       $('input[name=welcome]').val(data.val)
     else if (entity.name == 'model-firstname')
@@ -93,8 +90,7 @@ var app = (function () {
     log(`render-model: ${entity.name}, ${data.val}`);
   });
 
-
-  engine.system('render-display', ['data', 'displayOptions'], (entity, {data, displayOptions}) => {
+  engine.system('render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
     if (entity.name == 'model-welcome-message') {
       $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
       topright.welcome = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
@@ -104,10 +100,10 @@ var app = (function () {
     else if (entity.name == 'model-surname')
       topright.surname = (displayOptions.upper || displayOptions.upperright) ? data.val.toUpperCase() : data.val
 
-    log(`render-display: ${entity.name}, ${data.val}`);
+    log(`render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(topright)}`);
   });
 
-  engine.on('tick:after', (engine) => { 
+  engine.on('tick:after', (engine) => {
     // flush out pending 'render-display' renders
     $topright.html(`${topright.welcome} ${topright.firstname} ${topright.surname} `)
   })
@@ -134,7 +130,7 @@ var app = (function () {
   // Util
 
   function isUpperCaseAt(str, n) {
-    return str[n]=== str[n].toUpperCase();
+    return str[n] === str[n].toUpperCase();
   }
 
   function toggleCase(str) {  // determine case of string based on arbitrary choice of char 1
@@ -143,39 +139,18 @@ var app = (function () {
 
   engine.tick()
 
-  /*
-
-  // If you prefer, you can avoid using simulator and start
-  // engine iterations manually by calling engine.tick() in a loop.
-  var sim = new Jecs.Simulator(engine);
-
-  // Limit the fps to 6
-  sim.setFps(6);
-
-  // Start simulator
-  sim.start();
-
-  // Stop simulator after three seconds
-  setInterval(function() { sim.stop() }, 3000);
-
-  */
-
-
-// });
-
   return {
     set_message,
     set_firstname,
     set_surname,
-    
+
     toggle_message,
     toggle_user,
-    
+
     display_option_toggle_message_case,
     display_option_toggle_user_case,
     display_option_toggle_topright_case,
-    engine,    
+    engine,
   }
-  
-}());
 
+}());

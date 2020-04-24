@@ -19,9 +19,9 @@
         background-color: #eee;
       }
 
-      .buttons {
+      /* .buttons {
         text-align: center;
-      }
+      } */
 
 
       .row {
@@ -76,7 +76,7 @@
     <p>open the console to see even more output</p>
     
     <div class="buttons">
-      <button id="tick">tick</button>
+      <button id="tick">refresh</button>
     </div>
 
 
@@ -133,8 +133,6 @@
       $(document).ready(function() {
 
         $('#tick').on('click', function() {
-          app.toggle_message_case()
-          app.toggle_surname_case()
           app.engine.tick()
         })
 
@@ -179,8 +177,7 @@
         })
 
         $("input[name=uppercase_welcome_user]").on('change', function(e) {
-          // uppercase top right - but nothing else, esp. not the model
-          // app.display_option_toggle_message_case($(e.target).prop('checked'))  <--- this will affect both top left and top right !! Hmmm
+          // uppercase both top left and top right - but nothing else, esp. not the model
           app.display_option_toggle_topright_case($(e.target).prop('checked'))
           app.engine.tick()
         })
