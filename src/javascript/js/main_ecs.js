@@ -1,230 +1,160 @@
-//
-// Model
-//
+var app = (function () {
 
-var model = {
-  welcomemsg: "Welcome", 
-  user: {
-    firstname: "Sam", 
-    surname: "Smith"
+  // Instantiating engine, timer and simulator
+  var engine = new Jecs.Engine();
+  
+  engine.on('tick:before', (engine) => {
+    log_clear()
+  })
+
+  // 
+  // Model - of a sort ;-)
+  //
+
+  // Declare entities - this is like the model, but without data - we attach that later, as 'components'
+  const message = engine.entity('model-welcome-message');
+  const firstname = engine.entity('model-firstname');
+  const surname = engine.entity('model-surname');
+  const topright = engine.entity('display-model-topright');
+
+  // Associate the model entities to components.
+  message.setComponent('data', { val: "Welcome" })
+  firstname.setComponent('data', { val: "Sam" })
+  surname.setComponent('data', { val: "Smith" })
+  topright.setComponent('renderData', { welcome:"", firstname:"", surname:"" })
+  message.setComponent('displayOptions', { upper: false })
+  firstname.setComponent('displayOptions', { upper: false })
+  surname.setComponent('displayOptions', { upper: false })
+  topright.setComponent('displayOptions', { upper: false })
+
+
+  // App - Set Model
+
+  function set_message(val) {
+    message.getComponent('data').val = val
   }
-}
-
-const world = new Ecs();
-
-//
-// Components
-//
-
-class ModelRef extends NestedDictAccess {  // Reference to a shared model object
-  constructor(model, keys) {
-    super(model, keys)
-    this.finalstr = "";
+  function set_firstname(val) {
+    firstname.getComponent('data').val = val
   }
-}
-
-class PlainData{  // plain string
-  constructor(s) {
-    this.finalstr = s
+  function set_surname(val) {
+    surname.getComponent('data').val = val
   }
-}
 
-class MultiModelRef {  // Refers to multiple model fields, since can only have one component per entity can't have multiple ModelRefs
-  constructor(refs) {
-    this.refs = refs;  // list of ModelRefs
+  // App - Toggle Model
+
+  function toggle_message() {
+    let data = message.getComponent('data')
+    data.val = toggleCase(data.val)
   }
-}
 
-class GuiControlRef {  // Mediator (entity + this component) needs to know about a wxPython gui control
-  constructor($el, el_type) {
-    this.$el = $el          // JQuery reference to element, but could be just 'id' or 'name' string
-    this.el_type = el_type  // e.g. 'div' or 'input', tells render system what kind of DOM element to render/set
+  function toggle_user() {
+    let data = firstname.getComponent('data')
+    data.val = toggleCase(data.val)
+    data = surname.getComponent('data')
+    data.val = toggleCase(data.val)
   }
-}
 
-class DisplayOptions {
-  constructor() {
-    this.uppercase_welcome = false
-    this.uppercase_user = false
+  // App - Display Option Checkbox toggles
+
+  function display_option_toggle_message_case(flag) {
+    message.getComponent('displayOptions').upper = flag
   }
-}
 
-//
-// Wire up and build everything
-//
+  function display_option_toggle_user_case(flag) {
+    firstname.getComponent('displayOptions').upper = flag
+    surname.getComponent('displayOptions').upper = flag
+  }
 
-const entity_welcome = world.entity('entity_welcome')
-entity_welcome.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']))
-entity_welcome.setComponent('c_gui_ref', new GuiControlRef($('#welcome'), 'div'))  // id of div to hold welcome message, top left
-entity_welcome.setComponent('c_display_options', new DisplayOptions())
+  function display_option_toggle_topright_case(flag) {
+    topright.getComponent('displayOptions').upper = flag
+  }
 
-const entity_welcome_user = world.entity('entity_welcome_user')
-entity_welcome_user.setComponent('c_multi_model_ref', new MultiModelRef(
-  [
-    new ModelRef(model, ['welcomemsg']),
-    new ModelRef(model, ["user", "firstname"]),
-    new ModelRef(model, ["user", "surname"]),
-  ]
-));
-entity_welcome_user.setComponent('c_gui_ref', new GuiControlRef($('#welcome-user'), 'div'));
-entity_welcome_user.setComponent('c_display_options', new DisplayOptions())
+  let $topleft = $('#welcome')
+  let $topright = $('#welcome-user')
 
-const entity_edit_welcome_msg = world.entity('entity_edit_welcome_msg')
-entity_edit_welcome_msg.setComponent('c_model_ref', new ModelRef(model, ['welcomemsg']));
-entity_edit_welcome_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=welcome]'), 'input'));
 
-const entity_edit_user_name_msg = world.entity('entity_edit_user_name_msg')
-entity_edit_user_name_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "firstname"]));
-entity_edit_user_name_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=firstname]'), 'input'));
 
-const entity_edit_user_surname_msg = world.entity('entity_edit_user_surname_msg')
-entity_edit_user_surname_msg.setComponent('c_model_ref', new ModelRef(model, ["user", "surname"]));
-entity_edit_user_surname_msg.setComponent('c_gui_ref', new GuiControlRef($('input[name=surname]'), 'input'));
 
-const entity_page_title = world.entity('entity_page_title')
-entity_page_title.setComponent('c_plain_data', new PlainData("Gui wired via ECS (Entity Component System)"));
-entity_page_title.setComponent('c_gui_ref', new GuiControlRef($('#title > h1'), 'div'));
+  // Systems
 
-const entity_dump_models = world.entity('entity_dump_models')
-entity_dump_models.setComponent('c_debug_dump_options', {$el: $('#debug_info'), verbose: false});  // dict as component is ok
+  engine.system('controller-render-model', ['data'], (entity, { data }) => {
+    if (entity.name == 'model-welcome-message') $('input[name=welcome]').val(data.val)
+    else if (entity.name == 'model-firstname') $('input[name=firstname]').val(data.val)
+    else if (entity.name == 'model-surname') $('input[name=surname]').val(data.val)
+    log(`render-model: ${entity.name}, ${data.val}`);
+  });
 
-// Extract systems - pull info from model into component 'finalstr' field for later manipulation by other systems
-// Tip - the variables receiving the component must be named exactly the same as the registered component name string
+  engine.system('pre-render-topright', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+    let buffer = topright.getComponent('renderData')
+    if (entity.name == 'model-welcome-message')
+      buffer.welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
+    else if (entity.name == 'model-firstname')
+      buffer.firstname = displayOptions.upper ? data.val.toUpperCase() : data.val
+    else if (entity.name == 'model-surname')
+      buffer.surname = displayOptions.upper ? data.val.toUpperCase() : data.val
 
-world.system('extract-model-ref', ['c_model_ref'], (entity, {c_model_ref}) => {
-  c_model_ref.finalstr = c_model_ref.val
-});
-world.system('extract-multi-model-ref-system', ['c_multi_model_ref'], (entity, {c_multi_model_ref}) => {
-  for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    c.finalstr = c.val
-});
+    log(`pre-render-topright: model=${data.val} buffer: ${JSON.stringify(buffer)}, displayOptions=${JSON.stringify(displayOptions)}`);
+  });
 
-// Case transform systems
+  engine.system('controller-render-display-topleft', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+    if (entity.name == 'model-welcome-message')
+      $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
+    log(`render-display-topleft: ${entity.name}, ${data.val}, displayOptions=${JSON.stringify(displayOptions)}`);
+  });
 
-world.system('case-transform-uppercase-welcome', ['c_model_ref', 'c_display_options'], (entity, {c_model_ref, c_display_options}) => {
-  let c = c_model_ref
-  if (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg"))
-    c.finalstr = c.finalstr.toUpperCase()
-});
-world.system('case-transform-uppercase_welcome_user', ['c_multi_model_ref', 'c_display_options'], (entity, {c_multi_model_ref, c_display_options}) => {
-  for (const c of c_multi_model_ref.refs)  // each 'c' is a ModelRef component 
-    if (
-      (c_display_options.uppercase_welcome && c.keys.includes("welcomemsg")) ||
-      (c_display_options.uppercase_user && (c.keys.includes("firstname") || c.keys.includes("surname")))
-    )
-      c.finalstr = c.finalstr.toUpperCase()
-});
+  engine.system('controller-render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
+    let s = `${renderData.welcome} ${renderData.firstname} ${renderData.surname}`
+    if (displayOptions.upper)
+      s = s.toUpperCase()
+    $topright.html(s)
+    log(`render-display-topright: ${entity.name}, ${JSON.stringify(renderData)}, displayOptions=${JSON.stringify(displayOptions)}`);
+  });
 
-// Render Systems
 
-function render(s, c_gui_ref) {  // Helper, stores 's' into DOM referenced by 'c_gui_ref'
-  if (c_gui_ref.el_type == 'div')
-    c_gui_ref.$el.html(s)
-  else if (c_gui_ref.el_type == 'input')
-    c_gui_ref.$el.val(s)
-}
-function gather_model_refs_into_single_dict(c_multi_model_ref) {  // Helper
-  let data = {}  // can't target how model ref components get found, so build up multi model output string here, via dict
-  for (const c_model_ref of c_multi_model_ref.refs)
-    data[c_model_ref.keys.slice(-1)] = c_model_ref.finalstr
-  return data
-}
+  // Util - Logging
 
-world.system('render-model_refs', ['c_model_ref', 'c_gui_ref'], (entity, {c_model_ref, c_gui_ref}) => {
-  render(c_model_ref.finalstr, c_gui_ref)
-});
+  var logarea = document.getElementById('log');
 
-world.system('render-plain', ['c_plain_data', 'c_gui_ref'], (entity, {c_plain_data, c_gui_ref}) => {
-  render(c_plain_data.finalstr, c_gui_ref)
-});
+  // Append a line of log
+  function log(text) {
+    var html = logarea.innerHTML;
+    html += (text || '') + '<br/>';
+    logarea.innerHTML = html;
 
-world.system('render-top-right', ['c_multi_model_ref', 'c_gui_ref'], (entity, {c_multi_model_ref, c_gui_ref}) => {
-  data = gather_model_refs_into_single_dict(c_multi_model_ref)
-  render(`${data['welcomemsg']} ${data['firstname']} ${data['surname']}`, c_gui_ref)
-});
+    // Scroll log to bottom
+    // logarea.scrollTop = logarea.scrollHeight;
+  }
+  function log_clear() {
+    logarea.innerHTML = ""
+    // logarea.scrollTop = logarea.scrollHeight;
+  }
 
-world.system('render-debug-dump-models', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {  // For debugging
-  let part1_html = syntaxHighlight(JSON.stringify({
-    model: model, 
-    "entity_welcome[c_display_options]": entity_welcome.components.c_display_options,
-    "entity_welcome_user[c_display_options]": entity_welcome_user.components.c_display_options,
-  }, null, 2))
-  let part2_html = dump_world(world, c_debug_dump_options.verbose)
-  c_debug_dump_options.$el.html(part1_html + '<br>' + part2_html)
-});
+  // Util - Uppercase
 
-// Util
+  function isUpperCaseAt(str, n) {
+    return str[n] === str[n].toUpperCase();
+  }
 
-function isUpperCaseAt(str, n) {
-  return str[n]=== str[n].toUpperCase();
-}
+  function toggleCase(str) {  // determine case of string based on arbitrary choice of char 1
+    return isUpperCaseAt(str, 1) ? str.toLowerCase() : str.toUpperCase()
+  }
 
-//
-// GUI events
-//
+  // Boot
 
-$('#change_welcome_model').on('click', function(e) {
-  model.welcomemsg = isUpperCaseAt(model.welcomemsg, 1) ? model.welcomemsg.toLowerCase() : model.welcomemsg.toUpperCase()
-  world.tick()
-})
+  engine.tick()
 
-$('#change_user_model').on('click', function(e) {
-  model.user.firstname = isUpperCaseAt(model.user.firstname, 1) ? model.user.firstname.toLowerCase() : model.user.firstname.toUpperCase()
-  model.user.surname = isUpperCaseAt(model.user.surname, 1) ? model.user.surname.toLowerCase() : model.user.surname.toUpperCase()
-  world.tick()
-})
+  return {
+    set_message,
+    set_firstname,
+    set_surname,
 
-$('#reset_welcome_model').on('click', function(e) {
-  model.welcomemsg = "Hello"
-  world.tick()
-})
+    toggle_message,
+    toggle_user,
 
-$('#reset_user_model').on('click', function(e) {
-  model.user.firstname = "Fred"
-  model.user.surname = "Flinstone"
-  world.tick()
-})
+    display_option_toggle_message_case,
+    display_option_toggle_user_case,
+    display_option_toggle_topright_case,
+    engine,
+  }
 
-$("input[name=uppercase_welcome]").on('change', function(e) {
-  entity_welcome.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  entity_welcome_user.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  world.tick()
-})
-
-$("input[name=uppercase_user]").on('change', function(e) {
-  entity_welcome_user.components.c_display_options.uppercase_user = $(e.target).prop('checked')
-  world.tick()
-})
-
-$("input[name=uppercase_welcome_user]").on('change', function(e) {
-  entity_welcome_user.components.c_display_options.uppercase_welcome = $(e.target).prop('checked')
-  entity_welcome_user.components.c_display_options.uppercase_user = $(e.target).prop('checked')
-  world.tick()
-});
-
-$("input[name=verbose_debug]").on('change', function(e) {
-  let component = {$el: $('#debug_info'), verbose: $(e.target).prop('checked')}
-  entity_dump_models.setComponent('c_debug_dump_options', component)  // replaces any existing component
-  world.tick()
-});
-
-$("input[name=welcome]").on('keyup', function(e) {
-    model["welcomemsg"] = $(e.target).val()
-    world.tick()
-})
-
-$("input[name=firstname]").on('keyup', function(e) {
-  model["user"]["firstname"] = $(e.target).val()
-  world.tick()
-})
-
-$("input[name=surname]").on('keyup', function(e) {
-  model["user"]["surname"] = $(e.target).val()
-  world.tick()
-})
-
-$('#render-now').on('click', function(e) {
-  world.tick()
-})
-
-world.tick()
+}());
