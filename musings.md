@@ -559,8 +559,22 @@ Ans. buffer intermediate results:
 
 ```
 
-More to think about here - could levergae the ECS pipeline and rendering to do things in stages
-properly.
+Could leverage the ECS pipeline and rendering to do things in stages
+properly. Which then looks like:
+
+```javascript
+const topright = engine.entity('display-model-topright');
+topright.setComponent('renderData', { welcome:"", firstname:"", surname:"" })
+
+engine.system('render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+  topright.getComponent('renderData').welcome = 'blah'
+});
+
+engine.system('render-display-topright', ['renderData'], (entity, { renderData }) => {
+  $topright.html(`${renderData.welcome} ${renderData.firstname} ${renderData.surname} `)
+});
+```
+
 
 ## render system scraps
 
