@@ -68,6 +68,10 @@ var app = (function () {
   function display_option_toggle_topright_case(flag) {
     topright.getComponent('displayOptions').upper = flag
   }
+  
+  function display_option_toggle_verbose_debug(flag) {
+    flag ? $('#log-cont').show() : $('#log-cont').hide()
+  }
 
   let $topleft = $('#welcome')
   let $topright = $('#welcome-user')
@@ -172,6 +176,9 @@ var app = (function () {
     display_option_toggle_message_case,
     display_option_toggle_user_case,
     display_option_toggle_topright_case,
+
+    display_option_toggle_verbose_debug,
+
     engine,
   }
 

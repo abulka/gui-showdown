@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="row">
-      <div id="log-cont">
+      <div id="log-cont" style="display: none;">
         <div id="log"></div>
       </div>
 </div>
@@ -116,6 +116,13 @@
           app.display_option_toggle_topright_case($(e.target).prop('checked'))
           app.engine.tick()
         })
+
+        // Debug - verbose
+
+        $("input[name=verbose_debug]").on('change', function(e) {
+          app.display_option_toggle_verbose_debug($(e.target).prop('checked'))
+          world.tick()
+        });
 
       });
     </script>
