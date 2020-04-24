@@ -79,6 +79,21 @@
 
         // Which change the actual model
 
+        $("input[name=welcome]").on('keyup', function(e) {
+            app.set_message($(e.target).val())
+            app.engine.tick()
+        })
+
+        $("input[name=firstname]").on('keyup', function(e) {
+          app.set_firstname($(e.target).val())
+          app.engine.tick()
+        })
+
+        $("input[name=surname]").on('keyup', function(e) {
+          app.set_surname($(e.target).val())
+          app.engine.tick()
+        })
+
         $('#change_welcome_model').on('click', function(e) {
           app.toggle_message()
           app.engine.tick()
