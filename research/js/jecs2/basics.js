@@ -16,15 +16,13 @@ var app = (function () {
   firstname.setComponent('data', { val: "Sam" })
   surname.setComponent('data', { val: "Smith" })
   topright.setComponent('renderData', { welcome:"", firstname:"", surname:"" })
-
-  // we need display option re uppercase for welcome, the whole user, and the 'welcome user' message (top right)
-  // only the first is an entity, the second is a combo of two entities and the third is a combo of three
   message.setComponent('displayOptions', { upper: false })
   firstname.setComponent('displayOptions', { upper: false })
   surname.setComponent('displayOptions', { upper: false })
   topright.setComponent('displayOptions', { upper: false })
 
-  // Set Model
+
+  // App - Set Model
 
   function set_message(val) {
     message.getComponent('data').val = val
@@ -36,7 +34,7 @@ var app = (function () {
     surname.getComponent('data').val = val
   }
 
-  // Toggle Model
+  // App - Toggle Model
 
   function toggle_message() {
     let data = message.getComponent('data')
@@ -50,7 +48,7 @@ var app = (function () {
     data.val = toggleCase(data.val)
   }
 
-  // Display Option Checkbox toggles
+  // App - Display Option Checkbox toggles
 
   function display_option_toggle_message_case(flag) {
     message.getComponent('displayOptions').upper = flag
@@ -72,6 +70,9 @@ var app = (function () {
     log_clear()
   })
 
+
+  // Systems
+
   engine.system('controller-render-model', ['data'], (entity, { data }) => {
     if (entity.name == 'model-welcome-message') $('input[name=welcome]').val(data.val)
     else if (entity.name == 'model-firstname') $('input[name=firstname]').val(data.val)
@@ -79,7 +80,7 @@ var app = (function () {
     log(`render-model: ${entity.name}, ${data.val}`);
   });
 
-  engine.system('pre-render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+  engine.system('pre-render-topright', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
     let buffer = topright.getComponent('renderData')
     if (entity.name == 'model-welcome-message')
       buffer.welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
@@ -124,7 +125,7 @@ var app = (function () {
     logarea.scrollTop = logarea.scrollHeight;
   }
 
-  // Util
+  // Util - Uppercase
 
   function isUpperCaseAt(str, n) {
     return str[n] === str[n].toUpperCase();
@@ -133,6 +134,8 @@ var app = (function () {
   function toggleCase(str) {  // determine case of string based on arbitrary choice of char 1
     return isUpperCaseAt(str, 1) ? str.toLowerCase() : str.toUpperCase()
   }
+
+  // Boot
 
   engine.tick()
 
