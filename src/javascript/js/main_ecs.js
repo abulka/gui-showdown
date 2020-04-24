@@ -77,11 +77,11 @@ var app = (function () {
 
   // Systems
 
-  engine.system('controller-render-model', ['data'], (entity, { data }) => {
+  engine.system('controller-model', ['data'], (entity, { data }) => {
     if (entity.name == 'model-welcome-message') $('input[name=welcome]').val(data.val)
     else if (entity.name == 'model-firstname') $('input[name=firstname]').val(data.val)
     else if (entity.name == 'model-surname') $('input[name=surname]').val(data.val)
-    log(`render-model: ${entity.name}, ${data.val}`);
+    log(`controller-model: ${entity.name}, ${data.val}`);
   });
 
   engine.system('pre-render-topright', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
@@ -92,22 +92,21 @@ var app = (function () {
       buffer.firstname = displayOptions.upper ? data.val.toUpperCase() : data.val
     else if (entity.name == 'model-surname')
       buffer.surname = displayOptions.upper ? data.val.toUpperCase() : data.val
-
-    log(`pre-render-topright: model=${data.val} buffer: ${JSON.stringify(buffer)}, displayOptions=${JSON.stringify(displayOptions)}`);
+    log(`pre-render-topright: model=${data.val} buffer: ${JSON.stringify(buffer)}, ${JSON.stringify(displayOptions)}`);
   });
 
-  engine.system('controller-render-display-topleft', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+  engine.system('controller-topleft', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
     if (entity.name == 'model-welcome-message')
       $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
-    log(`render-display-topleft: ${entity.name}, ${data.val}, displayOptions=${JSON.stringify(displayOptions)}`);
+    log(`controller-topleft: ${entity.name}, ${data.val}, ${JSON.stringify(displayOptions)}`);
   });
 
-  engine.system('controller-render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
+  engine.system('controller-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
     let s = `${renderData.welcome} ${renderData.firstname} ${renderData.surname}`
     if (displayOptions.upper)
       s = s.toUpperCase()
     $topright.html(s)
-    log(`render-display-topright: ${entity.name}, ${JSON.stringify(renderData)}, displayOptions=${JSON.stringify(displayOptions)}`);
+    log(`controller-topright: ${entity.name}, ${JSON.stringify(renderData)}, ${JSON.stringify(displayOptions)}`);
   });
 
   // world.system('controller-render-debug-dump', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {  // For debugging
@@ -134,6 +133,8 @@ var app = (function () {
 
   // Append a line of log
   function log(text) {
+    let pad = '&nbsp;'.repeat(30)
+    text = text.replace('\n', `<br/>${pad}`)
     var html = logarea.innerHTML;
     html += (text || '') + '<br/>';
     logarea.innerHTML = html;
