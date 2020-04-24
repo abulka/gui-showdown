@@ -9,7 +9,9 @@ wc -l main_plain.js
 echo -------------------------------------
 wc -l main_vue.js
 echo -------------------------------------
-wc -l main_ecs.js nested_dict_accessor.js
+wc -l main_ecs_v2.js nested_dict_accessor.js
+echo -------------------------------------
+wc -l main_ecs.js
 echo -------------------------------------
 wc -l main_mvca.js
 echo -------------------------------------

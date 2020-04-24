@@ -30,11 +30,8 @@ cd js
 DEST=../../../docs/js
 cp -v \
 assert.js \
-jecs_extras.js \
-jecs_min.js \
-jecs.js \
+jecs_2.0.0_min.js \
 main_ecs.js \
-nested_dict_accessor.js \
 main_oo.js \
 main_mvca.js \
 observer_oo.js \

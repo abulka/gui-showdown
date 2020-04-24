@@ -6,10 +6,12 @@
     <meta charset="utf-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
 
-    <script src="js/jecs.js"></script>
-    <script src="js/jecs_extras.js"></script>
+    <!-- <script src="js/jecs.js"></script> -->
+    <script src="js/jecs_2.0.0_min.js"></script>
+    <!-- <script src="js/jecs_extras.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/jecs_extras.css">
   </head>
 
   <body>
@@ -50,19 +52,95 @@
         <div class="column-half">
             <h4>Debug</h4>
             <label><input name="verbose_debug" type="checkbox">Verbose</label><br>
+            <p>List of <b><u>E</b></u>ntities, with <b><u>C</u></b>omponents attached:</p>
             <pre id="debug_info" class="pre-scroller"></pre>
         </div>
     </div>
+    <div class="row">
+      <div id="log-cont" style="display: none;">
+        <p><b><u>S</u></b>ystem behaviour log:</p>
+        <div id="log"></div>
+      </div>
+</div>
 
     <br>
     <a href="index.html">Back to index of examples</a>
 
     <script src="js/syntax_highlighting.js"></script>
     <script src="js/assert.js"></script>
-    <script src="js/nested_dict_accessor.js"></script>
+    <!-- <script src="js/nested_dict_accessor.js"></script> -->
     <script src="js/main_ecs.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
+
+        //
+        // GUI events
+        //
+
+        // Which change the actual model
+
+        $("input[name=welcome]").on('keyup', function(e) {
+            app.set_message($(e.target).val())
+            app.engine.tick()
+        })
+
+        $("input[name=firstname]").on('keyup', function(e) {
+          app.set_firstname($(e.target).val())
+          app.engine.tick()
+        })
+
+        $("input[name=surname]").on('keyup', function(e) {
+          app.set_surname($(e.target).val())
+          app.engine.tick()
+        })
+
+        $('#change_welcome_model').on('click', function(e) {
+          app.toggle_message()
+          app.engine.tick()
+        })
+
+        $('#change_user_model').on('click', function(e) {
+          app.toggle_user()
+          app.engine.tick()
+        })
+
+        $('#reset_welcome_model').on('click', function(e) {
+          app.set_message("Hello")
+          app.engine.tick()
+        })
+
+        $('#reset_user_model').on('click', function(e) {
+          app.set_firstname("Fred")
+          app.set_surname("Flinstone")
+          app.engine.tick()
+        })
+
+        // Which change the way the model is displayed at the top left and top right, but does not change the model
+
+        $("input[name=uppercase_welcome]").on('change', function(e) {
+          // uppercase welcome in both top left and top right - but nothing else, esp. not the model
+          app.display_option_toggle_message_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+        $("input[name=uppercase_user]").on('change', function(e) {
+          // uppercase top right user (firstname + surname) - but nothing else, esp. not the model
+          app.display_option_toggle_user_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+
+        $("input[name=uppercase_welcome_user]").on('change', function(e) {
+          // uppercase both top left and top right - but nothing else, esp. not the model
+          app.display_option_toggle_topright_case($(e.target).prop('checked'))
+          app.engine.tick()
+        })
+
+        // Debug - verbose
+
+        $("input[name=verbose_debug]").on('change', function(e) {
+          app.display_option_toggle_verbose_debug($(e.target).prop('checked'))
+          world.tick()
+        });
+
       });
     </script>
   </body>
