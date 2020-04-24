@@ -79,17 +79,22 @@ var app = (function () {
     log(`render-model: ${entity.name}, ${data.val}`);
   });
 
-  engine.system('controller-render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
-    if (entity.name == 'model-welcome-message') {
-      $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
-      topright.getComponent('renderData').welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
-    }
+  engine.system('pre-render-display', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+    let buffer = topright.getComponent('renderData')
+    if (entity.name == 'model-welcome-message')
+      buffer.welcome = displayOptions.upper ? data.val.toUpperCase() : data.val
     else if (entity.name == 'model-firstname')
-      topright.getComponent('renderData').firstname = displayOptions.upper ? data.val.toUpperCase() : data.val
+      buffer.firstname = displayOptions.upper ? data.val.toUpperCase() : data.val
     else if (entity.name == 'model-surname')
-      topright.getComponent('renderData').surname = displayOptions.upper ? data.val.toUpperCase() : data.val
+      buffer.surname = displayOptions.upper ? data.val.toUpperCase() : data.val
 
-    log(`render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(topright.getComponent('renderData'))}, displayOptions=${JSON.stringify(displayOptions)}`);
+    log(`pre-render-display: ${entity.name}, ${data.val} buffer: ${JSON.stringify(buffer)}, displayOptions=${JSON.stringify(displayOptions)}`);
+  });
+
+  engine.system('controller-render-display-topleft', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
+    if (entity.name == 'model-welcome-message')
+      $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
+    log(`render-display-topleft: ${entity.name}, ${data.val}, displayOptions=${JSON.stringify(displayOptions)}`);
   });
 
   engine.system('controller-render-display-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
