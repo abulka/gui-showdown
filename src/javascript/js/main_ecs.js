@@ -112,17 +112,6 @@ var app = (function () {
     $topright.html(s)
     log(`controller-topright: ${entity.name}, ${JSON.stringify(renderData)}, ${JSON.stringify(displayOptions)}`);
   });
-
-  // world.system('controller-render-debug-dump', ['c_debug_dump_options'], (entity, {c_debug_dump_options}) => {  // For debugging
-  //   let part1_html = syntaxHighlight(JSON.stringify({
-  //     model: model, 
-  //     // "entity_welcome[c_display_options]": entity_welcome.components.c_display_options,
-  //     // "entity_welcome_user[c_display_options]": entity_welcome_user.components.c_display_options,
-  //   }, null, 2))
-  //   // let part2_html = dump_world(world, c_debug_dump_options.verbose)
-  //   let part2_html = ""
-  //   c_debug_dump_options.$el.html(part1_html + '<br>' + part2_html)
-  // });
   
   engine.on('tick:after', (engine) => {
     let html = syntaxHighlight(JSON.stringify({message, firstname, surname, topright} , null, 2))
