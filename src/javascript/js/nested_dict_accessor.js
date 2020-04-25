@@ -43,52 +43,52 @@ class NestedDictAccess {  // Reference to a shared model object
 // (uncomment all the code below this line)
 // -----------------------------------------------------
 
-// function assert(condition, message) {
-//   if (!condition) {
-//       message = message || "Assertion failed";
-//       if (typeof Error !== "undefined") {
-//           throw new Error(message);
-//       }
-//       throw message; // Fallback
-//   }
-// }
-// var model = {
-//   welcomemsg: "Welcome", 
-//   user: {
-//     firstname: "Sam", 
-//     surname: "Smith"
-//   }
-// }
-// assert(model.user.firstname == "Sam")
-// let m_firstname = new NestedDictAccess(model, ["user", "firstname"])
-// assert(m_firstname.val == "Sam")
-// m_firstname.val = "Mary"
-// assert(m_firstname.val == "Mary")
-// assert(model.user.firstname == "Mary")
+function assert(condition, message) {
+  if (!condition) {
+      message = message || "Assertion failed";
+      if (typeof Error !== "undefined") {
+          throw new Error(message);
+      }
+      throw message; // Fallback
+  }
+}
+var model = {
+  welcomemsg: "Welcome", 
+  user: {
+    firstname: "Sam", 
+    surname: "Smith"
+  }
+}
+assert(model.user.firstname == "Sam")
+let m_firstname = new NestedDictAccess(model, ["user", "firstname"])
+assert(m_firstname.val == "Sam")
+m_firstname.val = "Mary"
+assert(m_firstname.val == "Mary")
+assert(model.user.firstname == "Mary")
 
-// /**
-//  * I suppose it could be done with a functions but have to mention the 
-//  * object name 'obj' each time
-//  */
-// let surname_set = (obj, val) => { obj.user.surname = val }
-// let surname_get = (obj) => { return obj.user.surname }
-// // test
-// assert(model.user.surname == "Smith")
-// assert(surname_get(model) == "Smith")
-// surname_set(model, "Flinstone")  // change it using the lambda
-// assert(model.user.surname == "Flinstone")
-// assert(surname_get(model) == "Flinstone")
+/**
+ * I suppose it could be done with a functions but have to mention the 
+ * object name 'obj' each time
+ */
+let surname_set = (obj, val) => { obj.user.surname = val }
+let surname_get = (obj) => { return obj.user.surname }
+// test
+assert(model.user.surname == "Smith")
+assert(surname_get(model) == "Smith")
+surname_set(model, "Flinstone")  // change it using the lambda
+assert(model.user.surname == "Flinstone")
+assert(surname_get(model) == "Flinstone")
 
-// /** 
-//  * I suppose it could be done with lambdas, functions which return a function locked to an obj
-//  */ 
-// let factory_model_surname_set = function (obj) { return (val)=> { obj.user.surname = val }}
-// let factory_model_surname_get = function (obj) { return () => { return obj.user.surname }}
-// // create the lambda functions
-// let m_surname_set = factory_model_surname_set(model)
-// let m_surname_get = factory_model_surname_get(model)
-// // test
-// assert(model.user.surname == "Flinstone")
-// assert(m_surname_get() == "Flinstone")  // lambda approach, notice we don't mention 'model' its baked in
-// m_surname_set("Jones")  // lambda approach, again
-// assert(model.user.surname == "Jones")
+/** 
+ * I suppose it could be done with lambdas, functions which return a function locked to an obj
+ */ 
+let factory_model_surname_set = function (obj) { return (val)=> { obj.user.surname = val }}
+let factory_model_surname_get = function (obj) { return () => { return obj.user.surname }}
+// create the lambda functions
+let m_surname_set = factory_model_surname_set(model)
+let m_surname_get = factory_model_surname_get(model)
+// test
+assert(model.user.surname == "Flinstone")
+assert(m_surname_get() == "Flinstone")  // lambda approach, notice we don't mention 'model' its baked in
+m_surname_set("Jones")  // lambda approach, again
+assert(model.user.surname == "Jones")
