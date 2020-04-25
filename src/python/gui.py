@@ -26,7 +26,7 @@ class MyFrame1 ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
 
 		self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.m_panel1.SetBackgroundColour( wx.Colour( 255, 255, 135 ) )
+		self.m_panel1.SetBackgroundColour( wx.Colour( 203, 174, 0 ) )
 
 		bSizer5 = wx.BoxSizer( wx.HORIZONTAL )
 
