@@ -77,7 +77,7 @@
         // GUI events
         //
 
-        // Which change the actual model
+        // Which change the actual model - input fields
 
         $("input[name=welcome]").on('keyup', function(e) {
             app.set_message($(e.target).val())
@@ -93,6 +93,8 @@
           app.set_surname($(e.target).val())
           app.engine.tick()
         })
+
+        // Which change the actual model - buttons
 
         $('#change_welcome_model').on('click', function(e) {
           app.toggle_message()

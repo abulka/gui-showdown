@@ -100,9 +100,10 @@ var app = (function () {
   });
 
   engine.system('controller-topleft', ['data', 'displayOptions'], (entity, { data, displayOptions }) => {
-    if (entity.name == 'model-welcome-message')
+    if (entity.name == 'model-welcome-message') {
       $topleft.html(displayOptions.upper ? data.val.toUpperCase() : data.val)
-    log(`controller-topleft: ${entity.name}, ${data.val}, ${JSON.stringify(displayOptions)}`);
+      log(`controller-topleft: ${entity.name}, ${data.val}, ${JSON.stringify(displayOptions)}`);
+    }
   });
 
   engine.system('controller-topright', ['renderData', 'displayOptions'], (entity, { renderData, displayOptions }) => {
