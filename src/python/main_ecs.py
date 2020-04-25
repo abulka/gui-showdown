@@ -7,7 +7,91 @@ from dataclasses import dataclass
 from typing import List, Any
 from enum import Enum
 
+
 engine = world = esper.World()
+
+
+# Util - Uppercase
+
+def toggleCase(s):
+    return s.lower() if s.isupper() else s.upper()
+
+#
+# Frame with GUI events
+#
+
+class MyFrame1A(MyFrame1):
+    def __init__(self, parent):
+        MyFrame1.__init__(self, parent)
+
+        # CMD-W to close Frame by attaching the key bind event to accellerator table
+        id_close = wx.NewIdRef()
+        self.Bind(wx.EVT_MENU, self.OnCloseWindow, id=id_close)
+        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord("W"), id_close)])
+        self.SetAcceleratorTable(accel_tbl)
+
+    def OnCloseWindow(self, event):
+        self.Destroy()
+
+    # Overridden events
+
+    # Which change the actual model - input fields
+
+    def on_enter_welcome(self, event):
+        set_message(event.GetEventObject().GetValue())
+        world.process()
+
+    def on_enter_user_firstname(self, event):
+        set_firstname(event.GetEventObject().GetValue())
+        world.process()
+
+    def on_enter_user_surname(self, event):
+        set_surname(event.GetEventObject().GetValue())
+        world.process()
+
+    # Which change the actual model - buttons
+
+    def on_button_change_welcome_model_case(self, event):
+        # toggle the case of the model's welcome message
+        toggle_message()
+        world.process()
+
+    def on_button_change_user_model_case(self, event):
+        # toggle the case of the model's user message
+        toggle_user()
+        world.process()
+    
+    def on_button_reset_welcome(self, event):
+        set_message("Hello")
+        world.process()
+
+    def on_button_reset_user(self, event):
+        set_firstname("Fred")
+        set_surname("Flinstone")
+        world.process()
+
+    # Which change the way the model is displayed at the top left and top right, but does not change the model
+
+    def on_check_toggle_welcome_outputs_only(self, event):
+        # toggle the case of the welcome output messages only - do not affect model
+        display_option_toggle_message_case(event.GetEventObject().IsChecked())
+        world.process()
+
+    def on_check_toggle_user_outputs_only(self, event):
+        # toggle the case of the user output messages only - do not affect model
+        display_option_toggle_user_case(event.GetEventObject().IsChecked())
+        world.process()
+
+    def on_check_upper_entire_top_right_output(self, event):
+        # toggle the case of both the welcome and user output messages only on rhs (top right) display - do not affect model
+        display_option_toggle_topright_case(event.GetEventObject().IsChecked())
+        world.process()
+
+    # Debug
+
+    def onClickRenderNow(self, event):
+        world.process()
+
 
 # 
 # Model - of a sort ;-)
@@ -90,93 +174,7 @@ def display_option_toggle_topright_case(flag):
     engine.component_for_entity(topright, DisplayOptions).upper = flag
 
 
-# Util - Uppercase
-
-def toggleCase(s):
-    return s.lower() if s.isupper() else s.upper()
-
-
-#
-# Frame with GUI events
-#
-
-class MyFrame1A(MyFrame1):
-    def __init__(self, parent):
-        MyFrame1.__init__(self, parent)
-
-        # CMD-W to close Frame by attaching the key bind event to accellerator table
-        id_close = wx.NewIdRef()
-        self.Bind(wx.EVT_MENU, self.OnCloseWindow, id=id_close)
-        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord("W"), id_close)])
-        self.SetAcceleratorTable(accel_tbl)
-
-    def OnCloseWindow(self, event):
-        self.Destroy()
-
-    # Overridden events
-
-    # Which change the actual model - input fields
-
-    def on_enter_welcome(self, event):
-        set_message(event.GetEventObject().GetValue())
-        world.process()
-
-    def on_enter_user_firstname(self, event):
-        set_firstname(event.GetEventObject().GetValue())
-        world.process()
-
-    def on_enter_user_surname(self, event):
-        set_surname(event.GetEventObject().GetValue())
-        world.process()
-
-    # Which change the actual model - buttons
-
-    def on_button_change_welcome_model_case(self, event):
-        # toggle the case of the model's welcome message
-        toggle_message()
-        world.process()
-
-    def on_button_change_user_model_case(self, event):
-        # toggle the case of the model's user message
-        toggle_user()
-        world.process()
-    
-    def on_button_reset_welcome(self, event):
-        set_message("Hello")
-        world.process()
-
-    def on_button_reset_user(self, event):
-        set_firstname("Fred")
-        set_surname("Flinstone")
-        world.process()
-
-    # Which change the way the model is displayed at the top left and top right, but does not change the model
-
-    def on_check_toggle_welcome_outputs_only(self, event):
-        # toggle the case of the welcome output messages only - do not affect model
-        display_option_toggle_message_case(event.GetEventObject().IsChecked())
-        world.process()
-
-    def on_check_toggle_user_outputs_only(self, event):
-        # toggle the case of the user output messages only - do not affect model
-        display_option_toggle_user_case(event.GetEventObject().IsChecked())
-        world.process()
-
-    def on_check_upper_entire_top_right_output(self, event):
-        # toggle the case of both the welcome and user output messages only on rhs (top right) display - do not affect model
-        display_option_toggle_topright_case(event.GetEventObject().IsChecked())
-        world.process()
-
-    # Debug
-
-    def onClickRenderNow(self, event):
-        world.process()
-
-
-#
 # Init WxPython - do this before defining Systems which need to refer to 'frame'
-#
-
 app = wx.App()
 frame = MyFrame1A(None)
 frame.SetTitle("Gui wired via ECS")
