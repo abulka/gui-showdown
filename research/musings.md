@@ -533,13 +533,15 @@ Let's do it another way
 This is more in line with the intent of the ECS.  My previous interpretation 
 in `main_ecs_v2.js` was backwards and uncomfortable - even though it worked.
 
+Declare entities - this is like the model, but without data - we attach that later, as 'components'
+
 ## how to distinguish re who the data is from? 
 
 Ans: Check entity.name
 
-## how to do a combo display that relies on TWO model entities - here we get only one at a time. 
+# how to do a combo display that relies on TWO model entities - here we get only one at a time. 
 
-Ans. buffer intermediate results:
+## Ans. buffer intermediate results:
 
 ```javascript
   let welcome_user_render = {welcome, firstname, surname}  // create an empty object to buffer
@@ -575,11 +577,83 @@ engine.system('render-display-topright', ['renderData'], (entity, { renderData }
 });
 ```
 
+## Another example of buffering
 
-## render system scraps
+```javascript
+    let todos_data = []  // gather this list for persistence purposes, array of pure data dicts
+    engine.system('reset-gather-for-save', ['housekeeping'], (entity, { housekeeping }) => {
+        todos_data = []
+    });
+    engine.system('gather-todos-for-save', ['data'], (entity, { data }) => {
+        todos_data.push(data)
+    });
+    engine.system('save', ['housekeeping'], (entity, { housekeeping }) => {
+        util.store('todos-oo', todos_data)
+        console.log('saved', JSON.stringify(todos_data))
+    });
+```
+
+that last housekeeping step can be also be done as a `engine.on('tick:after', (engine) => { ` e.g.
+
+```javascript
+  engine.on('tick:after', (engine) => { 
+      util.store('todos-oo', todos_data)
+      console.log('saved', JSON.stringify(todos_data))
+  })
+```
+
+### Encapsulating into a class
+
+Systems still work when created inside classes - they are registered with the engine and will run ok.
+
+```javascript
+class Persistence {
+    constructor() {
+        this.todos_data = []  // gather this list for persistence purposes, array of pure data dicts
+
+        engine.system('reset-gather-for-save', ['housekeeping'], (entity, { housekeeping }) => {
+            this.todos_data = []
+        });
+        engine.system('gather-todos-for-save', ['data'], (entity, { data }) => {
+            this.todos_data.push(data)
+        });
+        engine.system('save', ['housekeeping'], (entity, { housekeeping }) => {
+            this.save()
+        });
+
+        save() {
+            util.store('todos-oo', this.todos_data)
+            console.log('saved', JSON.stringify(this.todos_data))
+        }
+}
+new Persistence()
+```
+
+this is arguably nicer and more encapsulated.
+
+# render system scraps
 
 Define a 'render' system for updating val of entities associated to components 'data'
 
+## P.S. this fails to work as a System - infinite loop bt KEYUP and FOCUSOUT ?  Thus leave as is.
+
+```javascript
+.on('keyup', '.edit', function(event) {
+    if (event.which === ENTER_KEY)
+        event.target.blur()
+    if (event.which === ESCAPE_KEY)
+        $(event.target).data('abort', true).blur()
+})
+```
+
+# Re controller classes being converted to flat systems
+
+No need for these to be Systems - just regular Controller objects instead, since there is no looping?
+
+Maybe we could convert them into Systems?
+
+Or perhaps leave them as they are.
+    
 ## sim
 
 ```javascript
